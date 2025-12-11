@@ -1,0 +1,34 @@
+{
+  "compilerOptions": {
+    // Target modern Node.js
+    "target": "ES2020",
+    "module": "CommonJS",           // or "nodenext" if you want ESM imports
+    "moduleResolution": "node",
+    
+    // Project structure
+    "rootDir": "./src",
+    "outDir": "./dist",
+    
+    // Typechecking
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    
+    // Module interop
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    
+    // Maps
+    "sourceMap": true,
+    "declaration": true,
+    "declarationMap": true,
+    
+    // Skip type checks for libraries
+    "skipLibCheck": true,
+    
+    // Node.js types
+    "types": ["node"]
+  },
+  "include": ["src"],
+  "exclude": ["node_modules"]
+}
