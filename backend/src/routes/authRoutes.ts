@@ -1,14 +1,15 @@
 import { Router, Request, Response } from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { supabase } from "../db/supabaseClient"; // import your Supabase client
+import { supabase } from "../db/supabaseClient";
+import { emailExists } from "../auth/auth";
 
 const router = Router();
 
+const JWT_EXPIRES_IN = 60 * 60; // 1 hour in seconds
+
 /**
- * @route   POST /api/auth/register
- * @desc    Register a new user
- * @access  Public
+ * REGISTER
  */
 router.post("/register", async (req: Request, res: Response) => {
   const { email, password, address, phone } = req.body;
@@ -18,7 +19,6 @@ router.post("/register", async (req: Request, res: Response) => {
   }
 
   try {
-    // 1. Check if user already exists
     const { data: existingUsers, error: selectError } = await supabase
       .from("users")
       .select("*")
@@ -28,21 +28,21 @@ router.post("/register", async (req: Request, res: Response) => {
     if (selectError) throw selectError;
 
     if (existingUsers?.length) {
-      return res.status(409).json({ message: "User with this email already exists" });
+      return res
+        .status(409)
+        .json({ message: "User with this email already exists" });
     }
 
-    // 2. Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // 3. Insert new user into Supabase
     const { data: newUser, error: insertError } = await supabase
       .from("users")
       .insert([
         {
           email,
           password: hashedPassword,
-          address: address || null,       // optional
-          phone_number: phone || null,    // optional
+          address: address || null,
+          phone_number: phone || null,
         },
       ])
       .select("id, email, address, phone_number, created_at")
@@ -50,17 +50,35 @@ router.post("/register", async (req: Request, res: Response) => {
 
     if (insertError) throw insertError;
 
-    res.status(201).json(newUser);
+    // ✅ Create JWT token
+    const jwtSecret = process.env.JWT_SECRET!;
+    const payload = { user: { id: newUser.id, email: newUser.email } };
+    const token = jwt.sign(payload, jwtSecret, { expiresIn: JWT_EXPIRES_IN });
+
+    // ✅ Set HttpOnly cookie - TO DO for production
+    // res.cookie("token", token, {
+    //   httpOnly: true,
+    //   secure: process.env.NODE_ENV === "production", // only on HTTPS
+    //   sameSite: "strict",
+    //   maxAge: JWT_EXPIRES_IN * 1000, // in milliseconds
+    // });
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: false, // localhost = no HTTPS
+      sameSite: "lax", // ✅ ALLOW cross-site navigation
+      maxAge: JWT_EXPIRES_IN * 1000,
+    });
+
+    return res.status(201).json(newUser);
   } catch (error: any) {
     console.error("Registration error:", error.message || error);
-    res.status(500).json({ message: "Internal Server Error" });
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 });
 
 /**
- * @route   POST /api/auth/login
- * @desc    Authenticate user and get token
- * @access  Public
+ * LOGIN
  */
 router.post("/login", async (req: Request, res: Response) => {
   const { email, password } = req.body;
@@ -70,7 +88,6 @@ router.post("/login", async (req: Request, res: Response) => {
   }
 
   try {
-    // 1. Find the user by email
     const { data: user, error } = await supabase
       .from("users")
       .select("*")
@@ -78,29 +95,108 @@ router.post("/login", async (req: Request, res: Response) => {
       .single();
 
     if (error) {
-      if (error.code === "PGRST116") { // “no rows found” error from Supabase
-        return res.status(404).json({ message: "No user with this email exists" });
+      if (error.code === "PGRST116") {
+        return res
+          .status(404)
+          .json({ message: "No user with this email exists" });
       }
       throw error;
     }
 
-    // 2. Compare passwords
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(401).json({ message: "Incorrect password" });
     }
 
-    // 3. Create JWT
     const jwtSecret = process.env.JWT_SECRET!;
     const payload = { user: { id: user.id, email: user.email } };
-    const token = jwt.sign(payload, jwtSecret, { expiresIn: "1h" });
+    const token = jwt.sign(payload, jwtSecret, { expiresIn: JWT_EXPIRES_IN });
 
-    res.json({ token });
+    // ✅ Set HttpOnly cookie TO DO for production
+    // res.cookie("token", token, {
+    //   httpOnly: true,
+    //   secure: process.env.NODE_ENV === "production",
+    //   sameSite: "strict",
+    //   maxAge: JWT_EXPIRES_IN * 1000,
+    // });
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: false, // localhost = no HTTPS
+      sameSite: "lax", // ✅ ALLOW cross-site navigation
+      maxAge: JWT_EXPIRES_IN * 1000,
+    });
+
+    return res.json({ message: "Login successful" });
   } catch (err: any) {
     console.error("Login error:", err.message || err);
-    res.status(500).json({ message: "Internal Server Error" });
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 });
 
+/**
+ * CHECK EMAIL EXISTS
+ */
+router.get("/check-email", async (req: Request, res: Response) => {
+  const email = req.query.email as string;
+
+  if (!email) {
+    return res
+      .status(400)
+      .json({ exists: false, message: "Email is required" });
+  }
+
+  try {
+    const exists = await emailExists(email);
+    return res.json({ exists });
+  } catch (err) {
+    console.error("Email check error:", err);
+    return res.status(500).json({ exists: false, message: "Server error" });
+  }
+});
+
+router.get("/me", async (req: Request, res: Response) => {
+  try {
+    const token = req.cookies.token; // read HttpOnly cookie
+
+    if (!token) {
+      return res.status(401).json({ message: "Not authorized" });
+    }
+
+    const jwtSecret = process.env.JWT_SECRET!;
+    const decoded = jwt.verify(token, jwtSecret) as {
+      user: { id: string; email: string };
+    };
+
+    // Optional: fetch user data from DB
+    const { data: user, error } = await supabase
+      .from("users")
+      .select("id, email, address, phone_number, created_at")
+      .eq("id", decoded.user.id)
+      .single();
+
+    if (error || !user) {
+      return res.status(401).json({ message: "Not authorized" });
+    }
+
+    return res.json(user);
+  } catch (err) {
+    return res.status(401).json({ message: "Not authorized" });
+  }
+});
+
+// LOGOUT
+router.post("/logout", (req: Request, res: Response) => {
+  res.clearCookie("token", {
+    httpOnly: true,
+
+    secure: false, // localhost = no HTTPS
+
+    sameSite: "lax",
+  });
+  console.log("✅ Logout successful - Cookie cleared");
+  return res.json({ message: "Logged out successfully" });
+});
 
 export default router;
+

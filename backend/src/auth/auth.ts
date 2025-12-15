@@ -52,3 +52,14 @@ export async function loginUser(email: string, password: string) {
 
   return { id: user.id, email: user.email };
 }
+
+export async function emailExists(email: string): Promise<boolean> {
+  const { data, error } = await supabase
+    .from("users")
+    .select("id")
+    .eq("email", email)
+    .limit(1);
+
+  if (error) throw new Error(error.message);
+  return data.length > 0;
+}

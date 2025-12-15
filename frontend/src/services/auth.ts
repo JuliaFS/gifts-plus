@@ -1,23 +1,22 @@
+import { RegisterData, User } from "./types";
+
 const API_URL = "http://localhost:8080/api/auth";
 
 export async function loginUser(data: { email: string; password: string }) {
   const res = await fetch(`${API_URL}/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
+    credentials: "include",
     body: JSON.stringify(data),
   });
   return res.json();
 }
 
-export async function registerUser(data: { 
-  email: string; 
-  password: string, 
-  address?: string, 
-  phone_number?: string 
-}) {
+export async function registerUser(data: RegisterData): Promise<User>  {
   const res = await fetch(`${API_URL}/register`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
+    credentials: "include",
     body: JSON.stringify(data),
   });
 
@@ -29,3 +28,19 @@ export async function registerUser(data: {
   
   return res.json();
 }
+
+export async function checkEmailExists(email: string): Promise<boolean> {
+  const res = await fetch(`${API_URL}/check-email?email=${email}`, {credentials: "include"});
+  const data = await res.json();
+  return data.exists;
+}
+
+export async function fetchCurrentUser(): Promise<User> {
+  const res = await fetch(`${API_URL}/me`, { credentials: "include" }); // include cookies
+  if (!res.ok) throw new Error("Not authenticated");
+
+  const user: User = await res.json();
+  return user;
+}
+
+
