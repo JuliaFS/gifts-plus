@@ -52,7 +52,7 @@ router.post("/register", async (req: Request, res: Response) => {
 
     // ✅ Create JWT token
     const jwtSecret = process.env.JWT_SECRET!;
-    const payload = { user: { id: newUser.id, email: newUser.email } };
+    const payload = { user: { id: newUser.id, email: newUser.email, role: 'customer' } };
     const token = jwt.sign(payload, jwtSecret, { expiresIn: JWT_EXPIRES_IN });
 
     // ✅ Set HttpOnly cookie - TO DO for production
@@ -109,7 +109,7 @@ router.post("/login", async (req: Request, res: Response) => {
     }
 
     const jwtSecret = process.env.JWT_SECRET!;
-    const payload = { user: { id: user.id, email: user.email } };
+    const payload = { user: { id: user.id, email: user.email, role: user.role } };
     const token = jwt.sign(payload, jwtSecret, { expiresIn: JWT_EXPIRES_IN });
 
     // ✅ Set HttpOnly cookie TO DO for production
@@ -165,13 +165,13 @@ router.get("/me", async (req: Request, res: Response) => {
 
     const jwtSecret = process.env.JWT_SECRET!;
     const decoded = jwt.verify(token, jwtSecret) as {
-      user: { id: string; email: string };
+      user: { id: string; email: string, role: string };
     };
 
     // Optional: fetch user data from DB
     const { data: user, error } = await supabase
       .from("users")
-      .select("id, email, address, phone_number, created_at")
+      .select("id, email, role, address, phone_number, created_at")
       .eq("id", decoded.user.id)
       .single();
 
@@ -185,13 +185,11 @@ router.get("/me", async (req: Request, res: Response) => {
   }
 });
 
-// LOGOUT
+// LOGOUT TO DO check for production
 router.post("/logout", (req: Request, res: Response) => {
   res.clearCookie("token", {
     httpOnly: true,
-
     secure: false, // localhost = no HTTPS
-
     sameSite: "lax",
   });
   console.log("✅ Logout successful - Cookie cleared");

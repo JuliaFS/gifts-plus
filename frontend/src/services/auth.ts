@@ -35,12 +35,28 @@ export async function checkEmailExists(email: string): Promise<boolean> {
   return data.exists;
 }
 
-export async function fetchCurrentUser(): Promise<User> {
+export async function fetchCurrentUser(): Promise<User | null> {
   const res = await fetch(`${API_URL}/me`, { credentials: "include" }); // include cookies
-  if (!res.ok) throw new Error("Not authenticated");
+  if (!res.ok) {
+    return null;
+  }
 
   const user: User = await res.json();
   return user;
 }
+
+export async function logout() {
+  const response = await fetch(`${API_URL}/logout`, {
+    method: "POST",
+    credentials: "include",
+  });
+
+  if (!response.ok) {
+    throw new Error("Logout failed");
+  }
+
+  return true;
+}
+
 
 
