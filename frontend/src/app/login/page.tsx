@@ -1,72 +1,87 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { loginUser } from "@/services/auth";
+import { useLogin } from "./hooks/useLogin";
+import { useQueryClient } from "@tanstack/react-query";
+import Link from "next/link";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+
+  const { mutate, isPending, isError} = useLogin();
+  const queryClient = useQueryClient();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    setIsLoading(true);
 
-    try {
-      const res = await loginUser({ email, password });
-      
-      if (res.token) {
-        localStorage.setItem("authToken", res.token);
-        router.push("/dashboard");
-      } else {
-        setError(res.message || "Login failed");
+    mutate(
+      { email, password },
+      {
+        onSuccess: async (data) => {
+          queryClient.setQueryData(["currentUser"], data);
+
+          if (data.role === "admin") {
+            router.push("/admin/products");
+          } else {
+            router.push("/dashboard");
+          }
+        },
+        onError: (err) => {
+          setError(err.message || "Login failed.");
+        },
       }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
-    } finally {
-      setIsLoading(false);
-    }
+    );
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6">
-      <form onSubmit={handleLogin} className="w-full max-w-md bg-white rounded-lg p-8 shadow-lg">
-        <h2 className="text-2xl font-bold mb-6">Login</h2>
-        
+    <div className="flex flex-col items-center justify-center p-6 mt-10">
+      <form
+        onSubmit={handleLogin}
+        className="w-full max-w-md bg-white rounded-3xl p-10 shadow-2xl"
+      >
+        <h2 className="text-4xl font-extrabold text-center mb-6">Login</h2>
+
         {error && <p className="text-red-500 mb-4">{error}</p>}
-        
+
         <div className="mb-4">
-          <input 
+          <input
             type="email"
-            value={email} 
-            onChange={e => setEmail(e.target.value)} 
-            placeholder="Email" 
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Email"
             className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
         </div>
-        
+
         <div className="mb-6">
-          <input 
+          <input
             type="password"
-            value={password} 
-            onChange={e => setPassword(e.target.value)} 
-            placeholder="Password" 
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Password"
             className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
         </div>
-        
-        <button 
-          type="submit" 
-          disabled={isLoading}
-          className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50"
+
+        <button
+          type="submit"
+          disabled={isPending || isError}
+          className="w-full py-3 bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-bold rounded-xl transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {isLoading ? "Logging in..." : "Login"}
+          {isPending ? "Logging in..." : "Login"}
         </button>
+        <p className="text-center text-gray-400 text-sm pt-8">
+          Don't have an account?{" "}
+          <Link href="/register" className="text-cyan-400 hover:underline">
+            Register
+          </Link>
+        </p>
       </form>
     </div>
   );

@@ -4,6 +4,7 @@ export interface User {
   address: string | null;
   phone_number: string | null;
   created_at: string;
+  role:string;
 }
 
 export interface RegisterData {
@@ -12,3 +13,26 @@ export interface RegisterData {
   address?: string;
   phone_number?: string;
 }
+
+export interface LoginData {
+  email: string;
+  password: string;
+}
+
+export interface Product {
+  id: string;
+  name: string;
+  description?: string;
+  price: number;
+  stock: number; // available pieces
+  image_url?: string;
+  created_at: string;
+}
+
+export type CreateProductInput = {
+  name: string;
+  description?: string;
+  price: number;
+  stock: number;
+  image_url?: string;
+};

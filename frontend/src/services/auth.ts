@@ -1,8 +1,8 @@
-import { RegisterData, User } from "./types";
+import { LoginData, RegisterData, User } from "./types";
 
 const API_URL = "http://localhost:8080/api/auth";
 
-export async function loginUser(data: { email: string; password: string }) {
+export async function loginUser(data: LoginData): Promise<User> {
   const res = await fetch(`${API_URL}/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -30,6 +30,7 @@ export async function registerUser(data: RegisterData): Promise<User>  {
 }
 
 export async function checkEmailExists(email: string): Promise<boolean> {
+  // const res = await fetch(`${API_URL}/check-email?email=${email}`, {credentials: "include"});
   const res = await fetch(`${API_URL}/check-email?email=${email}`, {credentials: "include"});
   const data = await res.json();
   return data.exists;
