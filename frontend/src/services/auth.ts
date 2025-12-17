@@ -9,10 +9,17 @@ export async function loginUser(data: LoginData): Promise<User> {
     credentials: "include",
     body: JSON.stringify(data),
   });
-  return res.json();
+  const json = await res.json();
+
+  // 🔥 THIS IS CRITICAL
+  if (!res.ok) {
+    throw new Error(json.message || "Login failed");
+  }
+
+  return json;
 }
 
-export async function registerUser(data: RegisterData): Promise<User>  {
+export async function registerUser(data: RegisterData): Promise<User> {
   const res = await fetch(`${API_URL}/register`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -23,15 +30,17 @@ export async function registerUser(data: RegisterData): Promise<User>  {
   if (!res.ok) {
     const errorData = await res.json();
     // Throwing an error here lets react-query's onError handle it
-    throw new Error(errorData.message || "Registration failed"); 
+    throw new Error(errorData.message || "Registration failed");
   }
-  
+
   return res.json();
 }
 
 export async function checkEmailExists(email: string): Promise<boolean> {
   // const res = await fetch(`${API_URL}/check-email?email=${email}`, {credentials: "include"});
-  const res = await fetch(`${API_URL}/check-email?email=${email}`, {credentials: "include"});
+  const res = await fetch(`${API_URL}/check-email?email=${email}`, {
+    credentials: "include",
+  });
   const data = await res.json();
   return data.exists;
 }
@@ -58,6 +67,3 @@ export async function logout() {
 
   return true;
 }
-
-
-

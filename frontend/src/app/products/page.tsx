@@ -2,6 +2,7 @@
 import Image from "next/image";
 import { Product } from "@/services/types";
 import { useGetProducts } from "./hooks/useGetProducts";
+import { Autour_One } from "next/font/google";
 
 export default function ProductsPage() {
   const { data: products, isLoading, isError } = useGetProducts();
@@ -17,7 +18,9 @@ export default function ProductsPage() {
             <Image
               src={product.image_url}
               alt={product.name}
-              className="w-full h-48 object-cover rounded"
+              width={150}
+              height={150}
+              className="object-cover rounded"
             />
           )}
 

@@ -44,8 +44,7 @@ export async function register(
 
 export async function login(
   req: AuthRequest,
-  res: Response,
-  next: NextFunction
+  res: Response
 ) {
   try {
     const { email, password } = req.body;
@@ -56,9 +55,7 @@ export async function login(
     const token = jwt.sign(
       { user: { id: user.id, email: user.email, role: user.role || 'customer' } },
       process.env.JWT_SECRET!,
-      {
-        expiresIn: JWT_EXPIRES_IN,
-      }
+      { expiresIn: JWT_EXPIRES_IN }
     );
 
     res.cookie("token", token, {
@@ -69,10 +66,26 @@ export async function login(
     });
 
     return res.status(200).json(user); // ✅ only user, no token
-  } catch (error) {
-    next(error);
+  } catch (error: unknown) {
+    console.error(error);
+
+    // Respect status if provided by the service
+    let status = 500;
+    let message = "Internal Server Error";
+
+    if (error instanceof Error) {
+      message = error.message;
+      // @ts-ignore
+      if ((error as any).status) {
+        // use status from loginUser errors
+        status = (error as any).status;
+      }
+    }
+
+    return res.status(status).json({ message });
   }
 }
+
 
 export async function getMe(
   req: AuthRequest,

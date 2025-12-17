@@ -9,9 +9,10 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [isLoginError, setIsLoginError] = useState(false);
   const router = useRouter();
 
-  const { mutate, isPending, isError} = useLogin();
+  const { mutate, isPending } = useLogin();
   const queryClient = useQueryClient();
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -22,6 +23,7 @@ export default function LoginPage() {
       { email, password },
       {
         onSuccess: async (data) => {
+          if (!data) return;
           queryClient.setQueryData(["currentUser"], data);
 
           if (data.role === "admin") {
@@ -30,8 +32,17 @@ export default function LoginPage() {
             router.push("/dashboard");
           }
         },
-        onError: (err) => {
-          setError(err.message || "Login failed.");
+        onError: (err: unknown) => {
+          // Narrow the error type
+          let message = "Login failed";
+          if (err instanceof Error) {
+            message = err.message;
+          } else if (err && typeof err === "object" && "message" in err) {
+            // @ts-expect-error
+            message = err.message;
+          }
+          setError(message);
+          setIsLoginError(true);
         },
       }
     );
@@ -51,7 +62,11 @@ export default function LoginPage() {
           <input
             type="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              setError(""); // reset error on change
+              setIsLoginError(false);
+            }}
             placeholder="Email"
             className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
@@ -62,7 +77,11 @@ export default function LoginPage() {
           <input
             type="password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => {
+              setPassword(e.target.value);
+              setError(""); // reset error on change
+              setIsLoginError(false);
+            }}
             placeholder="Password"
             className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
@@ -71,7 +90,7 @@ export default function LoginPage() {
 
         <button
           type="submit"
-          disabled={isPending || isError}
+          disabled={isPending || isLoginError}
           className="w-full py-3 bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-bold rounded-xl transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isPending ? "Logging in..." : "Login"}
