@@ -17,7 +17,7 @@ export function useCurrentUser(): UseQueryResult<User | null> {
     // Only fetch if the cache is empty (undefined).
     // If you log in or reset password, you use setQueryData, 
     // which fills the cache and turns this 'false'.
-    enabled: cachedUser === null,
+    enabled: cachedUser !== null && cachedUser !== undefined ? false : true,
 
     // Disable all "automatic" background triggers
     refetchOnWindowFocus: false,

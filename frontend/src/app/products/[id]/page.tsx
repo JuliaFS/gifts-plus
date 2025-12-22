@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import { useGetProductById } from "../hooks/useGetProductById";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 
 export default function ProductDetailsPage() {
   const params = useParams();
@@ -11,32 +11,33 @@ export default function ProductDetailsPage() {
 
   const { data: product, isLoading, isError } = useGetProductById(productId);
 
-  // ✅ Hooks MUST be here (top level)
+  // ✅ Hooks always at the top
   const [activeImage, setActiveImage] = useState<any | null>(null);
-  const [count, setCount] = useState(1);
 
+  // ✅ Memoize images array
+  const images = useMemo(() => product?.product_images ?? [], [product]);
 
-  // ✅ Sync active image once product loads
-  useEffect(() => {
-  if (product && images.length > 0 && !activeImage) {
-    setActiveImage(images[0]); // ✅ only runs once when product loads
+  // ✅ Set first image once
+ useEffect(() => {
+  if (images.length > 0 && !activeImage) {
+    // defer setting state to the next tick
+    const id = setTimeout(() => {
+      setActiveImage(images[0]);
+    }, 0);
+
+    return () => clearTimeout(id); // cleanup
   }
-}, [product, images, activeImage]);
+}, [images, activeImage]);
 
-
-
-  // ⛔ returns AFTER hooks
+  // Early returns AFTER hooks
   if (isLoading) return <p>Loading product...</p>;
   if (isError || !product) return <p>Product not found.</p>;
-
-  const images = product.product_images ?? [];
 
   return (
     <div className="max-w-6xl mx-auto p-6">
       <h1 className="text-3xl font-bold mb-6">{product.name}</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-[100px_1fr] gap-6">
-        
         {/* Thumbnails */}
         {images.length > 1 && (
           <div className="flex md:flex-col gap-3">
@@ -69,7 +70,7 @@ export default function ProductDetailsPage() {
             alt={product.name}
             width={800}
             height={600}
-            className="w-full h-[450px] object-cover rounded"
+            className="w-full max-h-[450px] object-contain rounded"
             priority
           />
         )}
@@ -77,12 +78,11 @@ export default function ProductDetailsPage() {
 
       <p className="mt-6 text-gray-700">{product.description}</p>
       <p className="mt-4 text-2xl font-bold">${product.price}</p>
-      <p className="text-sm text-gray-500 mt-1">
-        Stock: {product.stock}
-      </p>
+      <p className="text-sm text-gray-500 mt-1">Stock: {product.stock}</p>
     </div>
   );
 }
+
 
 
 

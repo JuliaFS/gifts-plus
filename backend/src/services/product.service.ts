@@ -6,13 +6,13 @@ import { CreateProductData } from "./types";
 export async function getProducts() {
   const { data, error } = await supabase
     .from("products")
-    .select("*")
+    .select(`
+      *,
+      product_images (*)
+    `)
     .order("created_at", { ascending: false });
 
-  if (error) {
-    throw error;
-  }
-
+  if (error) throw error;
   return data;
 }
 

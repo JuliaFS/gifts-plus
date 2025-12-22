@@ -20,21 +20,29 @@ export default function AdminProductPage() {
     previews.forEach((url) => URL.revokeObjectURL(url));
   };
 }, [previews]);
-
-
 const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
   const selectedFiles = Array.from(e.target.files || []);
+  
+  // To APPEND files instead of replacing:
+  setFiles((prev) => [...prev, ...selectedFiles]);
 
-  // cleanup old previews
-  previews.forEach((url) => URL.revokeObjectURL(url));
-
-  setFiles(selectedFiles);
-
-  const previewUrls = selectedFiles.map((file) =>
-    URL.createObjectURL(file)
-  );
-  setPreviews(previewUrls);
+  const newPreviewUrls = selectedFiles.map((file) => URL.createObjectURL(file));
+  setPreviews((prev) => [...prev, ...newPreviewUrls]);
 };
+
+// const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+//   const selectedFiles = Array.from(e.target.files || []);
+
+//   // cleanup old previews
+//   previews.forEach((url) => URL.revokeObjectURL(url));
+
+//   setFiles(selectedFiles);
+
+//   const previewUrls = selectedFiles.map((file) =>
+//     URL.createObjectURL(file)
+//   );
+//   setPreviews(previewUrls);
+// };
 
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
