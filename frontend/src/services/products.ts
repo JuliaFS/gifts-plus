@@ -15,7 +15,6 @@ export async function fetchProducts() {
   return res.json() as Promise<Product[]>;
 }
 
-
 export async function createProduct(
   input: CreateProductInput
 ): Promise<Product> {
@@ -29,8 +28,22 @@ export async function createProduct(
   });
 
   if (!res.ok) {
-    throw new Error("Failed to create product");
+    const error = await res.json();
+    throw new Error(error.message || "Failed to create product");
   }
 
-  return res.json() as Promise<Product>;
+return res.json() as Promise<Product>;
+}
+
+export async function getProduct(productId: string): Promise<Product> {
+  const res = await fetch(`${API_URL}/${productId}`, {
+    credentials: "include",
+    cache: "no-store", // important for fresh data
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch product");
+  }
+
+  return res.json();
 }

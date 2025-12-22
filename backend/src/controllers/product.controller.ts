@@ -21,7 +21,7 @@ export async function createProduct(
   next: NextFunction
 ) {
   try {
-    const { name, price, stock, description, image_url } = req.body;
+    const { name, price, stock, description, image_urls } = req.body;
 
     if (!name || price == null || stock == null) {
       return res.status(400).json({ message: "Missing fields" });
@@ -36,10 +36,34 @@ export async function createProduct(
       price,
       stock,
       description,
-      image_url,
+      image_urls,
     });
 
     return res.status(201).json(product);
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function getProductById(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      return res.status(400).json({ message: "Product id is required" });
+    }
+
+    const product = await productService.getProductById(id);
+
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    return res.json(product);
   } catch (error) {
     next(error);
   }

@@ -10,6 +10,9 @@ const router = Router();
  * PUBLIC - get products
  */
 router.get("/", productController.getProducts);
+// GET /api/products/:id
+router.get("/:id", productController.getProductById);
+
 
 /**
  * ADMIN ONLY - create product

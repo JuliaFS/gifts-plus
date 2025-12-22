@@ -87,6 +87,7 @@ export default function LoginPage() {
             required
           />
         </div>
+        <div><Link href="/forgot-password">Forgot password?</Link></div>
 
         <button
           type="submit"

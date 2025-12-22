@@ -19,14 +19,20 @@ export interface LoginData {
   password: string;
 }
 
+export interface ProductImage {
+  id: string;
+  image_url: string;
+  position: number;
+  is_main: boolean;
+}
+
 export interface Product {
   id: string;
   name: string;
   description?: string;
   price: number;
-  stock: number; // available pieces
-  image_url?: string;
-  created_at: string;
+  stock: number;
+  product_images?: ProductImage[]; // ✅ correct
 }
 
 export type CreateProductInput = {
@@ -34,5 +40,5 @@ export type CreateProductInput = {
   description?: string;
   price: number;
   stock: number;
-  image_url?: string;
+  image_urls?: string[];
 };

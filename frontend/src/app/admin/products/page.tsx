@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { uploadProductImage } from "@/services/storage";
 import { useCreateProduct } from "../hooks/useCreateProduct";
@@ -10,22 +10,32 @@ import ImagePreview from "./ImagePreview";
 export default function AdminProductPage() {
   const queryClient = useQueryClient();
   const router = useRouter();
-  const [file, setFile] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string | null>(null);
+  const [files, setFiles] = useState<File[]>([]);
+  const [previews, setPreviews] = useState<string[]>([]);
+
   const createMutation = useCreateProduct();
 
-  // Handle file selection and preview
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = e.target.files?.[0] || null;
-    setFile(selectedFile);
-
-    if (selectedFile) {
-      const url = URL.createObjectURL(selectedFile);
-      setPreview(url);
-    } else {
-      setPreview(null);
-    }
+  useEffect(() => {
+  return () => {
+    previews.forEach((url) => URL.revokeObjectURL(url));
   };
+}, [previews]);
+
+
+const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const selectedFiles = Array.from(e.target.files || []);
+
+  // cleanup old previews
+  previews.forEach((url) => URL.revokeObjectURL(url));
+
+  setFiles(selectedFiles);
+
+  const previewUrls = selectedFiles.map((file) =>
+    URL.createObjectURL(file)
+  );
+  setPreviews(previewUrls);
+};
+
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -33,22 +43,25 @@ export default function AdminProductPage() {
     const form = e.currentTarget;
     const formData = new FormData(form);
 
-    const name = (formData.get("name") as string) || "";
-    const description = (formData.get("description") as string) || "";
+    const name = formData.get("name") as string;
+    const description = formData.get("description") as string;
     const price = Number(formData.get("price"));
     const stock = Number(formData.get("stock"));
 
-    let image_url: string | undefined;
-    if (file) {
-      image_url = await uploadProductImage(file);
+    let image_urls: string[] = [];
+
+    if (files.length) {
+      image_urls = await Promise.all(
+        files.map((file) => uploadProductImage(file))
+      );
     }
 
     createMutation.mutate(
-      { name, description, price, stock, image_url },
+      { name, description, price, stock, image_urls },
       {
         onSuccess: () => {
-          router.push("/products");
           queryClient.invalidateQueries({ queryKey: ["products"] });
+          router.push("/products");
         },
       }
     );
@@ -93,15 +106,16 @@ export default function AdminProductPage() {
         <input
           type="file"
           accept="image/*"
+          multiple
           onChange={handleFileChange}
           className="w-full"
-          placeholder="Choose image"
         />
 
-        {/* Image preview */}
-        {preview && (
-          <ImagePreview src={preview} />
-        )}
+        <div className="grid grid-cols-3 gap-2">
+          {previews.map((src, i) => (
+            <ImagePreview key={i} src={src} />
+          ))}
+        </div>
 
         <button
           type="submit"

@@ -2,46 +2,56 @@ import { useQuery, useQueryClient, UseQueryResult } from "@tanstack/react-query"
 import { fetchCurrentUser } from "../auth";
 import { User } from "../types";
 
-// Define the User type
-
-
 export function useCurrentUser(): UseQueryResult<User | null> {
   const queryClient = useQueryClient();
-
-  // Check if user is already cached
   const cachedUser = queryClient.getQueryData<User>(["currentUser"]);
 
   return useQuery<User | null>({
     queryKey: ["currentUser"],
     queryFn: fetchCurrentUser,
-    staleTime: 0,
-    retry: false,
+    
+    // Set staleTime to Infinity. This means once the data is in the cache, 
+    // it never becomes "old" enough to trigger a refetch automatically.
+    staleTime: Infinity, 
+
+    // Only fetch if the cache is empty (undefined).
+    // If you log in or reset password, you use setQueryData, 
+    // which fills the cache and turns this 'false'.
+    enabled: cachedUser === null,
+
+    // Disable all "automatic" background triggers
     refetchOnWindowFocus: false,
-    enabled: cachedUser === undefined, // fetch only if not cached
-    //enabled: cachedUser !== null && cachedUser !== undefined ? false : true,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
+    retry: false,
+    
     initialData: cachedUser,
   });
 }
-
 
 // import { useQuery, useQueryClient, UseQueryResult } from "@tanstack/react-query";
 // import { fetchCurrentUser } from "../auth";
 // import { User } from "../types";
 
-// export function useCurrentUser():UseQueryResult<User | undefined> {
+// // Define the User type
+
+
+// export function useCurrentUser(): UseQueryResult<User | null> {
 //   const queryClient = useQueryClient();
 
 //   // Check if user is already cached
-//   const cachedUser = queryClient.getQueryData(["currentUser"]);
+//   const cachedUser = queryClient.getQueryData<User>(["currentUser"]);
 
-//   return useQuery({
+//   return useQuery<User | null>({
 //     queryKey: ["currentUser"],
 //     queryFn: fetchCurrentUser,
 //     staleTime: 0,
 //     retry: false,
 //     refetchOnWindowFocus: false,
-//     enabled: cachedUser !== null && cachedUser !== undefined ? false : true,
-//     initialData: cachedUser ?? undefined,
+//     enabled: cachedUser === undefined, // fetch only if not cached
+//     //enabled: cachedUser !== null && cachedUser !== undefined ? false : true,
+//     initialData: cachedUser,
 //   });
 // }
+
 

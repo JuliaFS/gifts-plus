@@ -1,3 +1,12 @@
+
+export interface CreateProductData {
+  name: string;
+  price: number;
+  stock: number;
+  description?: string;
+  image_urls?: string[];
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -7,6 +16,13 @@ export interface Product {
   image_url?: string;
   created_at: string;
 }
+
+export interface CartItem {
+  user_id: string;
+  product_id: string;
+  quantity: number;
+}
+
 
 export interface UserDTO {
   id: string;

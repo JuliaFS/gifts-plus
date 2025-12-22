@@ -7,8 +7,10 @@ export default function ImagePreview({ src }: { src: string }) {
       alt="Preview"
       width={128}
       height={128}
+      sizes="128px"
       unoptimized
       className="object-cover rounded"
     />
   );
 }
+
