@@ -30,20 +30,6 @@ const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
   setPreviews((prev) => [...prev, ...newPreviewUrls]);
 };
 
-// const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-//   const selectedFiles = Array.from(e.target.files || []);
-
-//   // cleanup old previews
-//   previews.forEach((url) => URL.revokeObjectURL(url));
-
-//   setFiles(selectedFiles);
-
-//   const previewUrls = selectedFiles.map((file) =>
-//     URL.createObjectURL(file)
-//   );
-//   setPreviews(previewUrls);
-// };
-
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

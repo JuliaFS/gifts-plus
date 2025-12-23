@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { logout } from "@/services/auth";
 import { useCurrentUser } from "@/services/hooks/useCurrentUser";
+import CartIcon from "./cart/CartIcon";
 
 export default function Header() {
   const router = useRouter();
@@ -57,6 +58,7 @@ export default function Header() {
               Logout
             </button>
           )}
+          <CartIcon />
         </div>
       </nav>
     </header>

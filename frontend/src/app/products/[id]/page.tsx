@@ -3,7 +3,9 @@
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import { useGetProductById } from "../hooks/useGetProductById";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
+import AddToCartButton from "@/components/cart/AddToCartButton";
+import { ProductImage } from "@/services/types";
 
 export default function ProductDetailsPage() {
   const params = useParams();
@@ -12,7 +14,8 @@ export default function ProductDetailsPage() {
   const { data: product, isLoading, isError } = useGetProductById(productId);
 
   // ✅ Hooks always at the top
-  const [activeImage, setActiveImage] = useState<any | null>(null);
+  const [activeImage, setActiveImage] = useState<ProductImage | null>(null);
+  const mainImageRef = useRef<HTMLDivElement | null>(null);
 
   // ✅ Memoize images array
   const images = useMemo(() => product?.product_images ?? [], [product]);
@@ -41,7 +44,7 @@ export default function ProductDetailsPage() {
         {/* Thumbnails */}
         {images.length > 1 && (
           <div className="flex md:flex-col gap-3">
-            {images.map((img: any) => (
+            {images.map((img: ProductImage) => (
               <button
                 key={img.id}
                 onClick={() => setActiveImage(img)}
@@ -64,7 +67,7 @@ export default function ProductDetailsPage() {
         )}
 
         {/* Main Image */}
-        {activeImage && (
+        {/* {activeImage && (
           <Image
             src={activeImage.image_url}
             alt={product.name}
@@ -73,12 +76,24 @@ export default function ProductDetailsPage() {
             className="w-full max-h-[450px] object-contain rounded"
             priority
           />
-        )}
+        )} */}
+        {activeImage && (
+  <div ref={mainImageRef} className="w-full max-h-[450px] relative rounded">
+    <Image
+      src={activeImage.image_url}
+      alt={product.name}
+      fill
+      className="object-contain rounded"
+      priority
+    />
+  </div>
+)}
       </div>
 
       <p className="mt-6 text-gray-700">{product.description}</p>
       <p className="mt-4 text-2xl font-bold">${product.price}</p>
       <p className="text-sm text-gray-500 mt-1">Stock: {product.stock}</p>
+      <AddToCartButton product={product} imgRef={mainImageRef} />
     </div>
   );
 }

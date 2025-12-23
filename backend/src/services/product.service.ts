@@ -95,18 +95,48 @@ export async function upsertCartItem(
   if (error) throw error;
 }
 
+export async function updateProduct(
+  productId: string,
+  updates: Partial<CreateProductData & { badge?: string; promotion?: string }>
+) {
+  const { data, error } = await supabase
+    .from("products")
+    .update(updates)
+    .eq("id", productId)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
+export async function deleteProduct(productId: string) {
+  const { data, error } = await supabase
+    .from("products")
+    .delete()
+    .eq("id", productId)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
+// Optional: dedicated function for badge/promotion
+export async function addBadgeToProduct(
+  productId: string,
+  badge?: string,
+  promotion?: string
+) {
+  const { data, error } = await supabase
+    .from("products")
+    .update({ badge, promotion })
+    .eq("id", productId)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}
 
 
-// export async function createProduct(product: CreateProductData) {
-//   const { data, error } = await supabase
-//     .from("products")
-//     .insert(product)
-//     .select()
-//     .single();
-
-//   if (error) {
-//     throw error;
-//   }
-
-//   return data;
-// }
