@@ -6,12 +6,30 @@ import { Product } from "@/services/types";
 import AddToCartButton from "./cart/AddToCartButton";
 import { useRef } from "react";
 
-type ProductCardProps = {
+type BadgeType = "NEW" | "SALE" | "HOT";
+
+function isNew(createdAt: string) {
+  const created = new Date(createdAt);
+  const now = new Date();
+  return (now.getTime() - created.getTime()) / 86400000 <= 20;
+}
+
+function getBadges(product: Product): BadgeType[] {
+  const badges: BadgeType[] = [];
+
+  if (isNew(product.created_at)) badges.push("NEW");
+  if (product.sales_price != null) badges.push("SALE");
+  if ((product.sales_count ?? 0) >= 50) badges.push("HOT");
+
+  return badges;
+}
+
+interface ProductCardProps {
   product: Product;
   showStock?: boolean;
   showDescription?: boolean;
   href?: string;
-};
+}
 
 export default function ProductCard({
   product,
@@ -24,13 +42,30 @@ export default function ProductCard({
   const mainImage =
     product.product_images?.find((img) => img.is_main) ||
     product.product_images?.[0];
-  const imageRef = useRef<HTMLImageElement>(null);
+
+  const badges = getBadges(product);
+
   return (
-    <div ref={wrapperRef} className="border rounded p-4 shadow-sm hover:shadow-md">
+    <div ref={wrapperRef} className="border rounded p-4 shadow-sm hover:shadow-md relative">
+      {/* BADGES */}
+      <div className="absolute top-2 left-2 flex gap-1 z-10">
+        {badges.map((badge) => (
+          <span
+            key={badge}
+            className={`px-2 py-1 text-xs font-bold rounded text-white
+              ${badge === "NEW" && "bg-green-500"}
+              ${badge === "SALE" && "bg-red-500"}
+              ${badge === "HOT" && "bg-orange-500"}
+            `}
+          >
+            {badge}
+          </span>
+        ))}
+      </div>
+
       <Link href={href} className="transition block">
         {mainImage && (
           <Image
-            ref={imageRef}
             src={mainImage.image_url}
             alt={product.name}
             width={300}
@@ -45,7 +80,21 @@ export default function ProductCard({
           <p className="text-gray-600 line-clamp-2">{product.description}</p>
         )}
 
-        <p className="mt-2 font-bold">{product.price} €</p>
+        {/* PRICE */}
+        <div className="mt-2 font-bold">
+          {product.sales_price ? (
+            <>
+              <span className="line-through text-gray-400 mr-2">
+                {product.price} €
+              </span>
+              <span className="text-red-600">
+                {product.sales_price} €
+              </span>
+            </>
+          ) : (
+            <span>{product.price} €</span>
+          )}
+        </div>
 
         {showStock && (
           <p className="text-sm text-gray-500">Stock: {product.stock}</p>

@@ -5,6 +5,8 @@ export interface CreateProductData {
   stock: number;
   description?: string;
   image_urls?: string[];
+  badge?: string;
+  promotion?: string;
 }
 
 export interface Product {
@@ -15,6 +17,8 @@ export interface Product {
   stock: number; // 🔑 available pieces
   image_url?: string;
   created_at: string;
+  badge?: string;
+  promotion?: string;
 }
 
 export interface CartItem {

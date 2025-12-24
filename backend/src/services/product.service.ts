@@ -3,17 +3,35 @@ import { CreateProductData } from "./types";
 
 
 
-export async function getProducts() {
+export async function getProducts(page: number = 1, limit: number = 12) {
+  const offset = (page - 1) * limit;
+
+  // Get total count
+  const { count, error: countError } = await supabase
+    .from("products")
+    .select("*", { count: "exact", head: true });
+
+  if (countError) throw countError;
+
+  // Get paginated data
   const { data, error } = await supabase
     .from("products")
     .select(`
       *,
       product_images (*)
     `)
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .range(offset, offset + limit - 1);
 
   if (error) throw error;
-  return data;
+
+  return {
+    data,
+    total: count || 0,
+    page,
+    limit,
+    totalPages: Math.ceil((count || 0) / limit),
+  };
 }
 
 export async function createProduct(
@@ -97,16 +115,34 @@ export async function upsertCartItem(
 
 export async function updateProduct(
   productId: string,
-  updates: Partial<CreateProductData & { badge?: string; promotion?: string }>
+  updates: Partial<CreateProductData>
 ) {
+  const { image_urls, ...productUpdates } = updates;
+
   const { data, error } = await supabase
     .from("products")
-    .update(updates)
+    .update(productUpdates)
     .eq("id", productId)
     .select()
     .single();
 
   if (error) throw error;
+
+  // Optional: Handle adding new images during update if needed
+  if (image_urls?.length) {
+    const images = image_urls.map((url) => ({
+      product_id: productId,
+      image_url: url,
+      // Note: You might want to handle 'position' or 'is_main' logic here
+    }));
+
+    const { error: imageError } = await supabase
+      .from("product_images")
+      .insert(images);
+
+    if (imageError) throw imageError;
+  }
+
   return data;
 }
 
@@ -138,5 +174,3 @@ export async function addBadgeToProduct(
   if (error) throw error;
   return data;
 }
-
-

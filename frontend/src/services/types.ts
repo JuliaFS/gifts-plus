@@ -26,14 +26,32 @@ export interface ProductImage {
   is_main: boolean;
 }
 
-export interface Product {
+// export interface Product {
+//   id: string;
+//   name: string;
+//   description?: string;
+//   price: number;
+//   stock: number;
+//   product_images?: ProductImage[]; // ✅ correct
+//   badge?: string;
+//   promotion?: string;
+// }
+
+export type Product = {
   id: string;
   name: string;
-  description?: string;
+  description: string;
   price: number;
+  sales_price?: number | null;
+  sales_count?: number | null;
+  created_at: string;
   stock: number;
-  product_images?: ProductImage[]; // ✅ correct
-}
+  product_images?: {
+    image_url: string;
+    is_main: boolean;
+  }[];
+};
+
 
 export type CreateProductInput = {
   name: string;
@@ -41,4 +59,22 @@ export type CreateProductInput = {
   price: number;
   stock: number;
   image_urls?: string[];
+  badge?: string;
+  promotion?: string;
 };
+
+export type UpdateProductInput = {
+  productId: string;
+  updates: Partial<CreateProductInput>; // only the fields to update
+};
+
+export type ProductFormData = {
+  name: string;
+  description: string;
+  price: number;
+  stock: number;
+  badge?: string | null;
+  promotion?: string | null;
+  image_urls?: string[];
+};
+

@@ -1,18 +1,25 @@
 import { CreateProductInput, Product } from "./types";
 
-// src/services/products.ts
 const API_URL = "http://localhost:8080/api/products";
-export async function fetchProducts() {
-  const res = await fetch(`${API_URL}`, {
+export interface PaginatedProducts {
+  data: Product[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+export async function fetchProducts(page: number): Promise<PaginatedProducts> {
+  const res = await fetch(`${API_URL}?page=${page}&limit=12`, {
     method: "GET",
-    credentials: "include", // safe even if public
+    credentials: "include", 
   });
 
   if (!res.ok) {
     throw new Error("Failed to fetch products");
   }
 
-  return res.json() as Promise<Product[]>;
+  return res.json() as Promise<PaginatedProducts>;
 }
 
 export async function createProduct(
@@ -46,4 +53,56 @@ export async function getProduct(productId: string): Promise<Product> {
   }
 
   return res.json();
+}
+
+export async function updateProduct(
+  productId: string,
+  updates: Partial<CreateProductInput>
+): Promise<Product> {
+  const res = await fetch(`${API_URL}/${productId}`, {
+    method: "PUT",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(updates),
+  });
+
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(error.message || "Failed to update product");
+  }
+
+  return res.json() as Promise<Product>;
+}
+
+
+export async function deleteProduct(productId: string): Promise<void> {
+  const res = await fetch(`${API_URL}/${productId}`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(error.message || "Failed to delete product");
+  }
+}
+
+export async function addBadgeToProduct(
+  productId: string,
+  badge?: string,
+  promotion?: string
+): Promise<Product> {
+  const res = await fetch(`${API_URL}/${productId}/badge`, {
+    method: "PATCH",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ badge, promotion }),
+  });
+
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(error.message || "Failed to update badge/promotion");
+  }
+
+  return res.json() as Promise<Product>;
 }

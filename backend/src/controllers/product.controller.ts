@@ -3,13 +3,16 @@ import { Request, Response, NextFunction } from "express";
 import * as productService from "../services/product.service";
 
 export async function getProducts(
-  _req: Request,
+  req: Request,
   res: Response,
   next: NextFunction
 ) {
   try {
-    const products = await productService.getProducts();
-    return res.status(200).json(products);
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 12;
+    
+    const result = await productService.getProducts(page, limit);
+    return res.status(200).json(result);
   } catch (error) {
     next(error);
   }
