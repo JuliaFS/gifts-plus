@@ -87,6 +87,23 @@ export async function deleteProduct(productId: string): Promise<void> {
   }
 }
 
+export async function deleteProductImages(
+  productId: string,
+  imageUrls: string[]
+): Promise<void> {
+  const res = await fetch(`${API_URL}/${productId}/images`, {
+    method: "DELETE",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ imageUrls }),
+  });
+
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(error.message || "Failed to delete images");
+  }
+}
+
 export async function addBadgeToProduct(
   productId: string,
   badge?: string,

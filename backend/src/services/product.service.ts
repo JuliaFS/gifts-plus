@@ -128,12 +128,21 @@ export async function updateProduct(
 
   if (error) throw error;
 
-  // Optional: Handle adding new images during update if needed
+  const { data: product } = await supabase
+  .from("products")
+  .select("id")
+  .eq("id", productId)
+  .single();
+
+if (!product) {
+  throw new Error("Product does not exist");
+}
+
   if (image_urls?.length) {
-    const images = image_urls.map((url) => ({
+    const images = image_urls.map((url, index) => ({
       product_id: productId,
       image_url: url,
-      // Note: You might want to handle 'position' or 'is_main' logic here
+      position: index,
     }));
 
     const { error: imageError } = await supabase
@@ -156,6 +165,22 @@ export async function deleteProduct(productId: string) {
 
   if (error) throw error;
   return data;
+}
+
+// Delete product images by URL
+export async function deleteProductImages(
+  productId: string,
+  imageUrls: string[]
+) {
+  if (!imageUrls.length) return;
+
+  const { error } = await supabase
+    .from("product_images")
+    .delete()
+    .eq("product_id", productId)
+    .in("image_url", imageUrls);
+
+  if (error) throw error;
 }
 
 // Optional: dedicated function for badge/promotion

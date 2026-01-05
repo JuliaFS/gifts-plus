@@ -126,6 +126,31 @@ export async function deleteProduct(
   }
 }
 
+// Delete product images
+export async function deleteProductImages(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { id } = req.params;
+    const { imageUrls } = req.body;
+
+    if (!id) {
+      return res.status(400).json({ message: "Product id is required" });
+    }
+
+    if (!imageUrls || !Array.isArray(imageUrls) || imageUrls.length === 0) {
+      return res.status(400).json({ message: "Image URLs are required" });
+    }
+
+    await productService.deleteProductImages(id, imageUrls);
+    return res.status(204).send();
+  } catch (error) {
+    next(error);
+  }
+}
+
 // Optional: add or update badge/promotion
 export async function addBadgeToProduct(
   req: Request,

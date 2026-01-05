@@ -44,6 +44,17 @@ router.delete(
 );
 
 /**
+ * ADMIN ONLY - delete product images
+ */
+// DELETE /api/products/:id/images
+router.delete(
+  "/:id/images",
+  authMiddleware,
+  adminOnly,
+  productController.deleteProductImages
+);
+
+/**
  * ADMIN ONLY - add/update badge or promotion
  */
 // PATCH /api/products/:id/badge
@@ -53,6 +64,7 @@ router.patch(
   adminOnly,
   productController.addBadgeToProduct
 );
+
 
 
 

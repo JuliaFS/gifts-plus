@@ -15,5 +15,14 @@ app.use(cookieParser()); // ✅ must be before routes
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
 
+//TO DO - may be remove
+app.use((err, req, res, next) => {
+  console.error(err);
+  res.status(500).json({
+    message: err.message || "Internal Server Error",
+  });
+});
+
+
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
