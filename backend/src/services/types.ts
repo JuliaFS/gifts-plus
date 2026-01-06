@@ -27,6 +27,11 @@ export interface CartItem {
   quantity: number;
 }
 
+export interface CartValidationItem {
+  productId: string;
+  quantity: number;
+}
+
 
 export interface UserDTO {
   id: string;

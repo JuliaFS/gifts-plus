@@ -123,3 +123,5 @@ export async function addBadgeToProduct(
 
   return res.json() as Promise<Product>;
 }
+
+

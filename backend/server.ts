@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import authRoutes from "./src/routes/auth.routes";
 import productRoutes from "./src/routes/product.routes";
+import cartRoutes from "./src/routes/cart.routes";
 
 dotenv.config();
 const app = express();
@@ -14,9 +15,10 @@ app.use(cookieParser()); // ✅ must be before routes
 
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
+app.use("/api/cart", cartRoutes);
 
 //TO DO - may be remove
-app.use((err, req, res, next) => {
+app.use((err, res) => {
   console.error(err);
   res.status(500).json({
     message: err.message || "Internal Server Error",

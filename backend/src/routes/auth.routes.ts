@@ -9,7 +9,6 @@ import {
   register,
 } from "../controllers/auth.controller";
 import { authMiddleware } from "../middleware/auth.middleware";
-import { getResetTokenCookie } from "../services/auth.service";
 
 const router = Router();
 

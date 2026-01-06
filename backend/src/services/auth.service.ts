@@ -3,7 +3,6 @@ import crypto from "crypto";
 import { supabase } from "../db/supabaseClient";
 import { UserDTO } from "./types";
 import { sendEmail } from "../services/email.service";
-import { Request, Response } from "express";
 
 interface RegisterInput {
   email: string;
@@ -129,7 +128,7 @@ export async function forgotPassword(email: string) {
     .update(resetToken)
     .digest("hex");
 
-    console.log("hashed token:", hashedToken);
+  console.log("hashed token:", hashedToken);
 
   const expires = new Date(Date.now() + 15 * 60 * 1000);
 
@@ -143,9 +142,7 @@ export async function forgotPassword(email: string) {
     })
     .eq("id", user.id);
 
- 
   const resetUrl = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`;
-
 
   await sendEmail({
     to: user.email,
@@ -160,47 +157,6 @@ export async function forgotPassword(email: string) {
 
   return { message: "If this email exists, a reset link was sent" };
 }
-
-
-
-// export async function resetPassword(
-//   rawToken: string,
-//   newPassword: string
-// ) {
-//   // 1. Re-hash the raw token from the URL to match the DB format
-//   const hashedToken = crypto
-//     .createHash("sha256")
-//     .update(rawToken)
-//     .digest("hex");
-
-//   // 2. Query for a user where the token matches AND it hasn't expired yet
-//   // This is cleaner than doing the date check in JS
-//   const { data: user, error } = await supabase
-//     .from("users")
-//     .select("id")
-//     .eq("reset_password_token", hashedToken)
-//     .gt("reset_password_expires", new Date().toISOString()) // Only get user if token is NOT expired
-//     .maybeSingle();
-
-//   if (!user || error) {
-//     throw Object.assign(new Error("Invalid or expired token"), { status: 400 });
-//   }
-
-//   // 3. Hash the new password
-//   const hashedPassword = await bcrypt.hash(newPassword, 10);
-
-//   // 4. Update password and CLEAR the token fields
-//   const { error: updateError } = await supabase
-//     .from("users")
-//     .update({
-//       password: hashedPassword,
-//       reset_password_token: null,
-//       reset_password_expires: null,
-//     })
-//     .eq("id", user.id);
-
-//   if (updateError) throw updateError;
-// }
 
 export async function resetPassword(
   rawToken: string,
@@ -222,7 +178,7 @@ export async function resetPassword(
     .maybeSingle();
 
   if (findError) throw findError;
-  
+
   if (!user) {
     const err: any = new Error("Invalid or expired reset link");
     err.status = 400;
@@ -252,4 +208,3 @@ export async function resetPassword(
 
   return updatedUser as UserDTO;
 }
-
