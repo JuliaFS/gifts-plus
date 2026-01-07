@@ -5,6 +5,9 @@ import cookieParser from "cookie-parser";
 import authRoutes from "./src/routes/auth.routes";
 import productRoutes from "./src/routes/product.routes";
 import cartRoutes from "./src/routes/cart.routes";
+import checkoutRoutes from "./src/routes/checkout.routes";
+import adminOrdersRoutes from "./src/routes/admin-orders.routes";
+
 
 dotenv.config();
 const app = express();
@@ -16,6 +19,9 @@ app.use(cookieParser()); // ✅ must be before routes
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/cart", cartRoutes);
+app.use("/api/checkout", checkoutRoutes);
+app.use("/api/admin", adminOrdersRoutes);
+
 
 //TO DO - may be remove
 app.use((err, res) => {
