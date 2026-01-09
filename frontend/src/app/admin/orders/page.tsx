@@ -1,6 +1,6 @@
 "use client";
 
-import { useAdminOrders } from "@/app/cart/hooks/useAdminOrders";
+import { useAdminOrders } from "@/app/admin/hooks/useAdminOrders";
 import OrderCard from "@/components/order/OrderCard";
 
 

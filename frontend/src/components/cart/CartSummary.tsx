@@ -2,17 +2,18 @@
 
 import { useCartStore } from "@/store/cartStore";
 import { useCheckout } from "@/app/cart/hooks/useCheckout";
-
 import { useCurrentUser } from "@/services/hooks/useCurrentUser";
 import { syncCartToBackend } from "@/services/cart";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function CartSummary() {
   const items = useCartStore((s) => s.items);
   const clearCart = useCartStore((s) => s.clearCart);
+  const [message, setMessage] = useState<string | null>(null);
 
-  //const userId = useAuthStore((s) => s.user?.id);
-  const userId =  useCurrentUser().data?.id;
-
+  const router = useRouter();
+  const userId = useCurrentUser().data?.id;
   const checkoutMutation = useCheckout();
 
   const total = items.reduce(
@@ -21,11 +22,18 @@ export default function CartSummary() {
   );
 
   const handleCheckout = async () => {
+    // 🚫 Not logged in
     if (!userId) {
-      alert("You must be logged in");
+      setMessage("You must be logged in to checkout.");
+
+      setTimeout(() => {
+        router.push("/login");
+      }, 2000);
+
       return;
     }
 
+    // 🚫 Empty cart
     if (items.length === 0) {
       alert("Cart is empty");
       return;
@@ -33,9 +41,9 @@ export default function CartSummary() {
 
     try {
       // 1️⃣ Sync cart to backend
-      await syncCartToBackend(items, userId);
+      await syncCartToBackend(items);
 
-      // 2️⃣ Call checkout
+      // 2️⃣ Checkout
       checkoutMutation.mutate(undefined, {
         onSuccess: () => {
           clearCart();
@@ -56,6 +64,12 @@ export default function CartSummary() {
         Total: {total.toFixed(2)} €
       </p>
 
+      {message && (
+        <p className="text-red-600 mt-2">
+          {message}
+        </p>
+      )}
+
       <button
         onClick={handleCheckout}
         disabled={checkoutMutation.isPending || items.length === 0}
@@ -72,3 +86,4 @@ export default function CartSummary() {
     </div>
   );
 }
+
