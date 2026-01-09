@@ -1,30 +1,23 @@
-export type CartItemPayload = {
-  productId: string;
-  quantity: number;
-};
+import { CartItem } from "@/store/cartStore";
 
-export type InvalidCartItem = {
-  productId: string;
-  reason: "DELETED" | "OUT_OF_STOCK" | "UNAVAILABLE";
-};
-
-export type CartValidationResponse = {
-  invalid: InvalidCartItem[];
-};
 const API_URL = "http://localhost:8080/api/cart";
-// POST /api/cart/validate
-export async function validateCart(
-  items: CartItemPayload[]
-): Promise<CartValidationResponse> {
-  const res = await fetch(`${API_URL}/validate`, {
+
+export async function syncCartToBackend(items: CartItem[]) {
+  const payload = items.map((i) => ({
+    productId: i.product.id,
+    quantity: i.quantity,
+  }));
+
+  const res = await fetch(`${API_URL}/sync`, {
     method: "POST",
+    credentials: "include",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ items }),
+    body: JSON.stringify({ items: payload }),
   });
 
   if (!res.ok) {
-    const data = await res.json();
-    throw new Error(data?.message || "Failed to validate cart");
+    const data = await res.json().catch(() => null);
+    throw new Error(data?.message || "Failed to sync cart");
   }
 
   return res.json();

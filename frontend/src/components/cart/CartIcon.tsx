@@ -4,23 +4,23 @@ import Link from "next/link";
 import { RiShoppingCartFill } from "react-icons/ri";
 import { useCartStore } from "@/store/cartStore";
 import { useCartIconRef } from "./CartIconContext";
-import { useCartValidation } from "@/app/cart/hooks/useCardValidation";
+//import { useCartValidation } from "@/app/cart/hooks/useCardValidation";
 
 export default function CartIcon() {
   const cartIconRef = useCartIconRef();
   const items = useCartStore((s) => s.items);
   const count = items.reduce((sum, i) => sum + i.quantity, 0);
 
-  const { validate, isPending } = useCartValidation();
+  //const { validate, isPending } = useCartValidation();
 
-  const handleClick = () => {
-    if (!isPending) {
-      validate();
-    }
-  };
+  // const handleClick = () => {
+  //   if (!isPending) {
+  //     validate();
+  //   }
+  // };
 
   return (
-    <Link href="/cart" className="relative" onClick={handleClick}>
+    <Link href="/cart" className="relative">
       <div ref={cartIconRef}>
         <RiShoppingCartFill size={24} />
       </div>

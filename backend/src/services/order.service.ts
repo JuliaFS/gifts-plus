@@ -1,44 +1,47 @@
 import { supabase } from "../db/supabaseClient";
 
 export async function createOrder(userId: string, cartItems: any[]) {
-  // Filter invalid products (deleted)
-  const validItems = cartItems.filter(i => i.products !== null);
+  // 1️⃣ Filter invalid products (keep your logic)
+  const validItems = cartItems.filter(
+    (i) => i.products !== null
+  );
 
-  if (!validItems.length) throw new Error("No valid products in cart");
+  if (!validItems.length) {
+    throw new Error("No valid products in cart");
+  }
 
-  // Calculate total
+  // 2️⃣ Calculate total (keep your logic)
   const total = validItems.reduce(
     (sum, i) => sum + i.quantity * i.products.price,
     0
   );
 
-  // Create order
-  const { data: order, error } = await supabase
-    .from("orders")
-    .insert({
-      user_id: userId,
-      total_amount: total,
-      status: "PENDING",
-    })
-    .select()
-    .single();
-
-  if (error) throw error;
-
-  // Insert order items
-  const orderItems = validItems.map((i) => ({
-    order_id: order.id,
+  // 3️⃣ Prepare items for DB (NEW)
+  const itemsPayload = validItems.map((i) => ({
     product_id: i.product_id,
     quantity: i.quantity,
     price_at_purchase: i.products.price,
   }));
 
-  const { error: itemsError } = await supabase
-    .from("order_items")
-    .insert(orderItems);
+  // 4️⃣ Create order + items ATOMICALLY (NEW)
+  const { data: orderId, error } = await supabase.rpc(
+    "create_order_with_items",
+    {
+      p_user_id: userId,
+      p_total: total,
+      p_items: itemsPayload,
+    }
+  );
 
-  if (itemsError) throw itemsError;
+  if (error) throw error;
 
-  return { ...order, items: orderItems };
+  // 5️⃣ Return same shape as before
+  return {
+    id: orderId,
+    total_amount: total,
+    status: "PENDING",
+    items: itemsPayload,
+  };
 }
+
 

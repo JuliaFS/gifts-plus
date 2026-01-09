@@ -23,7 +23,9 @@ export async function checkoutHandler(
 ) {
   try {
     const userId = req.user!.id;
+    console.log("User ID:", userId);
     const orderId = await checkout(userId);
+    console.log("Order ID:", orderId);
     res.json({ message: "Order completed", orderId });
   } catch (err) {
     next(err);

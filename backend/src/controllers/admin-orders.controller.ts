@@ -1,22 +1,15 @@
-import { Request, Response } from "express";
-import { supabase } from "../db/supabaseClient";
+import { Request, Response, NextFunction } from "express";
+import { getAllOrders } from "../services/admin-orders.service";
 
-export async function getAdminOrders(req: Request, res: Response) {
-  const { data, error } = await supabase
-    .from("orders")
-    .select(`
-      id,
-      created_at,
-      total_amount,
-      status,
-      users (email),
-      order_items (
-        quantity,
-        products (name)
-      )
-    `)
-    .order("created_at", { ascending: false });
-
-  if (error) return res.status(500).json(error);
-  res.json(data);
+export async function getOrdersHandler(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const orders = await getAllOrders();
+    res.json(orders);
+  } catch (err) {
+    next(err);
+  }
 }

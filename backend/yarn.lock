@@ -1069,6 +1069,13 @@
     "@aws-sdk/client-sesv2" "^3.839.0"
     "@types/node" "*"
 
+"@types/pdfkit@^0.17.4":
+  version "0.17.4"
+  resolved "https://registry.npmjs.org/@types/pdfkit/-/pdfkit-0.17.4.tgz"
+  integrity sha512-odAmVuuguRxKh1X4pbMrJMp8ecwNqHRw6lweupvzK+wuyNmi6wzlUlGVZ9EqMvp3Bs2+L9Ty0sRlrvKL+gsQZg==
+  dependencies:
+    "@types/node" "*"
+
 "@types/pg@^8.15.6":
   version "8.15.6"
   resolved "https://registry.npmjs.org/@types/pg/-/pg-8.15.6.tgz"

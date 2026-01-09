@@ -4,7 +4,7 @@ export interface User {
   address: string | null;
   phone_number: string | null;
   created_at: string;
-  role:string;
+  role: string;
 }
 
 export interface RegisterData {
@@ -26,17 +26,6 @@ export interface ProductImage {
   is_main: boolean;
 }
 
-// export interface Product {
-//   id: string;
-//   name: string;
-//   description?: string;
-//   price: number;
-//   stock: number;
-//   product_images?: ProductImage[]; // ✅ correct
-//   badge?: string;
-//   promotion?: string;
-// }
-
 export type Product = {
   id: string;
   name: string;
@@ -51,7 +40,6 @@ export type Product = {
     is_main: boolean;
   }[];
 };
-
 
 export type CreateProductInput = {
   name: string;
@@ -76,5 +64,21 @@ export type ProductFormData = {
   badge?: string | null;
   promotion?: string | null;
   image_urls?: string[];
+};
+
+export type OrderItem = {
+  quantity: number;
+  price_at_purchase: number;
+  products: {
+    name: string;
+  };
+};
+
+export type Order = {
+  id: string;
+  total_amount: number;
+  status: "PENDING" | "SHIPPED" | "CANCELLED";
+  created_at: string;
+  order_items: OrderItem[];
 };
 

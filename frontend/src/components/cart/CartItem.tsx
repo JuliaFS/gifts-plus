@@ -11,6 +11,8 @@ type Props = {
 
 export default function CartItem({ item }: Props) {
   const { updateQuantity, removeFromCart } = useCartStore();
+  const isOutOfStock = item.product.stock === 0;
+
   const [draft, setDraft] = useState(String(item.quantity));
   const [message, setMessage] = useState<string | null>(null);
 
@@ -22,16 +24,17 @@ export default function CartItem({ item }: Props) {
 
   // ✅ Debounced quantity update
   useEffect(() => {
-    if (draft === "") return;
+  if (draft === "" || isOutOfStock) return;
 
-    const timer = setTimeout(() => {
-      const value = Math.max(1, Number(draft));
-      updateQuantity(item.product.id, value);
-      showMessage("Quantity updated");
-    }, DEBOUNCE_MS);
+  const timer = setTimeout(() => {
+    const value = Math.max(1, Number(draft));
+    updateQuantity(item.product.id, value);
+    showMessage("Quantity updated");
+  }, DEBOUNCE_MS);
 
-    return () => clearTimeout(timer);
-  }, [draft, updateQuantity, item.product.id]);
+  return () => clearTimeout(timer);
+}, [draft, isOutOfStock, updateQuantity, item.product.id]);
+
 
   // ✅ Helper to show message for 2 seconds
   const showMessage = (msg: string) => {
@@ -39,19 +42,24 @@ export default function CartItem({ item }: Props) {
     setTimeout(() => setMessage(null), 2000);
   };
 
-  const increase = () => {
-    const value = Number(draft) + 1;
-    setDraft(String(value));
-    updateQuantity(item.product.id, value);
-    showMessage("Quantity updated");
-  };
+const increase = () => {
+  if (isOutOfStock) return;
 
-  const decrease = () => {
-    const value = Math.max(1, Number(draft) - 1);
-    setDraft(String(value));
-    updateQuantity(item.product.id, value);
-    showMessage("Quantity updated");
-  };
+  const value = Number(draft) + 1;
+  setDraft(String(value));
+  updateQuantity(item.product.id, value);
+  showMessage("Quantity updated");
+};
+
+const decrease = () => {
+  if (isOutOfStock) return;
+
+  const value = Math.max(1, Number(draft) - 1);
+  setDraft(String(value));
+  updateQuantity(item.product.id, value);
+  showMessage("Quantity updated");
+};
+
 
   return (
     <div className="flex gap-4 border-b pb-4 relative">
@@ -89,7 +97,7 @@ export default function CartItem({ item }: Props) {
             }}
           />
 
-          <button onClick={increase} className="px-2 border rounded">+</button>
+          <button onClick={increase} disabled={isOutOfStock} className="px-2 border rounded">+</button>
 
           <button
             onClick={() => removeFromCart(item.product.id)}

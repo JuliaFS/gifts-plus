@@ -11,6 +11,7 @@ type CartState = {
   items: CartItem[];
   addToCart: (product: Product, qty?: number) => void;
   removeFromCart: (productId: string) => void;
+  removeMany: (productIds: string[]) => void;
   updateQuantity: (productId: string, qty: number) => void;
   clearCart: () => void;
 };
@@ -22,10 +23,7 @@ export const useCartStore = create<CartState>()(
 
       addToCart: (product, qty = 1) =>
         set((state) => {
-          const existing = state.items.find(
-            (i) => i.product.id === product.id
-          );
-
+          const existing = state.items.find((i) => i.product.id === product.id);
           if (existing) {
             return {
               items: state.items.map((i) =>
@@ -35,32 +33,33 @@ export const useCartStore = create<CartState>()(
               ),
             };
           }
-
-          return {
-            items: [...state.items, { product, quantity: qty }],
-          };
+          return { items: [...state.items, { product, quantity: qty }] };
         }),
 
       removeFromCart: (productId) =>
         set((state) => ({
-          items: state.items.filter(
-            (i) => i.product.id !== productId
-          ),
+          items: state.items.filter((i) => i.product.id !== productId),
+        })),
+
+      removeMany: (productIds: string[]) =>
+        set((state) => ({
+          items: state.items.filter((i) => !productIds.includes(i.product.id)),
         })),
 
       updateQuantity: (productId, qty) =>
         set((state) => ({
-          items: state.items.map((i) =>
-            i.product.id === productId
-              ? { ...i, quantity: qty }
-              : i
-          ),
+          items:
+            qty <= 0
+              ? state.items.filter((i) => i.product.id !== productId)
+              : state.items.map((i) =>
+                  i.product.id === productId ? { ...i, quantity: qty } : i
+                ),
         })),
 
       clearCart: () => set({ items: [] }),
     }),
     {
-      name: "cart-storage", // key in localStorage
+      name: "cart-storage",
     }
   )
 );

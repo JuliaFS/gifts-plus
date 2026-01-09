@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
@@ -24,12 +24,26 @@ app.use("/api/admin", adminOrdersRoutes);
 
 
 //TO DO - may be remove
-app.use((err, res) => {
-  console.error(err);
-  res.status(500).json({
-    message: err.message || "Internal Server Error",
-  });
-});
+// app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+//   console.error(err);
+//   res.status(500).json({
+//     message: err.message || "Internal Server Error",
+//   });
+// });
+app.use(
+  (
+    err: any,
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) => {
+    console.error(err);
+
+    res.status(err.status || 500).json({
+      message: err.message || "Internal Server Error",
+    });
+  }
+);
 
 
 const PORT = process.env.PORT || 8080;

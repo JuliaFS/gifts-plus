@@ -1,38 +1,22 @@
-import { useCartStore } from "@/store/cartStore";
-import { useValidateCart } from "@/app/cart/hooks/useValidateCart";
-import { useRef } from "react";
+// import { useCartStore } from "@/store/cartStore";
 
-export function useCartValidation() {
-  const items = useCartStore((s) => s.items);
-  const removeFromCart = useCartStore((s) => s.removeFromCart);
-  const { mutate, isPending } = useValidateCart();
-  const prevItemsRef = useRef<typeof items>([]);
+// export function useCartValidation() {
+//   const removeMany = useCartStore((s) => s.removeMany);
 
-  const validate = () => {
-    if (!items.length) return;
+//   const validate = async () => {
+//     // Example: remove products with qty <= 0 locally
+//     const invalidItems = []; // compute invalid items if needed
 
-    const currIds = items.map((i) => i.product.id + i.quantity);
-    const prevIds = prevItemsRef.current.map((i) => i.product.id + i.quantity);
+//     if (invalidItems.length > 0) {
+//       removeMany(invalidItems.map((i) => i.productId));
+//       throw new Error(
+//         "Some products were removed because they are no longer available."
+//       );
+//     }
 
-    if (currIds.join() === prevIds.join()) return;
+//     return true;
+//   };
 
-    const payload = items.map((item) => ({
-      productId: item.product.id,
-      quantity: item.quantity,
-    }));
-
-    mutate(payload, {
-      onSuccess: (data) => {
-        data.invalid.forEach((invalidItem) => {
-          removeFromCart(invalidItem.productId); // reuse function here
-        });
-      },
-    });
-
-    prevItemsRef.current = items;
-  };
-
-  return { validate, isPending };
-}
-
+//   return { validate };
+// }
 

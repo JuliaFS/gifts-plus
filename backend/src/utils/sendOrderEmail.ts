@@ -12,13 +12,21 @@ const transporter = nodemailer.createTransport({
 
 type OrderEmailPayload = {
   orderId: string;
-  items: any[];
+  items: {
+    quantity: number;
+    products: {
+      name: string;
+      price: number;
+    };
+  }[];
   total: number;
+  invoicePath: string;
 };
 
 export async function sendOrderEmail(payload: OrderEmailPayload) {
   const html = `
-    <h2>New Order: ${payload.orderId}</h2>
+    <h2>🛒 New Order: ${payload.orderId}</h2>
+
     <ul>
       ${payload.items
         .map(
@@ -27,13 +35,23 @@ export async function sendOrderEmail(payload: OrderEmailPayload) {
         )
         .join("")}
     </ul>
-    <p><strong>Total:</strong> ${payload.total}</p>
+
+    <p><strong>Total:</strong> ${payload.total.toFixed(2)} €</p>
   `;
 
   await transporter.sendMail({
     from: `"Shop" <${process.env.EMAIL_USER}>`,
-    to: "yuliya.f.s@gmail.com", // admin email
-    subject: "New Order Received",
+    to: process.env.ADMIN_EMAIL!,
+    subject: `New Order #${payload.orderId}`,
     html,
+    attachments: [
+      {
+        filename: `invoice-${payload.orderId}.pdf`,
+        path: payload.invoicePath,
+        contentType: "application/pdf",
+      },
+    ],
   });
 }
+
+
