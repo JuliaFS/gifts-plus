@@ -12,7 +12,9 @@ export default function FavoritesIcon() {
   const currentPath = usePathname();
 
   const { data: user } = useCurrentUser();
-  const { favoritesQuery } = useFavorites();
+
+  // Pass isOpen as fetchOnClick to fetch favorites only when modal opens
+  const { favoritesQuery } = useFavorites(isOpen);
 
   const handleClick = () => {
     if (!user) {
@@ -22,7 +24,7 @@ export default function FavoritesIcon() {
       }, 2000);
       return;
     }
-    setIsOpen(true);
+    setIsOpen(true); // triggers favorites fetch
   };
 
   const handleProductClick = (productId: string) => {
@@ -37,6 +39,7 @@ export default function FavoritesIcon() {
 
   return (
     <>
+      {/* Favorites Icon */}
       <button
         onClick={handleClick}
         className="ml-4 p-2 text-2xl"
@@ -45,6 +48,7 @@ export default function FavoritesIcon() {
         ❤️
       </button>
 
+      {/* Favorites Modal */}
       {isOpen && user && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-start pt-20 z-50 overflow-auto">
           <div className="bg-white rounded-lg p-6 w-full max-w-4xl">
@@ -58,12 +62,14 @@ export default function FavoritesIcon() {
               </button>
             </div>
 
+            {/* Loading / Error / Empty States */}
             {favoritesQuery.isLoading && <p>Loading favorites...</p>}
             {favoritesQuery.isError && (
               <p className="text-red-500">Failed to load favorites.</p>
             )}
             {favoritesQuery.data?.length === 0 && <p>No favorite items yet.</p>}
 
+            {/* Favorites Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {favoritesQuery.data?.map((fav: any) => (
                 <div
@@ -76,6 +82,7 @@ export default function FavoritesIcon() {
               ))}
             </div>
 
+            {/* See All Favorites Button */}
             {favoritesQuery.data?.length > 0 && (
               <div className="mt-4 flex justify-end">
                 <button
@@ -92,4 +99,5 @@ export default function FavoritesIcon() {
     </>
   );
 }
+
 
