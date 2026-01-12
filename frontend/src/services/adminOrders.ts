@@ -6,7 +6,12 @@ export async function fetchAdminOrders() {
   });
 
   if (!res.ok) {
-    throw new Error("Failed to load orders");
+    const data = await res.json().catch(() => null);
+
+    const error: any = new Error(data?.message || "Failed to load orders");
+
+    error.status = res.status; // 👈 IMPORTANT
+    throw error;
   }
 
   return res.json();
@@ -16,18 +21,20 @@ export async function updateOrderStatus(
   orderId: string,
   status: "SHIPPED" | "CANCELLED"
 ) {
-  const res = await fetch(
-    `${API_URL}/orders/${orderId}/status`,
-    {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify({ status }),
-    }
-  );
+  const res = await fetch(`${API_URL}/orders/${orderId}/status`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ status }),
+  });
 
   if (!res.ok) {
-    throw new Error("Failed to update status");
+        const data = await res.json().catch(() => null);
+
+    const error: any = new Error(data?.message || "Failed to update status");
+
+    error.status = res.status; // 👈 IMPORTANT
+    throw error;
   }
 
   return res.json();

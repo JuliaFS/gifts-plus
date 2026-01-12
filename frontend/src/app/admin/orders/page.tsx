@@ -8,9 +8,9 @@ import OrderCard from "@/components/order/OrderCard";
 export default function AdminOrdersPage() {
   const { data, isLoading, isError, error } = useAdminOrders();
 
-  if (isLoading) return <p>Loading orders...</p>;
+  if (isLoading) return <p className="text-center mt-5">Loading orders...</p>;
   if (isError)
-    return <p className="text-red-600">{(error as Error).message}</p>;
+    return <p className="text-red-600 text-center mt-5">{(error as Error).message}</p>;
 
   return (
     <div className="max-w-4xl mx-auto p-6">

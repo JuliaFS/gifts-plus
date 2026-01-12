@@ -27,6 +27,8 @@ type FormErrors = {
 export default function AdminProductPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
+  
+   
 
   /* ---------- CREATE FORM ---------- */
   const [files, setFiles] = useState<File[]>([]);
@@ -47,6 +49,8 @@ export default function AdminProductPage() {
       previews.forEach(URL.revokeObjectURL);
     };
   }, [previews]);
+
+ 
 
   /* ---------- HELPERS ---------- */
   const clearError = (field: keyof FormErrors) => {

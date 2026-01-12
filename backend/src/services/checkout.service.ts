@@ -107,9 +107,19 @@ export async function checkout(userId: string) {
 
   await sendOrderEmail({
   orderId: order.id,
-  items: cartItems,
+
+  items: cartItems.map((item) => ({
+    quantity: item.quantity,
+    products: {
+      name: item.products.name,
+      price: item.products.price,
+    },
+  })),
+
   total: order.total_amount,
+  invoicePath,
 });
+
 
 
   // 6. Clear cart

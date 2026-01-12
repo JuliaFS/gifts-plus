@@ -27,11 +27,11 @@ export async function sendOrderEmail(payload: OrderEmailPayload) {
   const html = `
     <h2>🛒 New Order: ${payload.orderId}</h2>
 
-    <ul>
+    <ul className="numbered-list">
       ${payload.items
         .map(
           (i) =>
-            `<li>${i.products.name} × ${i.quantity}</li>`
+            `<li className="border-b">${i.products.name} × ${i.quantity}</li>`
         )
         .join("")}
     </ul>
