@@ -1,6 +1,7 @@
 // src/controllers/product.controller.ts
 import { Request, Response, NextFunction } from "express";
 import * as productService from "../services/product.service";
+import { searchProducts } from "../services/product.service";
 
 export async function getProducts(
   req: Request,
@@ -176,5 +177,18 @@ export async function addBadgeToProduct(
     next(error);
   }
 }
+
+
+
+export async function searchProductsHandler(req: Request, res: Response, next: NextFunction) {
+  try {
+    const q = req.query.q as string;
+    const products = await searchProducts(q);
+    res.json(products);
+  } catch (err) {
+    next(err);
+  }
+}
+
 
 

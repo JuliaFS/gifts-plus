@@ -3,8 +3,12 @@ import { Router } from "express";
 import { authMiddleware } from "../middleware/auth.middleware";
 import { adminOnly } from "../middleware/admin.middleware";
 import * as productController from "../controllers/product.controller";
+import { searchProductsHandler } from "../controllers/product.controller";
 
 const router = Router();
+
+// Search products
+router.get("/search", searchProductsHandler);
 
 /**
  * PUBLIC - get products
@@ -13,24 +17,13 @@ router.get("/", productController.getProducts);
 // GET /api/products/:id
 router.get("/:id", productController.getProductById);
 
-
 /**
  * ADMIN ONLY - create product
  */
-router.post(
-  "/",
-  authMiddleware,
-  adminOnly,
-  productController.createProduct
-);
+router.post("/", authMiddleware, adminOnly, productController.createProduct);
 
 // PUT /api/products/:id
-router.put(
-  "/:id",
-  authMiddleware,
-  adminOnly,
-  productController.updateProduct
-);
+router.put("/:id", authMiddleware, adminOnly, productController.updateProduct);
 
 /**
  * ADMIN ONLY - delete product
@@ -64,8 +57,6 @@ router.patch(
   adminOnly,
   productController.addBadgeToProduct
 );
-
-
 
 
 

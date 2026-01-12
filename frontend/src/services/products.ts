@@ -124,4 +124,19 @@ export async function addBadgeToProduct(
   return res.json() as Promise<Product>;
 }
 
+export async function searchProducts(query: string): Promise<Product[]> {
+  const res = await fetch(`${API_URL}/search?q=${encodeURIComponent(query)}`, {
+    credentials: "include",
+  });
+
+  if (!res.ok) {
+    const data = await res.json().catch(() => null);
+    const error: any = new Error(data?.message || "Failed to search products");
+    error.status = res.status;
+    throw error;
+  }
+
+  return res.json();
+}
+
 

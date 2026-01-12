@@ -1,7 +1,5 @@
 import { supabase } from "../db/supabaseClient";
-import { CreateProductData } from "./types";
-
-
+import { CreateProductData, Product } from "./types";
 
 export async function getProducts(page: number = 1, limit: number = 12) {
   const offset = (page - 1) * limit;
@@ -16,10 +14,12 @@ export async function getProducts(page: number = 1, limit: number = 12) {
   // Get paginated data
   const { data, error } = await supabase
     .from("products")
-    .select(`
+    .select(
+      `
       *,
       product_images (*)
-    `)
+    `
+    )
     .order("created_at", { ascending: false })
     .range(offset, offset + limit - 1);
 
@@ -34,9 +34,7 @@ export async function getProducts(page: number = 1, limit: number = 12) {
   };
 }
 
-export async function createProduct(
-  product: CreateProductData
-) {
+export async function createProduct(product: CreateProductData) {
   const { image_urls, ...productData } = product;
 
   const { data: createdProduct, error } = await supabase
@@ -68,7 +66,8 @@ export async function createProduct(
 export async function getProductById(productId: string) {
   const { data, error } = await supabase
     .from("products")
-    .select(`
+    .select(
+      `
       *,
       product_images (
         id,
@@ -76,7 +75,8 @@ export async function getProductById(productId: string) {
         position,
         is_main
       )
-    `)
+    `
+    )
     .eq("id", productId)
     .single();
 
@@ -102,13 +102,11 @@ export async function upsertCartItem(
   productId: string,
   quantity: number
 ) {
-  const { error } = await supabase
-    .from("shopping_cart")
-    .upsert({
-      user_id: userId,
-      product_id: productId,
-      quantity,
-    });
+  const { error } = await supabase.from("shopping_cart").upsert({
+    user_id: userId,
+    product_id: productId,
+    quantity,
+  });
 
   if (error) throw error;
 }
@@ -129,14 +127,14 @@ export async function updateProduct(
   if (error) throw error;
 
   const { data: product } = await supabase
-  .from("products")
-  .select("id")
-  .eq("id", productId)
-  .single();
+    .from("products")
+    .select("id")
+    .eq("id", productId)
+    .single();
 
-if (!product) {
-  throw new Error("Product does not exist");
-}
+  if (!product) {
+    throw new Error("Product does not exist");
+  }
 
   if (image_urls?.length) {
     const images = image_urls.map((url, index) => ({
@@ -195,6 +193,26 @@ export async function addBadgeToProduct(
     .eq("id", productId)
     .select()
     .single();
+
+  if (error) throw error;
+  return data;
+}
+
+export async function searchProducts(query: string) {
+  if (!query) return [];
+
+  const { data, error } = await supabase
+    .from("products")
+    .select(
+      `
+      *,
+      product_images (
+        image_url,
+        is_main
+      )
+    `
+    )
+    .ilike("name", `%${query}%`); // case-insensitive search
 
   if (error) throw error;
   return data;
