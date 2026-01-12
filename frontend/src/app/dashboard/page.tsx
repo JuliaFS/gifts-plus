@@ -14,7 +14,7 @@ export default function DashboardPage() {
     }
   }, [isLoading, isError, router]);
 
-  if (isLoading) return <p>Loading...</p>;
+  // if (isLoading) return <p>Loading...</p>;
 
   if (isError || !user) return null;
 

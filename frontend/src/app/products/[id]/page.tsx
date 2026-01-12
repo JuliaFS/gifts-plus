@@ -14,6 +14,8 @@ import DeleteButton from "@/app/admin/products/DeleteButton";
 import EditProductModal from "@/app/admin/products/EditProductModal";
 import { useCurrentUser } from "@/services/hooks/useCurrentUser";
 
+import { useFavorites } from "@/services/hooks/useFavorites";
+
 export default function ProductDetailsPage() {
   const { id } = useParams();
   const router = useRouter();
@@ -22,15 +24,24 @@ export default function ProductDetailsPage() {
   const { data: product, isLoading, isError } = useGetProductById(productId);
 
   const deleteMutation = useDeleteProduct();
-
   const { data: user } = useCurrentUser();
   const isAdmin = user?.role === "ADMIN";
 
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-
   const [activeImage, setActiveImage] = useState<ProductImage | null>(null);
-
   const mainImageRef = useRef<HTMLDivElement | null>(null);
+
+  const { favoritesQuery, addMutation, removeMutation } = useFavorites();
+
+  // Check if product is currently favorited
+  const isFavorite = favoritesQuery.data?.some(
+    (f: any) => f.product_id === productId
+  );
+
+  const toggleFavorite = () => {
+    if (isFavorite) removeMutation.mutate(productId);
+    else addMutation.mutate(productId);
+  };
 
   const images = useMemo(() => {
     const list = product?.product_images ?? [];
@@ -41,8 +52,12 @@ export default function ProductDetailsPage() {
     })) as ProductImage[];
   }, [product]);
 
-  // Derive the image to show: user selected OR default to first image
-  const displayImage = activeImage ?? images[0];
+  // const displayImage = activeImage ?? images[0];
+  const displayImage =
+    activeImage?.image_url || // user-selected image
+    product?.product_images?.find((img) => img.is_main)?.image_url || // main image
+    product?.product_images?.[0]?.image_url || // fallback to first
+    "/placeholder.png"; // fallback placeholder
 
   if (isLoading) return <p>Loading product...</p>;
   if (isError || !product) return <p>Product not found.</p>;
@@ -57,7 +72,14 @@ export default function ProductDetailsPage() {
 
   return (
     <div className="max-w-6xl mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6">{product.name}</h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold">{product.name}</h1>
+
+        {/* FAVORITE BUTTON */}
+        <button onClick={toggleFavorite} className="text-2xl ml-4">
+          {isFavorite ? "❤️" : "🤍"}
+        </button>
+      </div>
 
       {/* ADMIN ACTIONS */}
       {isAdmin && (
@@ -101,7 +123,7 @@ export default function ProductDetailsPage() {
         {displayImage && (
           <div ref={mainImageRef} className="relative w-full h-[250px]">
             <Image
-              src={displayImage.image_url}
+              src={displayImage}
               alt={product.name}
               fill
               className="object-contain rounded"

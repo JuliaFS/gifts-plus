@@ -4,7 +4,6 @@ import { supabase } from "../db/supabaseClient";
 export async function sendCustomerConfirmation({
   userId,
   order,
-  items,
   invoicePath,
 }: any) {
   const { data: user } = await supabase

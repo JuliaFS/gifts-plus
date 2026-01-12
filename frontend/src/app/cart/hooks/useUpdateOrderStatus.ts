@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { updateOrderStatus } from "@/services/adminOrders";
+import { OrderStatus } from "@/services/types";
 
 export function useUpdateOrderStatus() {
   const queryClient = useQueryClient();
@@ -10,13 +11,12 @@ export function useUpdateOrderStatus() {
       status,
     }: {
       orderId: string;
-      status: "SHIPPED" | "CANCELLED";
+      status: OrderStatus;
     }) => updateOrderStatus(orderId, status),
 
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["admin-orders"],
-      });
+      queryClient.invalidateQueries({ queryKey: ["admin-orders"] });
     },
   });
 }
+

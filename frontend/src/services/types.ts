@@ -77,8 +77,21 @@ export type OrderItem = {
 export type Order = {
   id: string;
   total_amount: number;
-  status: "PENDING" | "SHIPPED" | "CANCELLED";
+  status: OrderStatus;
   created_at: string;
   order_items: OrderItem[];
 };
+
+
+export type OrderStatus = "PENDING" | "SHIPPED" | "CANCELLED";
+
+export const ORDER_STATUS_TRANSITIONS: Record<
+  OrderStatus,
+  OrderStatus[]
+> = {
+  PENDING: ["SHIPPED", "CANCELLED"],
+  SHIPPED: ["CANCELLED", "PENDING"],      // allow cancelling shipped orders
+  CANCELLED: ["SHIPPED", "PENDING"],
+};
+
 

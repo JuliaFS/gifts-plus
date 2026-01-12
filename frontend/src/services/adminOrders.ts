@@ -1,3 +1,5 @@
+import { OrderStatus } from "./types";
+
 const API_URL = "http://localhost:8080/api/admin";
 
 export async function fetchAdminOrders() {
@@ -19,7 +21,7 @@ export async function fetchAdminOrders() {
 
 export async function updateOrderStatus(
   orderId: string,
-  status: "SHIPPED" | "CANCELLED"
+  status: OrderStatus
 ) {
   const res = await fetch(`${API_URL}/orders/${orderId}/status`, {
     method: "PATCH",

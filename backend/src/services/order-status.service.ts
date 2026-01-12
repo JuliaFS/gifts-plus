@@ -1,19 +1,43 @@
 import { supabase } from "../db/supabaseClient";
-// import { sendOrderStatusEmail } from "../utils/sendOrderStatusEmail";
+import { OrderStatus } from "../utils/orderStatus";
 import { sendOrderStatusEmail } from "../utils/sendOrderStatusEmail";
 
 export async function updateOrderStatus(
   orderId: string,
-  status: "SHIPPED" | "CANCELLED"
+  status: OrderStatus
 ) {
+  // 1. Update order status
   const { data: order, error } = await supabase
     .from("orders")
     .update({ status })
     .eq("id", orderId)
-    .select("id, user_id")
+    .select("id, total_amount")
     .single();
 
-  if (error) throw error;
 
-  await sendOrderStatusEmail(order.id, status);
+
+  if (error || !order) throw error;
+
+  // 2. Fetch order items
+  const { data: items, error: itemsError } = await supabase
+    .from("order_items")
+    .select(`
+      quantity,
+      products (
+        name,
+        price
+      )
+    `)
+    .eq("order_id", orderId);
+
+  if (itemsError) throw itemsError;
+
+  // 3. Send detailed email
+  await sendOrderStatusEmail({
+    orderId: order.id,
+    status,
+    items: items ?? [],
+    total: order.total_amount,
+  });
 }
+

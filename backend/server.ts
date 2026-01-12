@@ -7,6 +7,7 @@ import productRoutes from "./src/routes/product.routes";
 import cartRoutes from "./src/routes/cart.routes";
 import checkoutRoutes from "./src/routes/checkout.routes";
 import adminOrdersRoutes from "./src/routes/admin-orders.routes";
+import favoritesRoutes from "./src/routes/favorites.routes";
 
 
 dotenv.config();
@@ -21,6 +22,7 @@ app.use("/api/products", productRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/checkout", checkoutRoutes);
 app.use("/api/admin", adminOrdersRoutes);
+app.use("/api/favorites", favoritesRoutes);
 
 
 //TO DO - may be remove
