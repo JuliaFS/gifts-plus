@@ -1,5 +1,5 @@
 // services/favorites.ts
-const API_URL = "http://localhost:8080/api/favorites";
+const API_URL = "https://gifts-plus-back.vercel.app/api/favorites";
 
 export async function fetchFavorites() {
   const res = await fetch(API_URL, {

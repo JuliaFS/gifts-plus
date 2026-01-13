@@ -1,7 +1,8 @@
 import { OrderStatus } from "./types";
 
-const API_URL = "http://localhost:8080/api/admin";
+//const API_URL = "http://localhost:8080/api/admin";
 
+const API_URL = "https://gifts-plus-back.vercel.app/api/admin";
 export async function fetchAdminOrders() {
   const res = await fetch(`${API_URL}/orders`, {
     credentials: "include",

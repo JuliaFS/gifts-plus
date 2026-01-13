@@ -1,6 +1,6 @@
 import { CartItem } from "@/store/cartStore";
 
-const API_URL = "http://localhost:8080/api/cart";
+const API_URL = "https://gifts-plus-back.vercel.app/api/cart";
 
 export async function syncCartToBackend(items: CartItem[]) {
   const payload = items.map((i) => ({

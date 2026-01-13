@@ -1,6 +1,8 @@
 import { LoginData, RegisterData, User } from "./types";
 
-const API_URL = "http://localhost:8080/api/auth";
+// const API_URL = "http://localhost:8080/api/auth";
+
+const API_URL = "https://gifts-plus-back.vercel.app/api/auth";
 
 export async function loginUser(data: LoginData): Promise<User> {
   const res = await fetch(`${API_URL}/login`, {
