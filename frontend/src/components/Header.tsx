@@ -31,68 +31,68 @@ export default function Header() {
     }
   };
 
-  if (isLoading || !currentUser) return null; // wait for client fetch
+  if (isLoading) return null; // wait for client fetch
 
   return (
-    <header className="bg-blue-600 text-white p-4">
-      <nav className="container mx-auto flex justify-between items-center">
-        <Link href="/dashboard" className="font-bold text-xl">
-          Gifts Plus
-        </Link>
+  <header className="bg-blue-600 text-white p-4">
+    <nav className="container mx-auto flex justify-between items-center">
+      <Link href="/dashboard" className="font-bold text-xl">
+        Gifts Plus
+      </Link>
 
-        <div className="flex items-center border rounded overflow-hidden">
-          <input
-            type="text"
-            placeholder="Search products..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onKeyDown={handleKeyDown}
-            className="p-2 outline-none w-64 text-black"
-          />
+      <div className="flex items-center border rounded overflow-hidden">
+        <input
+          type="text"
+          placeholder="Search products..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          onKeyDown={handleKeyDown}
+          className="p-2 outline-none w-64 text-black"
+        />
+        <button
+          onClick={() => {
+            if (searchQuery.trim()) {
+              router.push(`/search?query=${encodeURIComponent(searchQuery.trim())}`);
+            }
+          }}
+          className="p-2 bg-gray-200 hover:bg-gray-300 text-black"
+        >
+          <FaSearch />
+        </button>
+      </div>
+
+      <div className="flex gap-4 items-center">
+        {!currentUser && (
+          <>
+            <Link href="/login">Login</Link>
+            <Link href="/register">Register</Link>
+          </>
+        )}
+
+        {currentUser && currentUser.role === "ADMIN" && (
+          <>
+            <Link href="/admin/products" className="hover:underline">
+              Admin Products
+            </Link>
+            <span>Welcome, {currentUser.email}</span>
+          </>
+        )}
+
+        {currentUser && (
           <button
-            onClick={() => {
-              if (searchQuery.trim()) {
-                router.push(`/search?query=${encodeURIComponent(searchQuery.trim())}`);
-              }
-            }}
-            className="p-2 bg-gray-200 hover:bg-gray-300 text-black"
+            onClick={() => logoutMutation.mutate()}
+            className="bg-red-500 px-3 py-1 rounded hover:bg-red-600"
           >
-            <FaSearch />
+            Logout
           </button>
-        </div>
+        )}
 
-        <div className="flex gap-4 items-center">
-          {!currentUser && (
-            <>
-              <Link href="/login">Login</Link>
-              <Link href="/register">Register</Link>
-            </>
-          )}
-
-          {currentUser && currentUser.role === "ADMIN" && (
-            <>
-              <Link href="/admin/products" className="hover:underline">
-                Admin Products
-              </Link>
-              <span>Welcome, {currentUser.email}</span>
-            </>
-          )}
-
-          {currentUser && (
-            <button
-              onClick={() => logoutMutation.mutate()}
-              className="bg-red-500 px-3 py-1 rounded hover:bg-red-600"
-            >
-              Logout
-            </button>
-          )}
-
-          <CartIcon />
-          <FavoritesIcon />
-        </div>
-      </nav>
-    </header>
-  );
+        <CartIcon />
+        <FavoritesIcon />
+      </div>
+    </nav>
+  </header>
+);
 }
 
 
