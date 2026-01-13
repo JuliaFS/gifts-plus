@@ -53,11 +53,8 @@ export default function ProductDetailsPage() {
   }, [product]);
 
   // const displayImage = activeImage ?? images[0];
-  const displayImage =
-    activeImage?.image_url || // user-selected image
-    product?.product_images?.find((img) => img.is_main)?.image_url || // main image
-    product?.product_images?.[0]?.image_url || // fallback to first
-    "/placeholder.png"; // fallback placeholder
+  const currentImage = activeImage ?? images.find((img) => img.is_main) ?? images[0];
+  const displayImageUrl = currentImage?.image_url || "/placeholder.png";
 
   if (isLoading) return <p>Loading product...</p>;
   if (isError || !product) return <p>Product not found.</p>;
@@ -103,7 +100,7 @@ export default function ProductDetailsPage() {
                 key={img.id}
                 onClick={() => setActiveImage(img)}
                 className={`border rounded p-1 ${
-                  displayImage?.id === img.id
+                  currentImage?.id === img.id
                     ? "border-blue-600"
                     : "border-gray-300"
                 }`}
@@ -120,10 +117,10 @@ export default function ProductDetailsPage() {
           </div>
         )}
 
-        {displayImage && (
+        {displayImageUrl && (
           <div ref={mainImageRef} className="relative w-full h-[250px]">
             <Image
-              src={displayImage}
+              src={displayImageUrl}
               alt={product.name}
               fill
               className="object-contain rounded"
