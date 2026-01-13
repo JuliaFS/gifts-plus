@@ -39,6 +39,10 @@ export default function EditProductModal({ product, onClose }: Props) {
   const { images, addImages, removeExisting, removeNew } =
     useProductImages(initialImages);
 
+  const clearError = (field: keyof Errors) => {
+    setErrors((prev) => ({ ...prev, [field]: undefined }));
+  };
+
   const validate = () => {
     const e: Errors = {};
     if (!form.name.trim()) e.name = "Name is required";
@@ -93,14 +97,20 @@ export default function EditProductModal({ product, onClose }: Props) {
         <input
           className="w-full p-2 border rounded mb-2"
           value={form.name}
-          onChange={(e) => setForm({ ...form, name: e.target.value })}
+          onChange={(e) => {
+            setForm({ ...form, name: e.target.value });
+            clearError("name");
+          }}
         />
         {errors.name && <p className="text-red-500">{errors.name}</p>}
 
         <textarea
           className="w-full p-2 border rounded mb-2"
           value={form.description}
-          onChange={(e) => setForm({ ...form, description: e.target.value })}
+          onChange={(e) => {
+            setForm({ ...form, description: e.target.value });
+            clearError("description");
+          }}
         />
         {errors.description && (
           <p className="text-red-500">{errors.description}</p>
@@ -110,7 +120,10 @@ export default function EditProductModal({ product, onClose }: Props) {
           type="number"
           className="w-full p-2 border rounded mb-2"
           value={form.price}
-          onChange={(e) => setForm({ ...form, price: Number(e.target.value) })}
+          onChange={(e) => {
+            setForm({ ...form, price: Number(e.target.value) });
+            clearError("price");
+          }}
         />
         {errors.price && <p className="text-red-500">{errors.price}</p>}
 
@@ -132,7 +145,7 @@ export default function EditProductModal({ product, onClose }: Props) {
 
             // allow only digits
             if (/^\d*$/.test(value)) {
-              setForm({ ...form, stock: value });
+              setForm({ ...form, stock: Number(value) });
               clearError("stock");
             }
           }}
