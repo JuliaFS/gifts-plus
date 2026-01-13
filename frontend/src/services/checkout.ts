@@ -19,7 +19,7 @@
 // }
 
 export async function checkout() {
-  const res = await fetch("https://gifts-plus-back.vercel.app/api/checkout", {
+  const res = await fetch("https://gifts-plus-phzb.vercel.app/api/checkout", {
     method: "POST",
     credentials: "include", // 🔥 REQUIRED
   });

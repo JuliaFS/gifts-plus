@@ -1,6 +1,6 @@
 import { CreateProductInput, Product } from "./types";
 
-const API_URL = "https://gifts-plus-back.vercel.app/api/products";
+const API_URL = "https://gifts-plus-phzb.vercel.app/api/products";
 export interface PaginatedProducts {
   data: Product[];
   total: number;
