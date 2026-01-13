@@ -22,7 +22,9 @@ export async function register(
 
     // Set JWT cookie
     const token = jwt.sign(
-      { user: { id: user.id, email: user.email, role: user.role || 'customer' } },
+      {
+        user: { id: user.id, email: user.email, role: user.role || "customer" },
+      },
       process.env.JWT_SECRET!,
       {
         expiresIn: JWT_EXPIRES_IN,
@@ -31,9 +33,10 @@ export async function register(
 
     res.cookie("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production", // required for HTTPS
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       maxAge: JWT_EXPIRES_IN * 1000,
+      path: "/", // important so cookie is sent to all API routes
     });
 
     return res.status(201).json(user); // ✅ only user, no token
@@ -42,10 +45,7 @@ export async function register(
   }
 }
 
-export async function login(
-  req: AuthRequest,
-  res: Response
-) {
+export async function login(req: AuthRequest, res: Response) {
   try {
     const { email, password } = req.body;
 
@@ -53,16 +53,19 @@ export async function login(
 
     // Set JWT cookie
     const token = jwt.sign(
-      { user: { id: user.id, email: user.email, role: user.role || 'customer' } },
+      {
+        user: { id: user.id, email: user.email, role: user.role || "customer" },
+      },
       process.env.JWT_SECRET!,
       { expiresIn: JWT_EXPIRES_IN }
     );
 
     res.cookie("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production", // required for HTTPS
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       maxAge: JWT_EXPIRES_IN * 1000,
+      path: "/", // important so cookie is sent to all API routes
     });
 
     return res.status(200).json(user); // ✅ only user, no token
@@ -85,7 +88,6 @@ export async function login(
     return res.status(status).json({ message });
   }
 }
-
 
 export async function getMe(
   req: AuthRequest,
@@ -139,10 +141,7 @@ export async function checkEmail(
   }
 }
 
-export async function forgotPassword(
-  req: Request,
-  res: Response
-) {
+export async function forgotPassword(req: Request, res: Response) {
   try {
     const { email } = req.body;
     if (!email) {
@@ -204,9 +203,9 @@ export async function forgotPassword(
 //     });
 
 //     // 4. Return success and the user object
-//     return res.status(200).json({ 
-//       message: "Password successfully reset", 
-//       user 
+//     return res.status(200).json({
+//       message: "Password successfully reset",
+//       user
 //     });
 //   } catch (error: any) {
 //     return res
@@ -220,7 +219,9 @@ export async function resetPassword(req: Request, res: Response) {
     const { token, password } = req.body;
 
     if (!token || !password) {
-      return res.status(400).json({ message: "Token and password are required" });
+      return res
+        .status(400)
+        .json({ message: "Token and password are required" });
     }
 
     // 1. Service handles the DB logic and returns the UserDTO
@@ -228,23 +229,26 @@ export async function resetPassword(req: Request, res: Response) {
 
     // 2. Generate the JWT (using your existing logic)
     const jwtToken = jwt.sign(
-      { user: { id: user.id, email: user.email, role: user.role || 'customer' } },
+      {
+        user: { id: user.id, email: user.email, role: user.role || "customer" },
+      },
       process.env.JWT_SECRET!,
       { expiresIn: JWT_EXPIRES_IN }
     );
 
     // 3. Set the HttpOnly cookie so the user is logged in instantly
-    res.cookie("token", jwtToken, {
+    res.cookie("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production", // required for HTTPS
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       maxAge: JWT_EXPIRES_IN * 1000,
+      path: "/", // important so cookie is sent to all API routes
     });
 
     // 4. Send back the user data (frontend can now redirect to /dashboard)
     return res.status(200).json({
       message: "Password successfully reset",
-      user 
+      user,
     });
   } catch (error: any) {
     return res
@@ -252,5 +256,3 @@ export async function resetPassword(req: Request, res: Response) {
       .json({ message: error.message || "Internal Server Error" });
   }
 }
-
-
