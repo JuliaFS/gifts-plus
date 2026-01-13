@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { FaSearch } from "react-icons/fa"; // optional, for search icon
+import { FaSearch } from "react-icons/fa";
 import { logout } from "@/services/auth";
 import { useCurrentUser } from "@/services/hooks/useCurrentUser";
 import CartIcon from "./cart/CartIcon";
@@ -20,7 +20,6 @@ export default function Header() {
   const logoutMutation = useMutation({
     mutationFn: logout,
     onSuccess: () => {
-      // Clear user from cache
       queryClient.setQueryData(["currentUser"], null);
       router.push("/login");
     },
@@ -32,17 +31,15 @@ export default function Header() {
     }
   };
 
-  if (isLoading) return null;
+  if (isLoading || !currentUser) return null; // wait for client fetch
 
   return (
     <header className="bg-blue-600 text-white p-4">
       <nav className="container mx-auto flex justify-between items-center">
-        {/* Logo / Dashboard Link */}
         <Link href="/dashboard" className="font-bold text-xl">
           Gifts Plus
         </Link>
 
-        {/* Search input */}
         <div className="flex items-center border rounded overflow-hidden">
           <input
             type="text"
@@ -64,7 +61,6 @@ export default function Header() {
           </button>
         </div>
 
-        {/* User / Admin / Icons */}
         <div className="flex gap-4 items-center">
           {!currentUser && (
             <>
@@ -91,7 +87,6 @@ export default function Header() {
             </button>
           )}
 
-          {/* Cart & Favorites */}
           <CartIcon />
           <FavoritesIcon />
         </div>
@@ -99,6 +94,7 @@ export default function Header() {
     </header>
   );
 }
+
 
 
 
