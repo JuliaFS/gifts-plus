@@ -66,6 +66,14 @@ export type ProductFormData = {
   image_urls?: string[];
 };
 
+export interface PaginatedProducts {
+  data: Product[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
 export type OrderItem = {
   quantity: number;
   price_at_purchase: number;

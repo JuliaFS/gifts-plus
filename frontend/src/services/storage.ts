@@ -38,28 +38,3 @@ export async function uploadProductImage(
     return data.signedUrl;
   }
 }
-
-//for public bucket
-// import { supabase } from "../lib/supabase";
-
-// export async function uploadProductImage(file: File) {
-//   const fileExt = file.name.split(".").pop();
-//   const fileName = `${crypto.randomUUID()}.${fileExt}`;
-//   const filePath = fileName; // or use folder: `uploads/${fileName}`
-
-//   // Upload file
-//   const { error } = await supabase.storage
-//     .from("products")
-//     .upload(filePath, file);
-
-//   if (error) throw error;
-
-//   // Get public URL
-//   const { data } = supabase.storage
-//     .from("products")
-//     .getPublicUrl(filePath);
-
-//   return data.publicUrl;
-// }
-
-

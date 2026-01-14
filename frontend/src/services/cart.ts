@@ -1,6 +1,5 @@
+import { API } from "./config";
 import { CartItem } from "@/store/cartStore";
-
-const API_URL = "https://gifts-plus-phzb.vercel.app/api/cart";
 
 export async function syncCartToBackend(items: CartItem[]) {
   const payload = items.map((i) => ({
@@ -8,7 +7,7 @@ export async function syncCartToBackend(items: CartItem[]) {
     quantity: i.quantity,
   }));
 
-  const res = await fetch(`${API_URL}/sync`, {
+  const res = await fetch(API.cart.sync(), {
     method: "POST",
     credentials: "include",
     headers: { "Content-Type": "application/json" },
@@ -22,3 +21,29 @@ export async function syncCartToBackend(items: CartItem[]) {
 
   return res.json();
 }
+
+
+// import { CartItem } from "@/store/cartStore";
+
+// const API_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/cart`;
+
+// export async function syncCartToBackend(items: CartItem[]) {
+//   const payload = items.map((i) => ({
+//     productId: i.product.id,
+//     quantity: i.quantity,
+//   }));
+
+//   const res = await fetch(`${API_URL}/sync`, {
+//     method: "POST",
+//     credentials: "include",
+//     headers: { "Content-Type": "application/json" },
+//     body: JSON.stringify({ items: payload }),
+//   });
+
+//   if (!res.ok) {
+//     const data = await res.json().catch(() => null);
+//     throw new Error(data?.message || "Failed to sync cart");
+//   }
+
+//   return res.json();
+// }

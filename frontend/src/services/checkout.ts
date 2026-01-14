@@ -1,27 +1,9 @@
-// export async function checkout() {
-//   const res = await fetch(
-//     "http://localhost:8080/api/checkout",
-//     {
-//       method: "POST",
-//       credentials: "include",
-//     }
-//   );
-
-//   if (!res.ok) {
-//     const data = await res.json().catch(() => null);
-//     throw new Error(data?.message || "Checkout failed");
-//   }
-
-//   return res.json() as Promise<{
-//     message: string;
-//     orderId: string;
-//   }>;
-// }
+import { API } from "./config";
 
 export async function checkout() {
-  const res = await fetch("https://gifts-plus-phzb.vercel.app/api/checkout", {
+  const res = await fetch(API.checkout.create(), {
     method: "POST",
-    credentials: "include", // 🔥 REQUIRED
+    credentials: "include", // 🔥 REQUIRED for session cookies
   });
 
   if (!res.ok) {
@@ -31,4 +13,20 @@ export async function checkout() {
 
   return res.json();
 }
+
+
+
+// export async function checkout() {
+//   const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/checkout`, {
+//     method: "POST",
+//     credentials: "include", // 🔥 REQUIRED
+//   });
+
+//   if (!res.ok) {
+//     const data = await res.json().catch(() => null);
+//     throw new Error(data?.message || "Checkout failed");
+//   }
+
+//   return res.json();
+// }
 
