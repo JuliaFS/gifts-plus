@@ -1,3 +1,4 @@
+import { handleFetchError } from "@/utils/handleFetchError";
 import { API } from "./config";
 
 // GET all favorites
@@ -6,11 +7,12 @@ export async function fetchFavorites() {
     credentials: "include",
   });
 
-  if (!res.ok) {
-    throw new Error("Failed to fetch favorites");
-  }
+  // if (!res.ok) {
+  //   throw new Error("Failed to fetch favorites");
+  // }
 
-  return res.json();
+  // return res.json();
+  return handleFetchError(res, "Failed to fetch favorites.");
 }
 
 // POST add favorite
@@ -20,11 +22,12 @@ export async function addFavorite(productId: string) {
     credentials: "include",
   });
 
-  if (!res.ok) {
-    throw new Error("Failed to add favorite");
-  }
+  // if (!res.ok) {
+  //   throw new Error("Failed to add favorite");
+  // }
 
-  return res.json();
+  // return res.json();
+  return handleFetchError(res, "Failed to add favorite.");
 }
 
 // DELETE remove favorite
@@ -34,11 +37,12 @@ export async function removeFavorite(productId: string) {
     credentials: "include",
   });
 
-  if (!res.ok) {
-    throw new Error("Failed to remove favorite");
-  }
+  // if (!res.ok) {
+  //   throw new Error("Failed to remove favorite");
+  // }
 
-  return res.json();
+  // return res.json();
+  return handleFetchError(res, "Failed to remove favorite.");
 }
 
 

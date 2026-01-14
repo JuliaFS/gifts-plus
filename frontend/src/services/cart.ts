@@ -1,3 +1,4 @@
+import { handleFetchError } from "@/utils/handleFetchError";
 import { API } from "./config";
 import { CartItem } from "@/store/cartStore";
 
@@ -14,12 +15,13 @@ export async function syncCartToBackend(items: CartItem[]) {
     body: JSON.stringify({ items: payload }),
   });
 
-  if (!res.ok) {
-    const data = await res.json().catch(() => null);
-    throw new Error(data?.message || "Failed to sync cart");
-  }
+  // if (!res.ok) {
+  //   const data = await res.json().catch(() => null);
+  //   throw new Error(data?.message || "Failed to sync cart");
+  // }
 
-  return res.json();
+  // return res.json();
+  return handleFetchError(res, "Failed to sync cart.");
 }
 
 

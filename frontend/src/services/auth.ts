@@ -1,3 +1,4 @@
+import { handleFetchError } from "@/utils/handleFetchError";
 import { API } from "./config";
 import { LoginData, RegisterData, User } from "./types";
 
@@ -9,9 +10,7 @@ export async function loginUser(data: LoginData): Promise<User> {
     body: JSON.stringify(data),
   });
 
-  const json = await res.json();
-  if (!res.ok) throw new Error(json.message || "Login failed");
-  return json;
+  return handleFetchError<User>(res, "Login failed.");
 }
 
 export async function registerUser(data: RegisterData): Promise<User> {
@@ -22,26 +21,24 @@ export async function registerUser(data: RegisterData): Promise<User> {
     body: JSON.stringify(data),
   });
 
-  if (!res.ok) {
-    const errorData = await res.json().catch(() => null);
-    throw new Error(errorData?.message || "Registration failed");
-  }
-
-  return res.json();
+  return handleFetchError<User>(res, "Registration failed.");
 }
 
 export async function checkEmailExists(email: string): Promise<boolean> {
   const res = await fetch(API.auth.checkEmail(email), {
     credentials: "include",
   });
-  const data = await res.json();
-  return data.exists;
+
+  return handleFetchError<{ exists: boolean }>(res, "Failed to check email.").then(data => data.exists);
 }
 
 export async function fetchCurrentUser(): Promise<User | null> {
   const res = await fetch(API.auth.me(), { credentials: "include" });
+  
+  // For fetchCurrentUser, return null if not authenticated
   if (!res.ok) return null;
-  return res.json();
+
+  return handleFetchError<User>(res, "Failed to fetch current user.");
 }
 
 export async function logout(): Promise<boolean> {
@@ -49,8 +46,9 @@ export async function logout(): Promise<boolean> {
     method: "POST",
     credentials: "include",
   });
-  if (!res.ok) throw new Error("Logout failed");
-  return true;
+
+  await handleFetchError(res, "Logout failed.");
+  return true; // If no error thrown, logout succeeded
 }
 
 export async function forgotPassword(email: string) {
@@ -60,9 +58,7 @@ export async function forgotPassword(email: string) {
     body: JSON.stringify({ email }),
   });
 
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.message || "Failed to send reset link");
-  return data;
+  return handleFetchError(res, "Failed to send reset link.");
 }
 
 export async function resetPassword(token: string, password: string) {
@@ -73,10 +69,9 @@ export async function resetPassword(token: string, password: string) {
     body: JSON.stringify({ token, password }),
   });
 
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.message || "Failed to reset password");
-  return data;
+  return handleFetchError(res, "Failed to reset password.");
 }
+
 
 
 // import { LoginData, RegisterData, User } from "./types";

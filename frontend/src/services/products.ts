@@ -1,3 +1,4 @@
+import { handleFetchError } from "@/utils/handleFetchError";
 import { API } from "./config";
 import { CreateProductInput, PaginatedProducts, Product } from "./types";
 
@@ -8,9 +9,10 @@ export async function fetchProducts(page: number): Promise<PaginatedProducts> {
     credentials: "include",
   });
 
-  if (!res.ok) throw new Error("Failed to fetch products");
+  // if (!res.ok) throw new Error("Failed to fetch products");
 
-  return res.json() as Promise<PaginatedProducts>;
+  // return res.json() as Promise<PaginatedProducts>;
+  return handleFetchError<PaginatedProducts>(res, "Failed to fetch products.");
 }
 
 // Create a new product
@@ -21,13 +23,7 @@ export async function createProduct(input: CreateProductInput): Promise<Product>
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(input),
   });
-
-  if (!res.ok) {
-    const error = await res.json();
-    throw new Error(error.message || "Failed to create product");
-  }
-
-  return res.json() as Promise<Product>;
+  return handleFetchError<Product>(res, "Failed to create product");
 }
 
 // Get a single product
@@ -37,8 +33,9 @@ export async function getProduct(productId: string): Promise<Product> {
     cache: "no-store",
   });
 
-  if (!res.ok) throw new Error("Failed to fetch product");
-  return res.json();
+  // if (!res.ok) throw new Error("Failed to fetch product");
+  // return res.json();
+  return handleFetchError(res, "Failed to fetch product.");
 }
 
 // Update product
@@ -50,12 +47,13 @@ export async function updateProduct(productId: string, updates: Partial<CreatePr
     body: JSON.stringify(updates),
   });
 
-  if (!res.ok) {
-    const error = await res.json();
-    throw new Error(error.message || "Failed to update product");
-  }
+  // if (!res.ok) {
+  //   const error = await res.json();
+  //   throw new Error(error.message || "Failed to update product");
+  // }
 
-  return res.json() as Promise<Product>;
+  // return res.json() as Promise<Product>;
+  return handleFetchError<Product>(res, "Failed to update product");
 }
 
 // Delete product
@@ -65,10 +63,11 @@ export async function deleteProduct(productId: string): Promise<void> {
     credentials: "include",
   });
 
-  if (!res.ok) {
-    const error = await res.json();
-    throw new Error(error.message || "Failed to delete product");
-  }
+  // if (!res.ok) {
+  //   const error = await res.json();
+  //   throw new Error(error.message || "Failed to delete product");
+  // }
+  return handleFetchError(res, "Failed to delete product");
 }
 
 // Delete product images
@@ -80,10 +79,11 @@ export async function deleteProductImages(productId: string, imageUrls: string[]
     body: JSON.stringify({ imageUrls }),
   });
 
-  if (!res.ok) {
-    const error = await res.json();
-    throw new Error(error.message || "Failed to delete images");
-  }
+  // if (!res.ok) {
+  //   const error = await res.json();
+  //   throw new Error(error.message || "Failed to delete images");
+  // }
+  return handleFetchError(res, "Failed to delete images");
 }
 
 // Add badge to product
@@ -95,12 +95,13 @@ export async function addBadgeToProduct(productId: string, badge?: string, promo
     body: JSON.stringify({ badge, promotion }),
   });
 
-  if (!res.ok) {
-    const error = await res.json();
-    throw new Error(error.message || "Failed to update badge/promotion");
-  }
+  // if (!res.ok) {
+  //   const error = await res.json();
+  //   throw new Error(error.message || "Failed to update badge/promotion");
+  // }
 
-  return res.json() as Promise<Product>;
+  // return res.json() as Promise<Product>;
+  return handleFetchError<Product>(res, "Failed to update badge/promotion");
 }
 
 // Search products
@@ -109,14 +110,15 @@ export async function searchProducts(query: string): Promise<Product[]> {
     credentials: "include",
   });
 
-  if (!res.ok) {
-    const data = await res.json().catch(() => null);
-    const error: any = new Error(data?.message || "Failed to search products");
-    error.status = res.status;
-    throw error;
-  }
+  // if (!res.ok) {
+  //   const data = await res.json().catch(() => null);
+  //   const error: any = new Error(data?.message || "Failed to search products");
+  //   error.status = res.status;
+  //   throw error;
+  // }
 
-  return res.json();
+  // return res.json();
+  return handleFetchError<Product[]>(res, "Failed to search products");
 }
 
 

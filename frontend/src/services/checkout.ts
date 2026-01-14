@@ -1,3 +1,4 @@
+import { handleFetchError } from "@/utils/handleFetchError";
 import { API } from "./config";
 
 export async function checkout() {
@@ -6,12 +7,13 @@ export async function checkout() {
     credentials: "include", // 🔥 REQUIRED for session cookies
   });
 
-  if (!res.ok) {
-    const data = await res.json().catch(() => null);
-    throw new Error(data?.message || "Checkout failed");
-  }
+  // if (!res.ok) {
+  //   const data = await res.json().catch(() => null);
+  //   throw new Error(data?.message || "Checkout failed");
+  // }
 
-  return res.json();
+  // return res.json();
+  return handleFetchError(res, "Checkout failed.");
 }
 
 
