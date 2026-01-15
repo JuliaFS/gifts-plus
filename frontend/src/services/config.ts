@@ -8,11 +8,12 @@ export const API = {
   BASE: BASE_URL,
 
   // static endpoints
-   auth: {
+  auth: {
     base: `${BASE_URL}/auth`,
     login: () => `${BASE_URL}/auth/login`,
     register: () => `${BASE_URL}/auth/register`,
-    checkEmail: (email: string) => `${BASE_URL}/auth/check-email?email=${encodeURIComponent(email)}`,
+    checkEmail: (email: string) =>
+      `${BASE_URL}/auth/check-email?email=${encodeURIComponent(email)}`,
     me: () => `${BASE_URL}/auth/me`,
     logout: () => `${BASE_URL}/auth/logout`,
     forgotPassword: () => `${BASE_URL}/auth/forgot-password`,
@@ -21,7 +22,7 @@ export const API = {
   admin: {
     base: `${BASE_URL}/admin`,
     orders: {
-      list: () => `${BASE_URL}/admin/orders`,           // GET all orders
+      list: () => `${BASE_URL}/admin/orders`, // GET all orders
       byId: (orderId: string) => `${BASE_URL}/admin/orders/${orderId}`, // optional
       status: (orderId: string) => `${BASE_URL}/admin/orders/${orderId}/status`, // PATCH
     },
@@ -43,13 +44,16 @@ export const API = {
   },
   products: {
     base: `${BASE_URL}/products`,
-    list: (page: number, limit = 12) => `${BASE_URL}/products?page=${page}&limit=${limit}`,
+    list: (page: number, limit = 12) =>
+      `${BASE_URL}/products?page=${page}&limit=${limit}`,
     create: () => `${BASE_URL}/products`,
     byId: (productId: string) => `${BASE_URL}/products/${productId}`,
     update: (productId: string) => `${BASE_URL}/products/${productId}`,
     delete: (productId: string) => `${BASE_URL}/products/${productId}`,
-    deleteImages: (productId: string) => `${BASE_URL}/products/${productId}/images`,
+    deleteImages: (productId: string) =>
+      `${BASE_URL}/products/${productId}/images`,
     addBadge: (productId: string) => `${BASE_URL}/products/${productId}/badge`,
-    search: (query: string) => `${BASE_URL}/products/search?q=${encodeURIComponent(query)}`,
+    search: (query: string) =>
+      `${BASE_URL}/products/search?q=${encodeURIComponent(query)}`,
   },
 };

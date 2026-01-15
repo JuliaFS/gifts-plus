@@ -5,6 +5,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { useCurrentUser } from "@/services/hooks/useCurrentUser";
 import { useFavorites } from "@/services/hooks/useFavorites";
 import ProductCard from "@/components/ProductCard";
+import { Favorite } from "@/services/types";
 
 export default function FavoritesIcon() {
   const [isOpen, setIsOpen] = useState(false);
@@ -71,7 +72,7 @@ export default function FavoritesIcon() {
 
             {/* Favorites Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {favoritesQuery.data?.map((fav: any) => (
+              {favoritesQuery.data?.map((fav: Favorite) => (
                 <div
                   key={fav.product_id}
                   onClick={() => handleProductClick(fav.product_id)}
@@ -83,7 +84,7 @@ export default function FavoritesIcon() {
             </div>
 
             {/* See All Favorites Button */}
-            {favoritesQuery.data?.length > 0 && (
+            {favoritesQuery.data!.length > 0 && (
               <div className="mt-4 flex justify-end">
                 <button
                   onClick={goToFavoritesPage}

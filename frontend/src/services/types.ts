@@ -90,16 +90,32 @@ export type Order = {
   order_items: OrderItem[];
 };
 
-
 export type OrderStatus = "PENDING" | "SHIPPED" | "CANCELLED";
 
-export const ORDER_STATUS_TRANSITIONS: Record<
-  OrderStatus,
-  OrderStatus[]
-> = {
+export const ORDER_STATUS_TRANSITIONS: Record<OrderStatus, OrderStatus[]> = {
   PENDING: ["SHIPPED", "CANCELLED"],
-  SHIPPED: ["CANCELLED", "PENDING"],      // allow cancelling shipped orders
+  SHIPPED: ["CANCELLED", "PENDING"], // allow cancelling shipped orders
   CANCELLED: ["SHIPPED", "PENDING"],
 };
 
+export interface Favorite {
+  product_id: string;
+  products: Product;
+}
 
+export interface ForgotPasswordResponse {
+  message: string;
+}
+
+export interface ResetPasswordPayload {
+  token: string | null;
+  password: string;
+}
+
+export interface ResetPasswordResponse {
+  message: string;
+}
+
+export interface CheckoutResponse {
+  message: string;
+}

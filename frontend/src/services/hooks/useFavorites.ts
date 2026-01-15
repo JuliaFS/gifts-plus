@@ -1,11 +1,17 @@
-// hooks/useFavorites.ts
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { fetchFavorites, addFavorite, removeFavorite } from "@/services/favorites";
+import {
+  fetchFavorites,
+  addFavorite,
+  removeFavorite,
+} from "@/services/favorites";
+import { Favorite } from "../types";
+
+
 
 export function useFavorites(fetchOnClick: boolean = false) {
   const queryClient = useQueryClient();
 
-  const favoritesQuery = useQuery({
+  const favoritesQuery = useQuery<Favorite[]>({
     queryKey: ["favorites"],
     queryFn: fetchFavorites,
     enabled: fetchOnClick, // only fetch when modal is opened
@@ -24,6 +30,3 @@ export function useFavorites(fetchOnClick: boolean = false) {
 
   return { favoritesQuery, addMutation, removeMutation };
 }
-
-
-

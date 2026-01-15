@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import { useState } from "react";
 import { OrderStatus, ORDER_STATUS_TRANSITIONS } from "@/services/types";
 
 interface StatusModalProps {

@@ -6,6 +6,7 @@ import { useCurrentUser } from "@/services/hooks/useCurrentUser";
 import { syncCartToBackend } from "@/services/cart";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { getErrorMessage } from "@/utils/getErrorMessage";
 
 export default function CartSummary() {
   const items = useCartStore((s) => s.items);
@@ -16,10 +17,7 @@ export default function CartSummary() {
   const userId = useCurrentUser().data?.id;
   const checkoutMutation = useCheckout();
 
-  const total = items.reduce(
-    (sum, i) => sum + i.product.price * i.quantity,
-    0
-  );
+  const total = items.reduce((sum, i) => sum + i.product.price * i.quantity, 0);
 
   const handleCheckout = async () => {
     // 🚫 Not logged in
@@ -43,32 +41,22 @@ export default function CartSummary() {
       // 1️⃣ Sync cart to backend
       await syncCartToBackend(items);
 
-      // 2️⃣ Checkout
-      checkoutMutation.mutate(undefined, {
-        onSuccess: () => {
-          clearCart();
-          alert("Order completed");
-        },
-        onError: (err: any) => {
-          alert(err.message || "Checkout failed");
-        },
-      });
-    } catch (err: any) {
-      alert(err.message || "Failed to sync cart");
+      // 2️⃣ Checkout (awaitable)
+      await checkoutMutation.mutateAsync();
+
+      // 3️⃣ Success UI
+      clearCart();
+      alert("Order completed");
+    } catch (err) {
+      alert(getErrorMessage(err, "Checkout failed"));
     }
   };
 
   return (
     <div className="border-t pt-4 mt-4">
-      <p className="font-bold text-lg">
-        Total: {total.toFixed(2)} €
-      </p>
+      <p className="font-bold text-lg">Total: {total.toFixed(2)} €</p>
 
-      {message && (
-        <p className="text-red-600 mt-2">
-          {message}
-        </p>
-      )}
+      {message && <p className="text-red-600 mt-2">{message}</p>}
 
       <button
         onClick={handleCheckout}
@@ -86,4 +74,3 @@ export default function CartSummary() {
     </div>
   );
 }
-
