@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useCurrentUser } from "@/services/hooks/useCurrentUser";
 import { useFavorites } from "@/services/hooks/useFavorites";
@@ -14,8 +14,9 @@ export default function FavoritesIcon() {
 
   const { data: user } = useCurrentUser();
 
-  // Pass isOpen as fetchOnClick to fetch favorites only when modal opens
+  // Fetch favorites only when modal opens
   const { favoritesQuery } = useFavorites(isOpen);
+  const favoritesData = favoritesQuery.data ?? [];
 
   const handleClick = () => {
     if (!user) {
@@ -37,6 +38,16 @@ export default function FavoritesIcon() {
     setIsOpen(false);
     router.push("/favorites");
   };
+
+  // Close modal automatically if no favorites after loading
+  useEffect(() => {
+    if (!favoritesQuery.isLoading && favoritesData.length === 0 && isOpen) {
+      const timer = setTimeout(() => {
+        setIsOpen(false);
+      }, 2000); // show message for 2 seconds before closing
+      return () => clearTimeout(timer);
+    }
+  }, [favoritesQuery.isLoading, favoritesData, isOpen]);
 
   return (
     <>
@@ -68,23 +79,27 @@ export default function FavoritesIcon() {
             {favoritesQuery.isError && (
               <p className="text-red-500">Failed to load favorites.</p>
             )}
-            {favoritesQuery.data?.length === 0 && <p>No favorite items yet.</p>}
+            {!favoritesQuery.isLoading && favoritesData.length === 0 && (
+              <p className="text-black">No favorites added.</p>
+            )}
 
             {/* Favorites Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {favoritesQuery.data?.map((fav: Favorite) => (
-                <div
-                  key={fav.product_id}
-                  onClick={() => handleProductClick(fav.product_id)}
-                  className="cursor-pointer"
-                >
-                  <ProductCard product={fav.products} />
-                </div>
-              ))}
-            </div>
+            {favoritesData.length > 0 && (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {favoritesData.map((fav: Favorite) => (
+                  <div
+                    key={fav.product_id}
+                    onClick={() => handleProductClick(fav.product_id)}
+                    className="cursor-pointer"
+                  >
+                    <ProductCard product={fav.products} />
+                  </div>
+                ))}
+              </div>
+            )}
 
             {/* See All Favorites Button */}
-            {favoritesQuery.data!.length > 0 && (
+            {favoritesData.length > 0 && (
               <div className="mt-4 flex justify-end">
                 <button
                   onClick={goToFavoritesPage}
