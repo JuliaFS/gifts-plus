@@ -7,6 +7,7 @@ export interface CreateProductData {
   image_urls?: string[];
   badge?: string;
   promotion?: string;
+  category_ids?: string[]; 
 }
 
 export interface Product {

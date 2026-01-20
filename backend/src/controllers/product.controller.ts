@@ -11,7 +11,7 @@ export async function getProducts(
   try {
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 12;
-    
+
     const result = await productService.getProducts(page, limit);
     return res.status(200).json(result);
   } catch (error) {
@@ -25,8 +25,10 @@ export async function createProduct(
   next: NextFunction
 ) {
   try {
-    const { name, price, stock, description, image_urls } = req.body;
+    const { name, price, stock, description, image_urls, category_ids } =
+      req.body;
 
+    // ✅ Basic validation
     if (!name || price == null || stock == null) {
       return res.status(400).json({ message: "Missing fields" });
     }
@@ -35,12 +37,14 @@ export async function createProduct(
       return res.status(400).json({ message: "Stock cannot be negative" });
     }
 
+    // ✅ Call service with category_ids
     const product = await productService.createProduct({
       name,
       price,
       stock,
       description,
       image_urls,
+      category_ids, // <--- new field added
     });
 
     return res.status(201).json(product);
@@ -72,7 +76,6 @@ export async function getProductById(
     next(error);
   }
 }
-
 export async function updateProduct(
   req: Request,
   res: Response,
@@ -91,10 +94,31 @@ export async function updateProduct(
       return res.status(400).json({ message: "Stock cannot be negative" });
     }
 
+    // Extract category_ids from request body if exists
+    const categoryIds: string[] | undefined = updates.category_ids;
+    delete updates.category_ids; // remove it from updates so we don't send to main product table
+
+    // Update main product fields
     const updated = await productService.updateProduct(id, updates);
 
     if (!updated) {
       return res.status(404).json({ message: "Product not found" });
+    }
+
+    // Handle categories if provided
+    if (Array.isArray(categoryIds)) {
+      // Remove all existing links for this product
+      await productService.clearProductCategories(id);
+
+      // Insert new links
+      const rows = categoryIds.map((category_id) => ({
+        product_id: id,
+        category_id,
+      }));
+
+      if (rows.length) {
+        await productService.addProductCategories(rows);
+      }
     }
 
     return res.json(updated);
@@ -166,7 +190,10 @@ export async function addBadgeToProduct(
       return res.status(400).json({ message: "Product id is required" });
     }
 
-    const updated = await productService.updateProduct(id, { badge, promotion });
+    const updated = await productService.updateProduct(id, {
+      badge,
+      promotion,
+    });
 
     if (!updated) {
       return res.status(404).json({ message: "Product not found" });
@@ -178,9 +205,11 @@ export async function addBadgeToProduct(
   }
 }
 
-
-
-export async function searchProductsHandler(req: Request, res: Response, next: NextFunction) {
+export async function searchProductsHandler(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   try {
     const q = req.query.q as string;
     const products = await searchProducts(q);
@@ -189,6 +218,3 @@ export async function searchProductsHandler(req: Request, res: Response, next: N
     next(err);
   }
 }
-
-
-

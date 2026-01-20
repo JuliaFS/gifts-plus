@@ -39,7 +39,15 @@ export type Product = {
     image_url: string;
     is_main: boolean;
   }[];
+  product_categories: ProductCategoryLink[];
 };
+
+type ProductCategoryLink = {
+  category_id: string;
+  product_id: string;
+  categories: Category; // <- nested category object returned from backend
+};
+
 
 export type CreateProductInput = {
   name: string;
@@ -49,6 +57,7 @@ export type CreateProductInput = {
   image_urls?: string[];
   badge?: string;
   promotion?: string;
+  category_ids?: string[]; // <--- important
 };
 
 export type UpdateProductInput = {
@@ -119,3 +128,19 @@ export interface ResetPasswordResponse {
 export interface CheckoutResponse {
   message: string;
 }
+
+export interface Category {
+  id: string;
+  name: string;
+  slug: string;
+  created_at: string;
+}
+
+export interface CreateCategoryPayload {
+  name: string;
+  slug: string;
+};
+
+export type UpdateCategoryPayload = Partial<CreateCategoryPayload>;
+
+

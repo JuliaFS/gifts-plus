@@ -56,4 +56,9 @@ export const API = {
     search: (query: string) =>
       `${BASE_URL}/products/search?q=${encodeURIComponent(query)}`,
   },
+    categories: {
+    fetch: () => `${BASE_URL}/categories`,
+    create: () => `${BASE_URL}/categories`,
+    products: (slug: string) => `${BASE_URL}/categories/${slug}/products`,
+  },
 };

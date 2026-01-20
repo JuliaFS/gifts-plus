@@ -4,18 +4,19 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
+import Link from "next/link";
 
 import { uploadProductImage } from "@/services/storage";
 import { useCreateProduct } from "../hooks/useCreateProduct";
 import { useDeleteProduct } from "../hooks/useDeleteProduct";
 import { useGetProducts } from "@/app/products/hooks/useGetProducts";
-import { Product } from "@/services/types";
+import { useCategories } from "@/services/hooks/useCategories";
+import { Product, Category } from "@/services/types";
 
 import ImagePreview from "./ImagePreview";
 import EditButton from "./EditButton";
 import DeleteButton from "./DeleteButton";
 import EditProductModal from "./EditProductModal";
-import Link from "next/link";
 
 type FormErrors = {
   name?: string;
@@ -27,19 +28,21 @@ type FormErrors = {
 export default function AdminProductPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
-  
-   
 
   /* ---------- CREATE FORM ---------- */
   const [files, setFiles] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
   const [errors, setErrors] = useState<FormErrors>({});
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 
   /* ---------- TABLE / MODAL ---------- */
   const [page, setPage] = useState(1);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
-  const { data, isLoading } = useGetProducts(page);
+  const { data: productsData, isLoading: productsLoading } =
+    useGetProducts(page);
+  const { data: categories = [], isLoading: categoriesLoading } =
+    useCategories();
   const createMutation = useCreateProduct();
   const deleteMutation = useDeleteProduct();
 
@@ -49,8 +52,6 @@ export default function AdminProductPage() {
       previews.forEach(URL.revokeObjectURL);
     };
   }, [previews]);
-
- 
 
   /* ---------- HELPERS ---------- */
   const clearError = (field: keyof FormErrors) => {
@@ -91,6 +92,7 @@ export default function AdminProductPage() {
         price: Number(formData.get("price")),
         stock: Number(formData.get("stock")),
         image_urls,
+        category_ids: selectedCategories, // pass selected categories
       },
       {
         onSuccess: () => {
@@ -112,7 +114,7 @@ export default function AdminProductPage() {
 
   return (
     <div className="max-w-3xl mx-auto p-6 space-y-10">
-      {/* ================= CREATE ================= */}
+      {/* ================= LINKS ================= */}
       <div className="flex gap-4 mb-6">
         <Link
           href="/admin/orders"
@@ -120,7 +122,6 @@ export default function AdminProductPage() {
         >
           View Orders
         </Link>
-
         <Link
           href="/products"
           className="text-blue-600 hover:underline font-medium"
@@ -129,12 +130,20 @@ export default function AdminProductPage() {
         </Link>
       </div>
 
+      {/* ================= CREATE FORM ================= */}
       <div>
-        <h1 className="text-2xl font-bold mb-4 text-green-500">
-          Create Product
-        </h1>
+        <div className="flex justify-between items-center mb-4">
+          <h1 className="text-2xl font-bold text-green-500">Create Product</h1>
+          <Link
+            href="/admin/categories"
+            className="text-blue-600 hover:underline font-medium"
+          >
+            Create Category
+          </Link>
+        </div>
 
         <form onSubmit={handleSubmit} className="space-y-3">
+          {/* Name */}
           <input
             name="name"
             placeholder="Name"
@@ -143,6 +152,7 @@ export default function AdminProductPage() {
           />
           {errors.name && <p className="text-red-500">{errors.name}</p>}
 
+          {/* Description */}
           <textarea
             name="description"
             placeholder="Description"
@@ -153,6 +163,7 @@ export default function AdminProductPage() {
             <p className="text-red-500">{errors.description}</p>
           )}
 
+          {/* Price */}
           <input
             name="price"
             type="number"
@@ -163,15 +174,50 @@ export default function AdminProductPage() {
           />
           {errors.price && <p className="text-red-500">{errors.price}</p>}
 
+          {/* Stock */}
           <input
             name="stock"
             type="number"
-            className="w-full p-2 border rounded mb-4"
+            className="w-full p-2 border rounded mb-2"
             placeholder="Enter stock..."
             onChange={() => clearError("stock")}
           />
           {errors.stock && <p className="text-red-500">{errors.stock}</p>}
 
+          {/* Categories */}
+          <label className="block mb-1 font-medium">Categories</label>
+          <div className="flex items-center justify-between mb-2">
+            <label className="font-medium">Categories</label>
+            <Link
+              href="/admin/categories"
+              className="text-blue-600 hover:underline text-sm"
+            >
+              + Add Category
+            </Link>
+          </div>
+
+          {categoriesLoading ? (
+            <p>Loading categories...</p>
+          ) : (
+            <select
+              multiple
+              className="w-full p-2 border rounded mb-2"
+              value={selectedCategories}
+              onChange={(e) =>
+                setSelectedCategories(
+                  Array.from(e.target.selectedOptions, (opt) => opt.value)
+                )
+              }
+            >
+              {categories.map((cat: Category) => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.name}
+                </option>
+              ))}
+            </select>
+          )}
+
+          {/* Images */}
           <input
             type="file"
             multiple
@@ -195,11 +241,11 @@ export default function AdminProductPage() {
         </form>
       </div>
 
-      {/* ================= TABLE ================= */}
+      {/* ================= PRODUCTS TABLE ================= */}
       <div>
         <h2 className="text-xl font-bold mb-3">Available Products</h2>
 
-        {isLoading ? (
+        {productsLoading ? (
           <p>Loading...</p>
         ) : (
           <>
@@ -210,11 +256,12 @@ export default function AdminProductPage() {
                   <th className="border">Image</th>
                   <th className="border">Price</th>
                   <th className="border">Stock</th>
+                  <th className="border">Categories</th>
                   <th className="border">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {data?.data.map((p: Product) => (
+                {productsData?.data.map((p: Product) => (
                   <tr key={p.id}>
                     <td className="border">{p.name}</td>
                     <td className="border">
@@ -229,6 +276,11 @@ export default function AdminProductPage() {
                     </td>
                     <td className="border">${Number(p.price).toFixed(2)}</td>
                     <td className="border">{p.stock}</td>
+                    <td className="border">
+                      {p.product_categories
+                        ?.map((c) => c.categories.name)
+                        .join(", ")}
+                    </td>
                     <td className="border">
                       <div className="flex gap-2 justify-center">
                         <EditButton product={p} onEdit={setEditingProduct} />
@@ -252,10 +304,10 @@ export default function AdminProductPage() {
                 Prev
               </button>
               <span>
-                Page {page} of {data?.totalPages}
+                Page {page} of {productsData?.totalPages}
               </span>
               <button
-                disabled={page === data?.totalPages}
+                disabled={page === productsData?.totalPages}
                 onClick={() => setPage((p) => p + 1)}
               >
                 Next

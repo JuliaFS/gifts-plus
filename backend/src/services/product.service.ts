@@ -17,7 +17,14 @@ export async function getProducts(page: number = 1, limit: number = 12) {
     .select(
       `
       *,
-      product_images (*)
+      product_images (*),
+      product_categories!product_categories_product_id_fkey (
+        categories!product_categories_category_id_fkey (
+          id,
+          name,
+          slug
+        )
+      )
     `
     )
     .order("created_at", { ascending: false })
@@ -34,9 +41,12 @@ export async function getProducts(page: number = 1, limit: number = 12) {
   };
 }
 
-export async function createProduct(product: CreateProductData) {
-  const { image_urls, ...productData } = product;
+export async function createProduct(
+  product: CreateProductData
+): Promise<Product> {
+  const { image_urls, category_ids, ...productData } = product;
 
+  // ✅ Insert product
   const { data: createdProduct, error } = await supabase
     .from("products")
     .insert(productData)
@@ -45,6 +55,21 @@ export async function createProduct(product: CreateProductData) {
 
   if (error) throw error;
 
+  // ✅ Insert categories
+  if (category_ids?.length) {
+    const rows = category_ids.map((category_id) => ({
+      product_id: createdProduct.id,
+      category_id,
+    }));
+
+    const { error: categoryError } = await supabase
+      .from("product_categories")
+      .insert(rows);
+
+    if (categoryError) throw categoryError;
+  }
+
+  // ✅ Insert images
   if (image_urls?.length) {
     const images = image_urls.map((url, index) => ({
       product_id: createdProduct.id,
@@ -216,4 +241,25 @@ export async function searchProducts(query: string) {
 
   if (error) throw error;
   return data;
+}
+
+// Clear all categories for a product
+export async function clearProductCategories(productId: string) {
+  const { error } = await supabase
+    .from("product_categories")
+    .delete()
+    .eq("product_id", productId);
+
+  if (error) throw error;
+}
+
+// Add multiple category links for a product
+export async function addProductCategories(
+  rows: { product_id: string; category_id: string }[]
+) {
+  if (rows.length === 0) return;
+
+  const { error } = await supabase.from("product_categories").insert(rows);
+
+  if (error) throw error;
 }

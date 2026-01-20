@@ -3,9 +3,10 @@ export interface FetchError {
   status?: number;
 }
 
-/**
- * Handle fetch errors with optional custom fallback message
- */
+interface ErrorResponse {
+  message?: string;
+}
+
 export async function handleFetchError<T>(
   res: Response,
   fallbackMessage?: string
@@ -13,13 +14,17 @@ export async function handleFetchError<T>(
   if (res.ok) return res.json() as Promise<T>;
 
   // Try to parse JSON body
-  const data = await res.json().catch(() => null);
+  let data: ErrorResponse = {};
+  try {
+    data = (await res.json()) as ErrorResponse;
+  } catch {
+    // ignore parse errors
+  }
 
-  const error: FetchError = {
-    message: data?.message || fallbackMessage || "Request failed",
-    status: res.status,
-  };
+  const message = data.message || fallbackMessage || "Request failed";
+
+  const error: FetchError = new Error(message);
+  error.status = res.status;
 
   throw error;
 }
-
