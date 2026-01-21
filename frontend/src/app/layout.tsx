@@ -34,7 +34,7 @@ export default function RootLayout({
         <Providers>
           <CartIconProvider>
             <Header />
-            <main className="flex-1">{children}</main>
+            <main className="flex-1 overflow-y-auto">{children}</main>
             <Footer />
           </CartIconProvider>
         </Providers>
