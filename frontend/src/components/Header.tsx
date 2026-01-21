@@ -16,7 +16,8 @@ export default function Header() {
   const queryClient = useQueryClient();
   const { data: currentUser, isLoading } = useCurrentUser();
   const [searchQuery, setSearchQuery] = useState("");
-  const { data: categories = [], isLoading: categoriesLoading } = useCategories();
+  const { data: categories = [], isLoading: categoriesLoading } =
+    useCategories();
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const logoutMutation = useMutation({
@@ -105,9 +106,6 @@ export default function Header() {
       {/* BOTTOM BAR */}
       <div className="bg-green-800 border-t border-green-900 text-white">
         <nav className="container mx-auto flex items-center py-2 px-4 space-x-6 relative">
-          {/* Phone Info */}
-          <span className="hidden md:inline-block">Call us: +1 234 567 890</span>
-
           {/* Browse Categories Dropdown */}
           <div className="relative">
             <button
@@ -123,7 +121,7 @@ export default function Header() {
                 {categories.map((cat) => (
                   <li key={cat.id}>
                     <Link
-                      href={`/category/${cat.slug}`}
+                      href={`/categories/${cat.slug}`}
                       className="block px-4 py-2 hover:bg-green-100 hover:text-green-800 transition-colors"
                       onClick={() => setDropdownOpen(false)} // close menu on click
                     >
@@ -136,16 +134,24 @@ export default function Header() {
           </div>
 
           {/* Other menu links */}
-          <Link href="/about" className="hover:text-green-300 transition-colors">
+          <Link
+            href="/about"
+            className="hover:text-green-300 transition-colors"
+          >
             About Us
           </Link>
-          <Link href="/contact" className="hover:text-green-300 transition-colors">
+          <Link
+            href="/contact"
+            className="hover:text-green-300 transition-colors"
+          >
             Contact
           </Link>
+          {/* Phone Info */}
+          <span className="hidden md:inline-block">
+            Call us: +1 234 567 890
+          </span>
         </nav>
       </div>
     </header>
   );
 }
-
-

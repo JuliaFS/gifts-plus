@@ -1,6 +1,6 @@
 import { handleFetchError } from "@/utils/handleFetchError";
 import { API } from "./config";
-import { Category, Product } from "./types";
+import { Category, CreateCategoryResponse, Product } from "./types";
 
 // GET all categories (public)
 export async function fetchCategories() {
@@ -8,13 +8,11 @@ export async function fetchCategories() {
     credentials: "include",
   });
 
-  return handleFetchError<Category[]>(
-    res,
-    "Failed to fetch categories."
-  );
+  return handleFetchError<Category[]>(res, "Failed to fetch categories.");
 }
 
 // POST create category (admin only)
+
 export async function createCategory(name: string, slug: string) {
   const res = await fetch(API.categories.create(), {
     method: "POST",
@@ -25,20 +23,19 @@ export async function createCategory(name: string, slug: string) {
     body: JSON.stringify({ name, slug }),
   });
 
-  return handleFetchError<Category>(
+  return handleFetchError<CreateCategoryResponse>(
     res,
     "Failed to create category."
   );
 }
 
-// GET products by category (public)
 export async function fetchProductsByCategory(slug: string) {
   const res = await fetch(API.categories.products(slug), {
     credentials: "include",
   });
 
-  return handleFetchError<Product[]>(
-    res,
-    "Failed to fetch products for category."
-  );
+  return handleFetchError<{
+    name: string;
+    products: Product[];
+  }>(res, "Failed to fetch products by category");
 }

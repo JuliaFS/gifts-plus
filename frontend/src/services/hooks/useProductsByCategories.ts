@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { fetchProductsByCategory } from "../categories";
 
-export function useProductsByCategory(slug: string) {
+export function useCategoryWithProducts(slug: string) {
   return useQuery({
-    queryKey: ["products", "category", slug],
+    queryKey: ["category", slug],
     queryFn: () => fetchProductsByCategory(slug),
     enabled: !!slug,
   });

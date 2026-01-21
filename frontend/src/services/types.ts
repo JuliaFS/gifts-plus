@@ -48,7 +48,6 @@ type ProductCategoryLink = {
   categories: Category; // <- nested category object returned from backend
 };
 
-
 export type CreateProductInput = {
   name: string;
   description?: string;
@@ -136,11 +135,14 @@ export interface Category {
   created_at: string;
 }
 
+export type CreateCategoryResponse = {
+  message: string;
+  category: Category[];
+};
+
 export interface CreateCategoryPayload {
   name: string;
   slug: string;
-};
+}
 
 export type UpdateCategoryPayload = Partial<CreateCategoryPayload>;
-
-

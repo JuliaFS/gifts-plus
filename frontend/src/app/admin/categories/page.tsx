@@ -12,6 +12,7 @@ export default function CreateCategoryPage() {
   const [slug, setSlug] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
+  const [success, setSuccess] = useState<string | null>(null);
 
   // Track last attempted values (to detect changes after error)
   const [lastAttempt, setLastAttempt] = useState({ name: "", slug: "" });
@@ -42,42 +43,48 @@ export default function CreateCategoryPage() {
     setIsPending(true);
 
     try {
-      await createCategory(name, slug);
+      const result = await createCategory(name, slug);
+
+      setSuccess(result.message); // ✅ BACKEND MESSAGE
+      setError(null);
+
       queryClient.invalidateQueries({ queryKey: ["categories"] });
 
-      // Clear inputs on success
       setName("");
       setSlug("");
       setLastAttempt({ name: "", slug: "" });
-
       router.push("/admin/categories");
-    } catch (err: unknown) {
+    } catch (err) {
+      setSuccess(null);
+
       if (err instanceof Error) {
         setError(err.message);
       } else {
         setError("Failed to create category.");
       }
 
-      // Save last attempted values to disable button until changed
       setLastAttempt({ name, slug });
-    } finally {
-      setIsPending(false);
     }
+    setIsPending(false);
   };
 
   const handleNameChange = (value: string) => {
     setName(value);
-    if (error) setError(null); // clear error on typing
+    if (error) setError(null);
+    if (success) setSuccess(null);
   };
 
   const handleSlugChange = (value: string) => {
     setSlug(value);
-    if (error) setError(null); // clear error on typing
+    if (error) setError(null);
+    if (success) setSuccess(null);
   };
 
   return (
     <div className="max-w-md mx-auto p-6 space-y-4">
-      <h1 className="text-2xl font-bold mb-4 text-green-500">Create Category</h1>
+      <h1 className="text-2xl font-bold mb-4 text-green-500">
+        Create Category
+      </h1>
 
       <form onSubmit={handleSubmit} className="space-y-3">
         <input
@@ -106,6 +113,15 @@ export default function CreateCategoryPage() {
           {isPending ? "Creating..." : "Create Category"}
         </button>
       </form>
+      {success && (
+        <p className="text-green-600 font-medium mt-2">
+          {success
+            .split('"')
+            .map((part, i) =>
+              i % 2 === 1 ? <strong key={i}>{`"${part}"`}</strong> : part
+            )}
+        </p>
+      )}
 
       {/* Display existing categories */}
       <div className="mt-6">
@@ -121,5 +137,3 @@ export default function CreateCategoryPage() {
     </div>
   );
 }
-
-
