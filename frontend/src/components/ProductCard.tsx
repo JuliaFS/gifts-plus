@@ -43,7 +43,7 @@ export default function ProductCard({
 
   // Check if this product is favorited
   const isFavorite = favoritesQuery.data?.some(
-    (f: Favorite) => f.product_id === product.id
+    (f: Favorite) => f.product_id === product.id,
   );
 
   // Toggle favorite
@@ -61,12 +61,12 @@ export default function ProductCard({
   const badges = getBadges(product);
 
   return (
-<div className="relative w-full overflow-visible">
-{/* Purple rotated background */}
-<div className="absolute -top-8 -left-8 w-[calc(100%+4rem)] h-[calc(100%+4rem)] bg-purple-400 rotate-12 rounded-xl z-0" />
+    <div className="relative w-full overflow-visible">
+      {/* Purple rotated background */}
+      <div className="absolute top-1.5 left-0 w-[calc(100%+0.2rem)] h-[calc(100%+0.1rem)] bg-purple-400 shadow-md rotate-2 rounded-xl z-0" />
       <div
         ref={wrapperRef}
-        className="rounded p-4 shadow-sm hover:shadow-md relative z-10 bg-white"
+        className="rounded p-4 shadow-sm hover:shadow-md relative z-10 bg-white flex flex-col h-96"
       >
         {/* BADGES */}
         <div className="absolute top-2 left-2 flex gap-1 z-10">
@@ -74,10 +74,9 @@ export default function ProductCard({
             <span
               key={badge}
               className={`px-2 py-1 text-xs font-bold rounded text-white
-              ${badge === "NEW" && "bg-green-500"}
-              ${badge === "SALE" && "bg-red-500"}
-              ${badge === "HOT" && "bg-orange-500"}
-            `}
+${badge === "NEW" && "bg-green-500"}
+${badge === "SALE" && "bg-red-500"}
+${badge === "HOT" && "bg-orange-500"}`}
             >
               {badge}
             </span>
@@ -93,24 +92,28 @@ export default function ProductCard({
         </button>
 
         {/* PRODUCT LINK */}
-        <Link href={href} className="block">
-          <div className="relative aspect-4/3 mb-2">
+        <Link href={href} className="flex flex-col flex-1">
+          {/* IMAGE */}
+          <div className="relative mb-2 h-32">
             <Image
               src={mainImage}
               alt={product.name}
-              width={60}
-              height={60}
+              fill
               className="object-contain rounded"
             />
           </div>
 
-          <h2 className="text-xl font-semibold">{product.name}</h2>
+          {/* TITLE */}
+          <h2 className="text-xl font-semibold line-clamp-2">{product.name}</h2>
 
+          {/* DESCRIPTION */}
           {showDescription && (
-            <p className="text-gray-600 line-clamp-2">{product.description}</p>
+            <p className="text-gray-600 line-clamp-2 mt-2 flex-1">
+              {product.description}
+            </p>
           )}
 
-          {/* PRICE */}
+          {/* PRICE + STOCK */}
           <div className="mt-2 font-bold">
             {product.sales_price ? (
               <>
@@ -122,14 +125,16 @@ export default function ProductCard({
             ) : (
               <span>{product.price} €</span>
             )}
+            {showStock && (
+              <p className="text-sm text-gray-500">Stock: {product.stock}</p>
+            )}
           </div>
-
-          {showStock && (
-            <p className="text-sm text-gray-500">Stock: {product.stock}</p>
-          )}
         </Link>
 
-        <AddToCartButton product={product} imgRef={wrapperRef} />
+        {/* ADD TO CART BUTTON */}
+        <div className="mt-auto pt-2">
+          <AddToCartButton product={product} imgRef={wrapperRef} />
+        </div>
       </div>
     </div>
   );

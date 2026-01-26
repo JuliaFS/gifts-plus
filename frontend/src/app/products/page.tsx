@@ -20,17 +20,15 @@ export default function ProductsPage() {
   if (isError) return <p>Failed to load products.</p>;
 
   return (
-    <div className="container mx-auto p-6">
-      {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        {products.map((product: Product) => (
-          <ProductCard key={product.id} product={product} />
-        ))}
-      </div> */}
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 overflow-visible">
-        {products.map((product: Product) => (
-          <ProductCard key={product.id} product={product} />
-        ))}
+    <div className="container mx-auto p-6 overflow-auto">
+      <div className="space-y-4 overflow-visible">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+          {products.map((product: Product) => (
+            <div key={product.id} className="overflow-visible">
+              <ProductCard product={product} />
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Pagination Controls */}

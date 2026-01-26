@@ -37,7 +37,7 @@ export default function DashboardPage() {
 
   const popularFavorites = [...(favoritesQuery.data || [])]
     .sort(
-      (a, b) => (b.products.sales_count || 0) - (a.products.sales_count || 0)
+      (a, b) => (b.products.sales_count || 0) - (a.products.sales_count || 0),
     )
     .slice(0, 8);
 
@@ -73,7 +73,7 @@ export default function DashboardPage() {
         {productsLoading ? (
           <p>Loading products...</p>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4">
             {hotProducts.slice(0, 6).map((p: Product) => (
               <ProductCard key={p.id} product={p} />
             ))}
@@ -87,7 +87,7 @@ export default function DashboardPage() {
         {productsLoading ? (
           <p>Loading products...</p>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4">
             {saleProducts.slice(0, 6).map((p: Product) => (
               <ProductCard key={p.id} product={p} />
             ))}
@@ -101,7 +101,7 @@ export default function DashboardPage() {
         {productsLoading ? (
           <p>Loading products...</p>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4">
             {newProducts.slice(0, 6).map((p: Product) => (
               <ProductCard key={p.id} product={p} />
             ))}
