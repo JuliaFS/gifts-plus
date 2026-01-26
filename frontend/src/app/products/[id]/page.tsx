@@ -68,7 +68,7 @@ export default function ProductDetailsPage() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto p-6">
+    <div className="container mx-auto p-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">{product.name}</h1>
 
@@ -107,7 +107,7 @@ export default function ProductDetailsPage() {
               >
                 <Image
                   src={img.image_url}
-                  alt=""
+                  alt={product.name}
                   width={80}
                   height={80}
                   className="object-cover rounded"

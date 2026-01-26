@@ -124,7 +124,7 @@ export default function CreateCategoryPage() {
       )}
 
       {/* Display existing categories */}
-      <div className="mt-6">
+      <div className="mt-6 container">
         <h2 className="text-lg font-semibold mb-2">Existing Categories</h2>
         {isLoading ? (
           <p>Loading categories...</p>

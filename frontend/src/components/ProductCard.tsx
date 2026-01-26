@@ -61,72 +61,76 @@ export default function ProductCard({
   const badges = getBadges(product);
 
   return (
-    <div
-      ref={wrapperRef}
-      className="border rounded p-4 shadow-sm hover:shadow-md relative"
-    >
-      {/* BADGES */}
-      <div className="absolute top-2 left-2 flex gap-1 z-10">
-        {badges.map((badge) => (
-          <span
-            key={badge}
-            className={`px-2 py-1 text-xs font-bold rounded text-white
+<div className="relative w-full overflow-visible">
+{/* Purple rotated background */}
+<div className="absolute -top-8 -left-8 w-[calc(100%+4rem)] h-[calc(100%+4rem)] bg-purple-400 rotate-12 rounded-xl z-0" />
+      <div
+        ref={wrapperRef}
+        className="rounded p-4 shadow-sm hover:shadow-md relative z-10 bg-white"
+      >
+        {/* BADGES */}
+        <div className="absolute top-2 left-2 flex gap-1 z-10">
+          {badges.map((badge) => (
+            <span
+              key={badge}
+              className={`px-2 py-1 text-xs font-bold rounded text-white
               ${badge === "NEW" && "bg-green-500"}
               ${badge === "SALE" && "bg-red-500"}
               ${badge === "HOT" && "bg-orange-500"}
             `}
-          >
-            {badge}
-          </span>
-        ))}
-      </div>
-
-      {/* FAVORITE BUTTON */}
-      <button
-        onClick={toggleFavorite}
-        className="absolute top-2 right-2 text-xl z-10"
-      >
-        {isFavorite ? "❤️" : "🤍"}
-      </button>
-
-      {/* PRODUCT LINK */}
-      <Link href={href} className="transition block">
-        {mainImage && (
-          <Image
-            src={mainImage}
-            alt={product.name}
-            width={300}
-            height={300}
-            className="object-cover rounded mb-2"
-          />
-        )}
-
-        <h2 className="text-xl font-semibold">{product.name}</h2>
-
-        {showDescription && (
-          <p className="text-gray-600 line-clamp-2">{product.description}</p>
-        )}
-
-        {/* PRICE */}
-        <div className="mt-2 font-bold">
-          {product.sales_price ? (
-            <>
-              <span className="line-through text-gray-400 mr-2">
-                {product.price} €
-              </span>
-              <span className="text-red-600">{product.sales_price} €</span>
-            </>
-          ) : (
-            <span>{product.price} €</span>
-          )}
+            >
+              {badge}
+            </span>
+          ))}
         </div>
 
-        {showStock && (
-          <p className="text-sm text-gray-500">Stock: {product.stock}</p>
-        )}
-      </Link>
+        {/* FAVORITE BUTTON */}
+        <button
+          onClick={toggleFavorite}
+          className="absolute top-2 right-2 text-xl z-10"
+        >
+          {isFavorite ? "❤️" : "🤍"}
+        </button>
 
-      <AddToCartButton product={product} imgRef={wrapperRef} />
+        {/* PRODUCT LINK */}
+        <Link href={href} className="block">
+          <div className="relative aspect-4/3 mb-2">
+            <Image
+              src={mainImage}
+              alt={product.name}
+              width={60}
+              height={60}
+              className="object-contain rounded"
+            />
+          </div>
+
+          <h2 className="text-xl font-semibold">{product.name}</h2>
+
+          {showDescription && (
+            <p className="text-gray-600 line-clamp-2">{product.description}</p>
+          )}
+
+          {/* PRICE */}
+          <div className="mt-2 font-bold">
+            {product.sales_price ? (
+              <>
+                <span className="line-through text-gray-400 mr-2">
+                  {product.price} €
+                </span>
+                <span className="text-red-600">{product.sales_price} €</span>
+              </>
+            ) : (
+              <span>{product.price} €</span>
+            )}
+          </div>
+
+          {showStock && (
+            <p className="text-sm text-gray-500">Stock: {product.stock}</p>
+          )}
+        </Link>
+
+        <AddToCartButton product={product} imgRef={wrapperRef} />
+      </div>
     </div>
   );
 }

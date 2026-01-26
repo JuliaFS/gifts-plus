@@ -7,7 +7,11 @@ import ProductCard from "@/components/ProductCard";
 
 export default function ProductsPage() {
   const [currentPage, setCurrentPage] = useState(1);
-  const { data: paginatedData, isLoading, isError } = useGetProducts(currentPage);
+  const {
+    data: paginatedData,
+    isLoading,
+    isError,
+  } = useGetProducts(currentPage);
 
   const products = paginatedData?.data || [];
   const totalPages = paginatedData?.totalPages || 0;
@@ -16,8 +20,14 @@ export default function ProductsPage() {
   if (isError) return <p>Failed to load products.</p>;
 
   return (
-    <div className="p-6">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div className="container mx-auto p-6">
+      {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        {products.map((product: Product) => (
+          <ProductCard key={product.id} product={product} />
+        ))}
+      </div> */}
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 overflow-visible">
         {products.map((product: Product) => (
           <ProductCard key={product.id} product={product} />
         ))}
@@ -51,7 +61,9 @@ export default function ProductsPage() {
           </div>
 
           <button
-            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+            onClick={() =>
+              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+            }
             disabled={currentPage === totalPages}
             className="px-4 py-2 border rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100"
           >
@@ -62,4 +74,3 @@ export default function ProductsPage() {
     </div>
   );
 }
-
