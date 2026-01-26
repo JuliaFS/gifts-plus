@@ -135,12 +135,12 @@ export default function RegisterPage() {
     isPending || checkingEmail || emailExists || !!emailError;
 
   return (
-    <div className="flex items-center justify-center p-6 mt-10">
+    <div className="flex items-center justify-center py-6 px-12 mt-10">
       <form
         onSubmit={handleRegister}
         className="w-full max-w-md bg-white rounded-3xl p-10 space-y-6 shadow-2xl"
       >
-        <h2 className="text-4xl font-extrabold text-center">Create Account</h2>
+        <h2 className="text-2xl md:text-4xl font-extrabold text-center">Create Account</h2>
 
         {/* ❌ Local errors */}
         {localError && (

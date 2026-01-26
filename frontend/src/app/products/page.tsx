@@ -22,7 +22,7 @@ export default function ProductsPage() {
   return (
     <div className="container mx-auto p-6 overflow-auto">
       <div className="space-y-4 overflow-visible">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+        <div className="grid px-12 md:px-0 grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-8">
           {products.map((product: Product) => (
             <div key={product.id} className="overflow-visible">
               <ProductCard product={product} />

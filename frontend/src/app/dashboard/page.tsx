@@ -73,7 +73,7 @@ export default function DashboardPage() {
         {productsLoading ? (
           <p>Loading products...</p>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-8">
             {hotProducts.slice(0, 6).map((p: Product) => (
               <ProductCard key={p.id} product={p} />
             ))}
@@ -87,7 +87,7 @@ export default function DashboardPage() {
         {productsLoading ? (
           <p>Loading products...</p>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-8">
             {saleProducts.slice(0, 6).map((p: Product) => (
               <ProductCard key={p.id} product={p} />
             ))}
@@ -101,7 +101,7 @@ export default function DashboardPage() {
         {productsLoading ? (
           <p>Loading products...</p>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-8">
             {newProducts.slice(0, 6).map((p: Product) => (
               <ProductCard key={p.id} product={p} />
             ))}
@@ -113,9 +113,9 @@ export default function DashboardPage() {
       <div className="space-y-4">
         <h2 className="text-2xl font-bold">Most Popular Favorites</h2>
         {favoritesQuery.isLoading ? (
-          <p>Loading favorites...</p>
+          <p className="text-center mt-10">Loading favorites...</p>
         ) : favoritesQuery.isError ? (
-          <p className="text-red-500">Failed to load favorites.</p>
+          <p className="text-red-500 text-center mt-10">Failed to load favorites.</p>
         ) : (
           <div className="flex space-x-4 overflow-x-auto py-2">
             {popularFavorites.map((fav) => (

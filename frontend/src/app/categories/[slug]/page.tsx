@@ -15,22 +15,21 @@ export default function CategoryPage({ params }: Props) {
 
   const { data: category, isLoading, isError } = useCategoryWithProducts(slug);
 
-  if (isLoading) return <p>Loading...</p>;
+  if (isLoading) return <p className="text-center mt-10">Loading...</p>;
   if (isError || !category) return <p>Failed to load category.</p>;
 
   return (
-    <div className="container mx-auto py-8">
-      <h1 className="text-2xl font-bold mb-6 capitalize">{category.name}</h1>
+    <div className="container mx-auto py-8 px-12 md:px-0">
+      <h1 className="text-lg md:text-2xl font-bold mb-6 capitalize text-center">{category.name}</h1>
 
       {category.products?.length === 0 ? (
         <p>No products found in this category.</p>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-8">
           {category.products.map((product: Product) => (
             <ProductCard
               key={product.id}
               product={product}
-              showStock={true}        // optional, show stock
               showDescription={false} // optional, hide description for compact cards
             />
           ))}

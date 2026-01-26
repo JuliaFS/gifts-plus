@@ -45,7 +45,7 @@ export default function FloatingInput({
         }}
         placeholder=" "
         onFocus={() => setIsFocused(true)}
-        className="peer w-full pl-10 pr-10 py-3 border border-blue-800 rounded-xl focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400 outline-none placeholder-transparent transition duration-300"
+        className="peer w-full pl-10 pr-10 py-3 border rounded-xl focus:ring-1 focus:ring-cyan-400 focus:border-cyan-400 outline-none placeholder-transparent transition duration-300"
       />
 
       {/* Right icon */}

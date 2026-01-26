@@ -56,6 +56,7 @@ export async function getProductsByCategory(slug: string) {
         id: row.product_id,
         name: row.product_name,
         price: row.price,
+        stock: row.stock,
         product_images: [],
       };
     }

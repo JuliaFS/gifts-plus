@@ -63,7 +63,7 @@ export default function ProductCard({
   return (
     <div className="relative w-full overflow-visible">
       {/* Purple rotated background */}
-      <div className="absolute top-1.5 left-0 w-[calc(100%+0.2rem)] h-[calc(100%+0.1rem)] bg-purple-400 shadow-md rotate-2 rounded-xl z-0" />
+      <div className="absolute top-1.5 left-0 w-[calc(100%+0.1rem)] h-[calc(100%+0.05rem)] bg-purple-400 shadow-md rotate-2 rounded-xl z-0" />
       <div
         ref={wrapperRef}
         className="rounded p-4 shadow-sm hover:shadow-md relative z-10 bg-white flex flex-col h-96"
@@ -114,7 +114,7 @@ ${badge === "HOT" && "bg-orange-500"}`}
           )}
 
           {/* PRICE + STOCK */}
-          <div className="mt-2 font-bold">
+          <div className="mt-2 font-bold flex-1 flex flex-col justify-end items-end pr-4">
             {product.sales_price ? (
               <>
                 <span className="line-through text-gray-400 mr-2">
@@ -132,7 +132,7 @@ ${badge === "HOT" && "bg-orange-500"}`}
         </Link>
 
         {/* ADD TO CART BUTTON */}
-        <div className="mt-auto pt-2">
+        <div className="mx-auto pt-2">
           <AddToCartButton product={product} imgRef={wrapperRef} />
         </div>
       </div>

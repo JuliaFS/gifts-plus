@@ -49,12 +49,12 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center p-6 mt-10">
+    <div className="flex flex-col items-center justify-center py-6 px-12 mt-10">
       <form
         onSubmit={handleLogin}
         className="w-full max-w-md bg-white rounded-3xl p-10 shadow-2xl"
       >
-        <h2 className="text-4xl font-extrabold text-center mb-6">Login</h2>
+        <h2 className="text-2xl md:text-4xl font-extrabold text-center mb-6">Login</h2>
 
         {error && <p className="text-red-500 mb-4">{error}</p>}
 
@@ -73,7 +73,7 @@ export default function LoginPage() {
           />
         </div>
 
-        <div className="mb-6">
+        <div className="mb-1">
           <input
             type="password"
             value={password}
@@ -87,7 +87,7 @@ export default function LoginPage() {
             required
           />
         </div>
-        <div><Link href="/forgot-password">Forgot password?</Link></div>
+        <div className="text-right italic font-bold text-sm pb-8"><Link href="/forgot-password">Forgot password?</Link></div>
 
         <button
           type="submit"

@@ -42,7 +42,7 @@ export default function Header() {
     <header>
       {/* TOP BAR */}
       <div className="bg-white shadow">
-        <nav className="container mx-auto flex justify-between items-center py-3 px-4">
+        <nav className="container mx-auto flex flex-col md:flex-row justify-between items-center py-3 px-4">
           {/* Logo */}
           <Link href="/" className="font-bold text-2xl text-black">
             Gifts Plus
