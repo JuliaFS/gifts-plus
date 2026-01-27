@@ -1,6 +1,6 @@
 "use client";
 
-const text = "Безплатна доставка над 120 € / 234.69 лв.";
+const text = "This site is currently under development.";
 
 export default function TopLineCarousel() {
   return (
