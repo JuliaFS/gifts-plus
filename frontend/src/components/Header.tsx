@@ -46,7 +46,10 @@ export default function Header() {
       <div className="bg-white shadow">
         <nav className="container mx-auto flex flex-col md:flex-row justify-between items-center py-3 px-4">
           {/* Logo */}
-          <Link href="/" className="font-bold text-2xl text-black">
+          <Link
+            href="/"
+            className="text-2xl font-extrabold bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 bg-clip-text text-transparent"
+          >
             Gifts Plus
           </Link>
 
