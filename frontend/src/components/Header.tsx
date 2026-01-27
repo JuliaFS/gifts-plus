@@ -10,6 +10,7 @@ import { useCurrentUser } from "@/services/hooks/useCurrentUser";
 import CartIcon from "./cart/CartIcon";
 import FavoritesIcon from "./favorites/FavoritesIcon";
 import { useCategories } from "@/services/hooks/useCategories";
+import TopLineCarousel from "./TopLineCarousel";
 
 export default function Header() {
   const router = useRouter();
@@ -40,6 +41,7 @@ export default function Header() {
 
   return (
     <header>
+      <TopLineCarousel />
       {/* TOP BAR */}
       <div className="bg-white shadow">
         <nav className="container mx-auto flex flex-col md:flex-row justify-between items-center py-3 px-4">
@@ -104,7 +106,7 @@ export default function Header() {
       </div>
 
       {/* BOTTOM BAR */}
-      <div className="bg-green-800 border-t border-green-900 text-white">
+      <div className="bg-purple-800 border-t border-purple-900 text-white shadow-lg">
         <nav className="container mx-auto flex items-center py-2 px-4 space-x-6 relative">
           {/* Browse Categories Dropdown */}
           <div className="relative">
