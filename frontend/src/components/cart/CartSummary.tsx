@@ -61,7 +61,7 @@ export default function CartSummary() {
       <button
         onClick={handleCheckout}
         disabled={checkoutMutation.isPending || items.length === 0}
-        className="mt-3 w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 disabled:opacity-50"
+        className="mt-3 w-full bg-purple-500 cursor-pointer text-white py-2 rounded hover:bg-purple-700 disabled:opacity-50"
       >
         {checkoutMutation.isPending ? "Processing..." : "Checkout"}
       </button>

@@ -56,7 +56,7 @@ export default function AddToCartButton({ product, imgRef }: Props) {
     <>
       <button
         onClick={handleAdd}
-        className="mt-2 px-3 py-1 bg-blue-500 text-white rounded"
+        className="mt-2 px-3 py-1 bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 shadow-sm cursor-pointer text-white rounded"
       >
         Add to Cart
       </button>
