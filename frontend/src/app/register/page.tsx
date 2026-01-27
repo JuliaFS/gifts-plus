@@ -163,7 +163,7 @@ export default function RegisterPage() {
             value={email}
             setter={handleEmailChange}
             type="email"
-            icon={<HiMail className="text-cyan-400" />}
+            icon={<HiMail className="text-purple-400" />}
             onBlur={handleEmailBlur}
           />
           <div className="mt-1">
@@ -177,7 +177,7 @@ export default function RegisterPage() {
           label="Address (optional)"
           value={address}
           setter={setAddress}
-          icon={<HiUser className="text-cyan-400" />}
+          icon={<HiUser className="text-purple-400" />}
         />
 
         {/* Phone */}
@@ -185,7 +185,7 @@ export default function RegisterPage() {
           label="Phone Number (optional)"
           value={phone}
           setter={setPhone}
-          icon={<HiPhone className="text-cyan-400" />}
+          icon={<HiPhone className="text-purple-400" />}
         />
 
         {/* Password */}
@@ -195,7 +195,7 @@ export default function RegisterPage() {
             value={password}
             setter={handlePasswordChange}
             type={showPassword ? "text" : "password"}
-            icon={<HiLockClosed className="text-cyan-400" />}
+            icon={<HiLockClosed className="text-purple-400" />}
             rightIcon={
               <span
                 onClick={() => setShowPassword(!showPassword)}
@@ -237,7 +237,7 @@ export default function RegisterPage() {
           value={repeatPassword}
           setter={handleRepeatPasswordChange}
           type={showRepeatPassword ? "text" : "password"}
-          icon={<HiLockClosed className="text-cyan-400" />}
+          icon={<HiLockClosed className="text-purple-400" />}
           rightIcon={
             <span
               onClick={() => setShowRepeatPassword(!showRepeatPassword)}
@@ -256,7 +256,7 @@ export default function RegisterPage() {
         <button
           type="submit"
           disabled={disableSubmit}
-          className="w-full py-3 bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-bold rounded-xl transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full py-3 bg-gradient-to-r from-purple-300 to-purple-500 text-white font-bold rounded-xl transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isPending
             ? "Registering..."
@@ -267,7 +267,7 @@ export default function RegisterPage() {
 
         <p className="text-center text-gray-400 text-sm">
           Already have an account?{" "}
-          <Link href="/login" className="text-cyan-400 hover:underline">
+          <Link href="/login" className="text-purple-400 font-bold cursor-pointer hover:underline">
             Login
           </Link>
         </p>

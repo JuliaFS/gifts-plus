@@ -68,7 +68,7 @@ export default function LoginPage() {
               setIsLoginError(false);
             }}
             placeholder="Email"
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400"
             required
           />
         </div>
@@ -83,7 +83,7 @@ export default function LoginPage() {
               setIsLoginError(false);
             }}
             placeholder="Password"
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-300"
             required
           />
         </div>
@@ -92,13 +92,13 @@ export default function LoginPage() {
         <button
           type="submit"
           disabled={isPending || isLoginError}
-          className="w-full py-3 bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-bold rounded-xl transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full py-3 bg-gradient-to-r from-purple-300 to-purple-500 text-white font-bold rounded-xl transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isPending ? "Logging in..." : "Login"}
         </button>
         <p className="text-center text-gray-400 text-sm pt-8">
           Don't have an account?{" "}
-          <Link href="/register" className="text-cyan-400 hover:underline">
+          <Link href="/register" className="text-purple-400 font-bold hover:underline cursor-pointer">
             Register
           </Link>
         </p>

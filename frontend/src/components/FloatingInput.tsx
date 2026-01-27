@@ -26,7 +26,7 @@ export default function FloatingInput({
   // Keep label floated if focused OR input has text
 
   return (
-    <div className="relative w-full border rounded-xl">
+    <div className="relative w-full border outline-none rounded-xl">
       {/* Left icon */}
       {icon && (
         <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -45,7 +45,7 @@ export default function FloatingInput({
         }}
         placeholder=" "
         onFocus={() => setIsFocused(true)}
-        className="peer w-full pl-10 pr-10 py-3 border rounded-xl focus:ring-1 focus:ring-cyan-400 focus:border-cyan-400 outline-none placeholder-transparent transition duration-300"
+        className="peer w-full pl-10 pr-10 py-3 rounded-xl focus:ring-1 focus:ring-purple-400 focus:purple-cyan-400 focus:outline-none placeholder-transparent transition duration-300"
       />
 
       {/* Right icon */}
