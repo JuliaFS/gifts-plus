@@ -10,6 +10,7 @@ import checkoutRoutes from "./src/routes/checkout.routes";
 import adminOrdersRoutes from "./src/routes/admin-orders.routes";
 import favoritesRoutes from "./src/routes/favorites.routes";
 import categoryRoutes from "./src/routes/category.routes";
+import stripeRoutes from "./src/routes/stripe.routes";
 
 dotenv.config();
 
@@ -23,6 +24,8 @@ app.use(
   })
 );
 
+console.log("Frontend URL for CORS:", process.env.FRONTEND_URL);
+
 app.use(express.json());
 app.use(cookieParser());
 
@@ -34,6 +37,7 @@ app.use("/api/admin", adminOrdersRoutes);
 app.use("/api/favorites", favoritesRoutes);
 
 app.use("/api/categories", categoryRoutes);
+app.use("/api/stripe", stripeRoutes);
 
 // Global error handler
 app.use(

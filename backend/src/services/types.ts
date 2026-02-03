@@ -42,3 +42,20 @@ export interface UserDTO {
   phone_number?: string | null;
   created_at: string;
 }
+
+// export interface OrderItem {
+//   quantity: number;
+//   products: {
+//     name: string;
+//     price: number;
+//   };
+// };
+
+export interface OrderItem {
+  quantity: number;
+  products: {
+    name: string;
+    price: number;
+    stock: number;
+  };
+}
