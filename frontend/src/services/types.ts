@@ -148,14 +148,5 @@ export interface CreateCategoryPayload {
 export type UpdateCategoryPayload = Partial<CreateCategoryPayload>;
 export interface PrepareCheckoutResponse {
   orderId: string;
-  totalAmount: number;
-  items: {
-    product_id: string;
-    quantity: number;
-    products: {
-      name: string;
-      price: number;
-      stock: number;
-    };
-  }[];
+  clientSecret: string | null;
 }
