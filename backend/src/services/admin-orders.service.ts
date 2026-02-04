@@ -17,7 +17,7 @@ export async function getAllOrders() {
     .order("created_at", { ascending: false });
 
   if (error) {
-    console.error("SUPABASE ERROR:", error); // 👈 ADD THIS
+    console.error("SUPABASE ERROR:", error); 
     throw error;
   }
 

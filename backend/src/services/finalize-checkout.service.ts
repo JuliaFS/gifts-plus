@@ -19,6 +19,12 @@ export async function finalizeCheckout(orderId: string, emailFromWebhook?: strin
   const order = await getOrderById(orderId);
   if (!order) throw new Error("Order not found");
 
+  // 🛑 Idempotency Check: If order is already paid, stop here.
+  if (order.status === "PAID") {
+    console.log(`Order ${orderId} is already finalized. Skipping.`);
+    return;
+  }
+
   const userId = order.user_id;
   if (!userId) throw new Error("User ID not found on order");
 
@@ -33,6 +39,7 @@ export async function finalizeCheckout(orderId: string, emailFromWebhook?: strin
       .single();
     customerEmail = user?.email;
   }
+  console.log("Customer email:", customerEmail);
   if (!customerEmail) throw new Error("Customer email not found");
 
   const cartItems = order.items as CheckoutItem[];

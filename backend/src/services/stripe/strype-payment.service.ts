@@ -1,4 +1,5 @@
 import { stripe } from "./stripe.client";
+import { finalizeCheckout } from "../finalize-checkout.service";
 
 interface CreatePaymentIntentParams {
   amount: number; // cents
@@ -34,4 +35,19 @@ export async function createStripePaymentIntent({
     id: paymentIntent.id,
     clientSecret: paymentIntent.client_secret,
   };
+}
+
+export async function verifyStripePayment(paymentIntentId: string) {
+  const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+
+  if (paymentIntent.status === "succeeded") {
+    const orderId = paymentIntent.metadata?.orderId;
+    const customerEmail = paymentIntent.metadata?.customerEmail;
+
+    if (orderId) {
+      await finalizeCheckout(orderId, customerEmail);
+      return true;
+    }
+  }
+  return false;
 }

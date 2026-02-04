@@ -67,6 +67,18 @@ export default function CheckoutForm() {
               return;
             }
             if (result.paymentIntent?.status === "succeeded") {
+              // 🔹 Notify backend manually to ensure email is sent (fallback for webhook)
+              console.log("Base url: ", process.env.NEXT_PUBLIC_API_BASE_URL);
+              try {
+                await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/checkout/verify-payment`, {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ paymentIntentId: result.paymentIntent.id }),
+                });
+              } catch (err) {
+                console.error("Manual verification failed", err);
+              }
+
               clearCart();
               router.push(`/success?payment=online&total=${total.toFixed(2)}`);
             }

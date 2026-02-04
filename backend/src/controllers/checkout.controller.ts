@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { checkout } from "../services/checkout.service";
 import { AuthRequest } from "../middleware/auth.middleware";
 import { prepareCheckout } from "../services/prepare-checkout.service";
+import { verifyStripePayment } from "../services/stripe/strype-payment.service";
 
 export async function checkoutHandler(
   req: AuthRequest,
@@ -16,6 +17,26 @@ export async function checkoutHandler(
     const customerEmail = req.user!.email;
     const orderId = await checkout(userId, customerEmail);
     res.json({ message: "Order completed", orderId });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function verifyPaymentController(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { paymentIntentId } = req.body;
+    if (!paymentIntentId) {
+      return res.status(400).json({ message: "Missing paymentIntentId" });
+    }
+
+    const success = await verifyStripePayment(paymentIntentId);
+
+    if (success) res.json({ message: "Payment verified and order finalized" });
+    else res.status(400).json({ message: "Payment verification failed" });
   } catch (err) {
     next(err);
   }
