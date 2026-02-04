@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { checkout } from "../services/checkout.service";
 import { AuthRequest } from "../middleware/auth.middleware";
+import { prepareCheckout } from "../services/prepare-checkout.service";
 
 export async function checkoutHandler(
   req: AuthRequest,
@@ -8,8 +9,12 @@ export async function checkoutHandler(
   next: NextFunction
 ) {
   try {
+    if (!req.user) {
+      return res.status(401).json({ message: "User not authenticated" });
+    }
     const userId = req.user!.id;
-    const orderId = await checkout(userId);
+    const customerEmail = req.user!.email;
+    const orderId = await checkout(userId, customerEmail);
     res.json({ message: "Order completed", orderId });
   } catch (err) {
     next(err);
@@ -17,17 +22,20 @@ export async function checkoutHandler(
 }
 
 export async function prepareCheckoutController(
-  req: Request,
-  res: Response
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
 ) {
   try {
+    if (!req.user) {
+      return res.status(401).json({ message: "User not authenticated" });
+    }
     const userId = req.user.id; // from auth middleware
 
     const result = await prepareCheckout(userId);
 
     res.json(result);
-  } catch (error: any) {
-    res.status(400).json({ error: error.message });
+  } catch (err) {
+    next(err);
   }
 }
-

@@ -5,7 +5,7 @@ import { authMiddleware } from "../middleware/auth.middleware";
 const router = Router();
 
 router.post("/", authMiddleware, checkoutHandler);
-router.post("/prepare", prepareCheckoutController);
+router.post("/prepare", authMiddleware,prepareCheckoutController);
 
 export default router;
 

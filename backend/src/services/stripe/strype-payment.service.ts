@@ -9,7 +9,7 @@ interface CreatePaymentIntentParams {
 
 export async function createStripePaymentIntent({
   amount,
-  currency = "usd",
+  currency = "eur",
   userId,
   orderId,
 }: CreatePaymentIntentParams) {

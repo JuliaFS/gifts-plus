@@ -6,7 +6,8 @@ import { useCurrentUser } from "@/services/hooks/useCurrentUser";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { syncCartToBackend } from "@/services/cart";
-import { prepareCheckout, PrepareCheckoutResponse } from "@/services/checkout.service";
+import { prepareCheckout} from "@/services/checkout";
+import { PrepareCheckoutResponse } from "@/services/types";
 
 type PaymentType = "online" | "offline";
 
