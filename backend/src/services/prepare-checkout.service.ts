@@ -12,7 +12,7 @@ interface CheckoutItem {
   };
 }
 
-export async function prepareCheckout(userId: string) {
+export async function prepareCheckout(userId: string, customerEmail: string) {
   // 1️⃣ Validate cart (DB = source of truth)
   const validation = await validateCartService(userId);
 
@@ -43,6 +43,7 @@ export async function prepareCheckout(userId: string) {
     amount: amountInCents,
     userId,
     orderId: order.id,
+    customerEmail,
   });
 
   return {

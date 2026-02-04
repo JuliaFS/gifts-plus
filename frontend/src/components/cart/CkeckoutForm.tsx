@@ -6,8 +6,8 @@ import { useCurrentUser } from "@/services/hooks/useCurrentUser";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { syncCartToBackend } from "@/services/cart";
-import { prepareCheckout } from "@/services/checkout";
-import { PrepareCheckoutResponse } from "@/services/types";
+import { useCheckout } from "@/app/cart/hooks/useCheckout";
+import { usePrepareCheckout } from "@/app/cart/hooks/usePrepareToCheckout";
 
 type PaymentType = "online" | "delivery";
 
@@ -19,58 +19,76 @@ export default function CheckoutForm() {
   const userId = useCurrentUser().data?.id;
   const router = useRouter();
 
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [paymentType, setPaymentType] = useState<PaymentType>("delivery");
+  const [isConfirmingStripe, setIsConfirmingStripe] = useState(false);
 
   const total = items.reduce((sum, i) => sum + i.product.price * i.quantity, 0);
 
+  // Mutations for each checkout flow
+  const { mutate: checkoutCOD, isPending: isPlacingCOD } = useCheckout();
+  const { mutate: prepareOnline, isPending: isPreparingOnline } = usePrepareCheckout();
+
+  const isLoading = isPlacingCOD || isPreparingOnline || isConfirmingStripe;
+
   const handleCheckout = async () => {
+    setError(null);
     if (!userId) {
       setError("You must be logged in to checkout.");
       setTimeout(() => router.push("/login"), 2000);
       return;
     }
-
     if (items.length === 0) {
       setError("Cart is empty");
       return;
     }
 
-    setLoading(true);
-    setError(null);
-
     try {
-      // Sync cart to backend
+      // Sync cart first, as both flows rely on backend cart state
       await syncCartToBackend(items);
 
-      // Prepare checkout → backend creates order
-      const checkoutData: PrepareCheckoutResponse = await prepareCheckout();
-
       if (paymentType === "online") {
-        // Stripe payment
-        if (!stripe || !elements) throw new Error("Stripe not loaded");
+        // Prepare online payment (gets client_secret)
+        prepareOnline(undefined, {
+          onSuccess: async (data) => {
+            const clientSecret = data.clientSecret;
+            if (!stripe || !elements || !clientSecret) {
+              setError("Failed to initialize payment.");
+              return;
+            }
+            setIsConfirmingStripe(true);
+            const result = await stripe.confirmCardPayment(clientSecret, {
+              payment_method: { card: elements.getElement(CardElement)! },
+            });
+            setIsConfirmingStripe(false);
 
-        const clientSecret = checkoutData.clientSecret;
-        const result = await stripe.confirmCardPayment(clientSecret, {
-          payment_method: { card: elements.getElement(CardElement)! },
+            if (result.error) {
+              setError(result.error.message || "Payment failed");
+              return;
+            }
+            if (result.paymentIntent?.status === "succeeded") {
+              clearCart();
+              router.push(`/success?payment=online&total=${total.toFixed(2)}`);
+            }
+          },
+          onError: (err) => {
+            setError(err.message || "Failed to prepare payment.");
+          },
         });
-
-        if (result.error) throw new Error(result.error.message || "Payment failed");
-
-        if (result.paymentIntent?.status === "succeeded") {
-          clearCart();
-          router.push("/success?payment=online");
-        }
       } else {
-        // Pay on Delivery
-        clearCart();
-        router.push("/success?payment=delivery");
+        // Finalize Pay on Delivery order
+        checkoutCOD(undefined, {
+          onSuccess: () => {
+            clearCart();
+            router.push(`/success?payment=delivery&total=${total.toFixed(2)}`);
+          },
+          onError: (err) => {
+            setError(err.message || "Failed to place order.");
+          },
+        });
       }
     } catch (err: any) {
-      setError(err.message || "Checkout failed");
-    } finally {
-      setLoading(false);
+      setError(err.message || "Failed to sync cart with server.");
     }
   };
 
@@ -111,34 +129,14 @@ export default function CheckoutForm() {
         />
       )}
 
-      {/* Single checkout button based on selected payment */}
-      {/* {paymentType === "delivery" && (
-        <button
-          onClick={handleCheckout}
-          disabled={loading || items.length === 0}
-          className="w-full py-2 bg-purple-500 text-white rounded hover:bg-purple-700 disabled:opacity-50 flex justify-center items-center"
-        >
-          {loading ? "Processing..." : "Place Order (Pay on Delivery)"}
-        </button>
-      )}
-
-      {paymentType === "online" && (
-        <button
-          onClick={handleCheckout}
-          disabled={loading || items.length === 0}
-          className="w-full py-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50 flex justify-center items-center"
-        >
-          {loading ? "Processing..." : "Pay Online"}
-        </button>
-      )} */}
       <button
   onClick={handleCheckout}
-  disabled={loading || items.length === 0}
+  disabled={isLoading || items.length === 0}
   className={`w-full py-2 text-white rounded flex justify-center items-center disabled:opacity-50 ${
     paymentType === "delivery" ? "bg-purple-500 hover:bg-purple-700" : "bg-green-600 hover:bg-green-700"
   }`}
 >
-  {loading
+  {isLoading
     ? "Processing..."
     : paymentType === "delivery"
     ? "Place Order (Pay on Delivery)"

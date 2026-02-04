@@ -37,19 +37,23 @@ export async function sendOrderEmail({
   total,
   invoicePath,
   customerEmail,
+  invoiceBuffer,
 }: {
   orderId: string;
   items: OrderItem[];
   total: number;
   invoicePath?: string;
   customerEmail: string;
+  invoiceBuffer?: Buffer;
 }) {
   if (!orderId || !items || !total) {
     throw new Error("Missing order info for email");
   }
 
   // Generate invoice buffer if no file path
-  const invoiceBuffer = invoicePath
+  const finalBuffer = invoiceBuffer
+    ? invoiceBuffer
+    : invoicePath
     ? undefined
     : await generateInvoice(orderId, items);
 
@@ -76,7 +80,7 @@ Total: ${total.toFixed(2)} €
     attachments: [
       invoicePath
         ? { path: invoicePath, filename: `invoice-${orderId}.pdf` }
-        : { content: invoiceBuffer, filename: `invoice-${orderId}.pdf` },
+        : { content: finalBuffer, filename: `invoice-${orderId}.pdf` },
     ],
   });
 

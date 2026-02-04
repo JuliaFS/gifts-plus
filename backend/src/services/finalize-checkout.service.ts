@@ -1,8 +1,8 @@
 
 import { supabase } from "../db/supabaseClient";
 import { generateInvoice } from "../utils/pdf/invoice.generator";
-import { sendOrderEmail } from "../utils/sendOrderEmail";
-import { getOrderById } from "./order.service";
+import { transporter } from "../utils/mailer";
+import { getOrderById, sendOrderEmail } from "./order.service";
 
 interface CheckoutItem {
   product_id: string;
@@ -14,7 +14,7 @@ interface CheckoutItem {
   };
 }
 
-export async function finalizeCheckout(orderId: string) {
+export async function finalizeCheckout(orderId: string, emailFromWebhook?: string) {
   // 1️⃣ Get order and userId
   const order = await getOrderById(orderId);
   if (!order) throw new Error("Order not found");
@@ -22,13 +22,18 @@ export async function finalizeCheckout(orderId: string) {
   const userId = order.user_id;
   if (!userId) throw new Error("User ID not found on order");
 
-  // Fetch customer email
-  const { data: user } = await supabase
-    .from("users")
-    .select("email")
-    .eq("id", userId)
-    .single();
-  if (!user?.email) throw new Error("Customer email not found");
+  let customerEmail = emailFromWebhook;
+
+  // If email wasn't in metadata, fallback to fetching from DB
+  if (!customerEmail) {
+    const { data: user } = await supabase
+      .from("users")
+      .select("email")
+      .eq("id", userId)
+      .single();
+    customerEmail = user?.email;
+  }
+  if (!customerEmail) throw new Error("Customer email not found");
 
   const cartItems = order.items as CheckoutItem[];
 
@@ -50,9 +55,26 @@ export async function finalizeCheckout(orderId: string) {
     orderId: order.id,
     items: order.items,
     total: order.total_amount,
-    customerEmail: user.email,
+    customerEmail: customerEmail,
     invoiceBuffer,
   });
+
+  // Admin email
+  if (process.env.ADMIN_EMAIL) {
+    await transporter.sendMail({
+      from: `"Shop" <${process.env.EMAIL_USER}>`,
+      to: process.env.ADMIN_EMAIL,
+      subject: `New Order #${order.id} (Paid Online)`,
+      text: `New order received and paid online!\nOrder ID: ${order.id}\nTotal: ${order.total_amount} €`,
+      attachments: [
+        {
+          content: invoiceBuffer,
+          filename: `invoice-${order.id}.pdf`,
+        },
+      ],
+    });
+    console.log(`Admin notified for paid order ${order.id}`);
+  }
 
   // 5️⃣ Clear cart
   await supabase.from("shopping_cart").delete().eq("user_id", userId);

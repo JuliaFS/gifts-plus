@@ -2,8 +2,7 @@ import nodemailer from "nodemailer";
 import { generateInvoice } from "../utils/pdf/invoice.generator";
 import { supabase } from "../db/supabaseClient";
 import { sendCustomerConfirmation } from "../utils/customerConfirmation";
-import { createOrder, OrderItem } from "./order.service";
-import { sendOrderEmail } from "../utils/sendOrderEmail";
+import { createOrder, OrderItem, sendOrderEmail } from "./order.service";
 import { validateCartService } from "./cart-validation.service";
 import { transporter } from "../utils/mailer";
 

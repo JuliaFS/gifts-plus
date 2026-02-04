@@ -5,6 +5,7 @@ interface CreatePaymentIntentParams {
   currency?: string;
   userId: string;
   orderId: string;
+  customerEmail: string;
 }
 
 export async function createStripePaymentIntent({
@@ -12,6 +13,7 @@ export async function createStripePaymentIntent({
   currency = "eur",
   userId,
   orderId,
+  customerEmail,
 }: CreatePaymentIntentParams) {
   if (!amount || amount <= 0) {
     throw new Error("Invalid payment amount");
@@ -24,6 +26,7 @@ export async function createStripePaymentIntent({
     metadata: {
       userId,
       orderId,
+      customerEmail,
     },
   });
 

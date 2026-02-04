@@ -126,6 +126,7 @@ export interface ResetPasswordResponse {
 
 export interface CheckoutResponse {
   message: string;
+  orderId: string;
 }
 
 export interface Category {

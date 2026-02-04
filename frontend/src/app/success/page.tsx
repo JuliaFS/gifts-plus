@@ -8,6 +8,7 @@ export default function SuccessPage() {
   const paymentType = searchParams.get("payment"); // "online" or "delivery"
   const sessionId = searchParams.get("session_id");
   const customerEmail = searchParams.get("customer_email");
+  const total = searchParams.get("total");
 
   let title = "Order Placed!";
   let message = "Thank you for your order.";
@@ -25,6 +26,12 @@ export default function SuccessPage() {
       <div className="bg-white shadow-md rounded-xl p-8 max-w-md w-full text-center">
         <h1 className="text-3xl font-bold text-green-600 mb-4">{title}</h1>
         <p className="text-gray-700 mb-6">{message}</p>
+
+        {total && (
+          <p className="text-xl font-semibold text-gray-800 mb-6">
+            Total Paid: {total} €
+          </p>
+        )}
 
         {sessionId && paymentType === "online" && (
           <p className="text-gray-500 text-sm mb-2">

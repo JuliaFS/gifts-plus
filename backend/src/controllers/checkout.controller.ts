@@ -31,8 +31,9 @@ export async function prepareCheckoutController(
       return res.status(401).json({ message: "User not authenticated" });
     }
     const userId = req.user.id; // from auth middleware
+    const customerEmail = req.user.email;
 
-    const result = await prepareCheckout(userId);
+    const result = await prepareCheckout(userId, customerEmail);
 
     res.json(result);
   } catch (err) {

@@ -22,9 +22,10 @@ export async function stripeWebhookHandler(req: Request, res: Response) {
       const paymentIntent = event.data.object as any;
 
       const orderId = paymentIntent.metadata?.orderId;
+      const customerEmail = paymentIntent.metadata?.customerEmail;
       if (orderId) {
         try {
-          await finalizeCheckout(orderId);
+          await finalizeCheckout(orderId, customerEmail);
           console.log("✅ Order finalized:", orderId);
         } catch (err) {
           console.error("❌ finalizeCheckout error:", err);
