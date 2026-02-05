@@ -98,10 +98,8 @@ export async function finalizeCheckout(orderId: string, emailFromWebhook?: strin
 
     if (!userError) {
       const retry = await supabase.from("invoices").insert({
-        user_id: userId,
         order_id: order.id,
         pdf_url: publicUrl,
-        amount: order.total_amount,
         payment_type: "online",
         status: "paid",
       });

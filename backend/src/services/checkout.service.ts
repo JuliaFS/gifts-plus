@@ -48,7 +48,7 @@ export async function checkout(userId: string, customerEmail?: string) {
     .getPublicUrl(invoiceFileName);
   const publicUrl = data.publicUrl;
 
-  // 6️⃣ Ensure we have an email
+  // 6️⃣ Ensure we have a customer email before DB writes
   if (!customerEmail) {
     const { data: user } = await supabase
       .from("users")
@@ -59,54 +59,30 @@ export async function checkout(userId: string, customerEmail?: string) {
   }
 
   if (!customerEmail) throw new Error("No customer email found");
+console.log("user_id:", order.user_id);
 
-  // 7️⃣ Send email to customer (attach PDF)
-  await sendOrderEmail({
-    orderId: order.id,
-    items: order.items,
-    total: order.total_amount,
-    customerEmail,
-    invoiceBuffer,
-  });
-
-  // 8️⃣ Send email to admin
-  if (process.env.ADMIN_EMAIL) {
-    await transporter.sendMail({
-      from: `"Shop" <${process.env.EMAIL_USER}>`,
-      to: process.env.ADMIN_EMAIL,
-      subject: `New Order #${order.id}`,
-      text: `New order received!\nOrder ID: ${order.id}\nTotal: ${order.total_amount} €`,
-      attachments: [
-        {
-          content: invoiceBuffer,
-          filename: invoiceFileName,
-          contentType: "application/pdf",
-        },
-      ],
-    });
-    console.log(`Admin notified for order ${order.id}`);
-  }
-
-  // 9️⃣ Insert row into invoices table
+  // 7️⃣ Insert row into invoices table (before sending emails)
   let { error: invoiceError } = await supabase.from("invoices").insert({
-    user_id: userId,
+   
     order_id: order.id,
     pdf_url: publicUrl,
-    amount: order.total_amount,
     payment_type: "delivery",
     status: "pending",
   });
 
   // 🛠️ Fix for local dev: If FK violation (user missing in public.users), create user and retry
   if (invoiceError && invoiceError.message.includes("foreign key constraint")) {
-    console.warn("⚠️ User missing in public.users. Attempting to create...");
+    console.warn("⚠️ FK violation detected. Assuming user is missing in public.users. Attempting to create...");
     const { error: userError } = await supabase.from("users").insert({
       id: userId,
       email: customerEmail,
       role: "customer",
     });
 
-    if (!userError) {
+    if (userError) {
+      console.error("❌ Failed to create user in public.users during retry:", userError);
+    } else {
+      console.log("✅ Successfully created user in public.users. Retrying invoice insert...");
       const retry = await supabase.from("invoices").insert({
         user_id: userId,
         order_id: order.id,
@@ -122,6 +98,33 @@ export async function checkout(userId: string, customerEmail?: string) {
   if (invoiceError) {
     console.error("❌ Failed to insert invoice record:", invoiceError);
     throw invoiceError;
+  }
+
+  // 8️⃣ Send email to customer (attach PDF)
+  await sendOrderEmail({
+    orderId: order.id,
+    items: order.items,
+    total: order.total_amount,
+    customerEmail,
+    invoiceBuffer,
+  });
+
+  // 9️⃣ Send email to admin
+  if (process.env.ADMIN_EMAIL) {
+    await transporter.sendMail({
+      from: `"Shop" <${process.env.EMAIL_USER}>`,
+      to: process.env.ADMIN_EMAIL,
+      subject: `New Order #${order.id}`,
+      text: `New order received!\nOrder ID: ${order.id}\nTotal: ${order.total_amount} €`,
+      attachments: [
+        {
+          content: invoiceBuffer,
+          filename: invoiceFileName,
+          contentType: "application/pdf",
+        },
+      ],
+    });
+    console.log(`Admin notified for order ${order.id}`);
   }
 
   // 🔟 Clear cart
