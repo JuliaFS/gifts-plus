@@ -79,10 +79,8 @@ export async function finalizeCheckout(orderId: string, emailFromWebhook?: strin
 
   // 5️⃣ Insert record into invoices table
   let { error: invoiceError } = await supabase.from("invoices").insert({
-    user_id: userId,
     order_id: order.id,
     pdf_url: publicUrl,
-    amount: order.total_amount,
     payment_type: "online",
     status: "paid",
   });
