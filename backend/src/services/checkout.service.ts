@@ -88,7 +88,7 @@ export async function checkout(userId: string, customerEmail?: string) {
   }
 
   // 9️⃣ Insert row into invoices table
-  const { error: invoiceError } = await supabase.from("invoices").insert({
+  let { error: invoiceError } = await supabase.from("invoices").insert({
     user_id: userId,
     order_id: order.id,
     pdf_url: publicUrl,
@@ -97,8 +97,31 @@ export async function checkout(userId: string, customerEmail?: string) {
     status: "pending",
   });
 
+  // 🛠️ Fix for local dev: If FK violation (user missing in public.users), create user and retry
+  if (invoiceError && invoiceError.message.includes("foreign key constraint")) {
+    console.warn("⚠️ User missing in public.users. Attempting to create...");
+    const { error: userError } = await supabase.from("users").insert({
+      id: userId,
+      email: customerEmail,
+      role: "customer",
+    });
+
+    if (!userError) {
+      const retry = await supabase.from("invoices").insert({
+        user_id: userId,
+        order_id: order.id,
+        pdf_url: publicUrl,
+        amount: order.total_amount,
+        payment_type: "delivery",
+        status: "pending",
+      });
+      invoiceError = retry.error;
+    }
+  }
+
   if (invoiceError) {
     console.error("❌ Failed to insert invoice record:", invoiceError);
+    throw invoiceError;
   }
 
   // 🔟 Clear cart
