@@ -83,15 +83,21 @@ export async function sendOrderEmail({
   let invoiceUrl: string | null = null;
   if (!invoicePath && finalBuffer) {
     const invoiceFileName = `invoice-${orderId}.pdf`;
-    const { error: uploadError } = await supabase.storage
+    let uploadResult = await supabase.storage
       .from("invoices")
       .upload(invoiceFileName, finalBuffer, {
         contentType: "application/pdf",
         upsert: true,
       });
-    if (uploadError) {
-      console.error("Supabase Storage upload failed:", uploadError);
-      throw uploadError;
+
+    if (uploadResult.error?.message.includes("Bucket not found")) {
+      await supabase.storage.createBucket("invoices", { public: true });
+      uploadResult = await supabase.storage.from("invoices").upload(invoiceFileName, finalBuffer, { contentType: "application/pdf", upsert: true });
+    }
+
+    if (uploadResult.error) {
+      console.error("Supabase Storage upload failed:", uploadResult.error);
+      throw uploadResult.error;
     }
 
     const { data } = supabase.storage

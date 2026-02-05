@@ -58,14 +58,19 @@ export async function finalizeCheckout(orderId: string, emailFromWebhook?: strin
 
   // 4️⃣ Upload invoice to Supabase Storage
   const invoiceFileName = `invoice-${order.id}.pdf`;
-  const { error: uploadError } = await supabase.storage
+  let uploadResult = await supabase.storage
     .from("invoices")
     .upload(invoiceFileName, invoiceBuffer, {
       contentType: "application/pdf",
       upsert: true, // replace if exists
     });
 
-  if (uploadError) throw uploadError;
+  if (uploadResult.error?.message.includes("Bucket not found")) {
+    await supabase.storage.createBucket("invoices", { public: true });
+    uploadResult = await supabase.storage.from("invoices").upload(invoiceFileName, invoiceBuffer, { contentType: "application/pdf", upsert: true });
+  }
+
+  if (uploadResult.error) throw uploadResult.error;
 
   const { data } = supabase.storage
     .from("invoices")
