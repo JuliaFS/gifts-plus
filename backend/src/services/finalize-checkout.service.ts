@@ -78,7 +78,7 @@ export async function finalizeCheckout(orderId: string, emailFromWebhook?: strin
   const publicUrl = data.publicUrl;
 
   // 5️⃣ Insert record into invoices table
-  await supabase.from("invoices").insert({
+  const { error: invoiceError } = await supabase.from("invoices").insert({
     user_id: userId,
     order_id: order.id,
     pdf_url: publicUrl,
@@ -86,6 +86,10 @@ export async function finalizeCheckout(orderId: string, emailFromWebhook?: strin
     payment_type: "online",
     status: "paid",
   });
+
+  if (invoiceError) {
+    console.error("❌ Failed to insert invoice record:", invoiceError);
+  }
 
   // 6️⃣ Send email to customer with PDF attachment
   await sendOrderEmail({

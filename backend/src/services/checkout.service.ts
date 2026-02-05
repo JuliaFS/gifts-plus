@@ -88,7 +88,7 @@ export async function checkout(userId: string, customerEmail?: string) {
   }
 
   // 9️⃣ Insert row into invoices table
-  await supabase.from("invoices").insert({
+  const { error: invoiceError } = await supabase.from("invoices").insert({
     user_id: userId,
     order_id: order.id,
     pdf_url: publicUrl,
@@ -96,6 +96,10 @@ export async function checkout(userId: string, customerEmail?: string) {
     payment_type: "delivery",
     status: "pending",
   });
+
+  if (invoiceError) {
+    console.error("❌ Failed to insert invoice record:", invoiceError);
+  }
 
   // 🔟 Clear cart
   await supabase.from("shopping_cart").delete().eq("user_id", userId);
