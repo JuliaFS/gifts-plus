@@ -118,12 +118,12 @@ ${badge === "HOT" && "bg-orange-500"}`}
             {product.sales_price ? (
               <>
                 <span className="line-through text-gray-400 mr-2">
-                  {product.price} €
+                  {product.price.toFixed(2)} €
                 </span>
-                <span className="text-red-600">{product.sales_price} €</span>
+                <span className="text-red-600">{product.sales_price.toFixed(2)} €</span>
               </>
             ) : (
-              <span>{product.price} €</span>
+              <span>{product.price.toFixed(2)} €</span>
             )}
             {showStock && (
               <p className="text-sm text-gray-500">Stock: {product.stock}</p>

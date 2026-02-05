@@ -9,6 +9,7 @@ interface CheckoutItem {
     name: string;
     price: number;
     stock: number;
+    sales_price?: number | null;
   };
 }
 
@@ -26,7 +27,12 @@ export async function prepareCheckout(userId: string, customerEmail: string) {
 
   // 2️⃣ Calculate final amount (backend truth)
   const totalAmount = cartItems.reduce(
-    (sum, item) => sum + item.quantity * item.products.price,
+    (sum, item) => {
+      const price = item.products.sales_price && item.products.sales_price < item.products.price
+        ? item.products.sales_price
+        : item.products.price;
+      return sum + item.quantity * price;
+    },
     0
   );
 

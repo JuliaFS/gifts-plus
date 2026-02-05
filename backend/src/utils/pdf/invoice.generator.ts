@@ -113,7 +113,7 @@ export function generateInvoice(orderId: string, items: OrderItem[]): Promise<Bu
     items.forEach((item) => {
       const name = item.products.name;
       const qty = item.quantity;
-      const price = item.products.price;
+      const price = item.price_at_purchase;
       const lineTotal = price * qty;
       grandTotal += lineTotal;
 

@@ -23,7 +23,12 @@ export default function CheckoutForm() {
   const [paymentType, setPaymentType] = useState<PaymentType>("delivery");
   const [isConfirmingStripe, setIsConfirmingStripe] = useState(false);
 
-  const total = items.reduce((sum, i) => sum + i.product.price * i.quantity, 0);
+  const total = items.reduce((sum, i) => {
+    const price = i.product.sales_price && i.product.sales_price < i.product.price
+      ? i.product.sales_price
+      : i.product.price;
+    return sum + price * i.quantity;
+  }, 0);
 
   // Mutations for each checkout flow
   const { mutate: checkoutCOD, isPending: isPlacingCOD } = useCheckout();

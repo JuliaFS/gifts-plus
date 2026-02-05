@@ -76,7 +76,9 @@ export default function CartItem({ item }: Props) {
 
       <div className="flex-1">
         <h3 className="font-semibold">{item.product.name}</h3>
-        <p className="text-sm">{item.product.price} €</p>
+        <p className="text-sm">
+          {(item.product.sales_price ?? item.product.price).toFixed(2)} €
+        </p>
 
         <div className="flex items-center gap-2 mt-2">
           <button onClick={decrease} className="px-2 border rounded">

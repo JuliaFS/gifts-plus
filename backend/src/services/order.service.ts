@@ -20,6 +20,7 @@ export interface OrderItem {
     name: string;
     price: number;
     stock: number;
+    sales_price?: number | null;
   };
 }
 
@@ -65,7 +66,7 @@ Order ID: ${orderId}
 ${items
   .map(
     (i) =>
-      `${i.products.name} × ${i.quantity} = ${i.products.price.toFixed(2)} € (Stock: ${i.products.stock})`
+      `${i.products.name} × ${i.quantity} = ${i.price_at_purchase.toFixed(2)} €`
   )
   .join("\n")}
 
@@ -97,21 +98,31 @@ export async function createOrder(userId: string, cartItems: CheckoutItem[]): Pr
 
   // 2️⃣ Calculate total
   const total = validItems.reduce(
-    (sum, i) => sum + i.quantity * i.products.price,
+    (sum, i) => {
+      const price = i.products.sales_price && i.products.sales_price < i.products.price
+        ? i.products.sales_price
+        : i.products.price;
+      return sum + i.quantity * price;
+    },
     0
   );
 
   // 3️⃣ Prepare items for DB
-  const itemsPayload = validItems.map((i) => ({
-    product_id: i.product_id,
-    quantity: i.quantity,
-    price_at_purchase: i.products.price,
-    products: { // keep full info for email/invoice
-      name: i.products.name,
-      price: i.products.price,
-      stock: i.products.stock,
-    },
-  }));
+  const itemsPayload = validItems.map((i) => {
+    const price = i.products.sales_price && i.products.sales_price < i.products.price
+      ? i.products.sales_price
+      : i.products.price;
+    return {
+      product_id: i.product_id,
+      quantity: i.quantity,
+      price_at_purchase: price,
+      products: { // keep full info for email/invoice
+        name: i.products.name,
+        price: i.products.price,
+        stock: i.products.stock,
+      },
+    };
+  });
 
   // 4️⃣ Create order + items ATOMICALLY
   const { data: orderId, error } = await supabase.rpc(
