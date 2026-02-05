@@ -36,6 +36,7 @@ export const API = {
     create: () => `${BASE_URL}/checkout`, // POST endpoint
     //easy to extend API.checkout.applyDiscount() or API.checkout.byId(id)  TO DO
     prepare: () => `${BASE_URL}/checkout/prepare`,
+    verifyPayment: () => `${BASE_URL}/checkout/verify-payment`,
   },
   favorites: {
     base: `${BASE_URL}/favorites`,

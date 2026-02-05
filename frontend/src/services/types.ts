@@ -156,3 +156,11 @@ export interface PrepareCheckoutResponse {
   orderId: string;
   clientSecret: string | null;
 }
+
+export type VerifyPaymentPayload = {
+  paymentIntentId: string;
+};
+
+export type VerifyPaymentResponse = {
+  success: boolean;
+};
