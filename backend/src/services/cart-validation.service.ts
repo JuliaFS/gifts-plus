@@ -9,7 +9,8 @@ export async function validateCartService(userId: string) {
       products (
         name,
         price,
-        stock
+        stock,
+        sales_price
       )
     `)
     .eq("user_id", userId);
@@ -32,7 +33,10 @@ export async function validateCartService(userId: string) {
       );
     }
 
-    total += item.quantity * item.products.price;
+    const price = item.products.sales_price && item.products.sales_price < item.products.price
+      ? item.products.sales_price
+      : item.products.price;
+    total += item.quantity * price;
   }
 
   if (issues.length) {

@@ -1,6 +1,4 @@
 import { supabase } from "../db/supabaseClient";
-import { transporter } from "../utils/mailer";
-import { generateInvoice } from "../utils/pdf/invoice.generator";
 
 export interface CheckoutItem {
   product_id: string;
@@ -9,6 +7,7 @@ export interface CheckoutItem {
     name: string;
     price: number;
     stock: number;
+    sales_price?: number | null;
   };
 }
 
@@ -33,61 +32,11 @@ export interface Order {
   payment_method?: string;
 }
 
-export async function sendOrderEmail({
-  orderId,
-  items,
-  total,
-  invoicePath,
-  customerEmail,
-  invoiceBuffer,
-}: {
-  orderId: string;
-  items: OrderItem[];
-  total: number;
-  invoicePath?: string;
-  customerEmail: string;
-  invoiceBuffer?: Buffer;
-}) {
-  if (!orderId || !items || !total) {
-    throw new Error("Missing order info for email");
-  }
+/**
+ * Sends order confirmation email to customer.
+ * Automatically handles invoice generation, buffer, and Supabase Storage.
+ */
 
-  // Generate invoice buffer if no file path
-  const finalBuffer = invoiceBuffer
-    ? invoiceBuffer
-    : invoicePath
-      ? undefined
-      : await generateInvoice(orderId, items);
-
-  // Human-readable email body (never PDF content)
-  const body = `
-Invoice
-Order ID: ${orderId}
-
-${items
-  .map(
-    (i) =>
-      `${i.products.name} × ${i.quantity} = ${i.price_at_purchase.toFixed(2)} €`,
-  )
-  .join("\n")}
-
-Total: ${total.toFixed(2)} €
-`;
-
-  await transporter.sendMail({
-    from: `"Shop" <${process.env.EMAIL_USER}>`,
-    to: customerEmail,
-    subject: `Order Confirmation #${orderId}`,
-    text: body,
-    attachments: [
-      invoicePath
-        ? { path: invoicePath, filename: `invoice-${orderId}.pdf` }
-        : { content: finalBuffer, filename: `invoice-${orderId}.pdf` },
-    ],
-  });
-
-  console.log(`Order email sent to ${customerEmail} for order ${orderId}`);
-}
 
 export async function createOrder(
   userId: string,
@@ -125,6 +74,7 @@ export async function createOrder(
         name: i.products.name,
         price: i.products.price,
         stock: i.products.stock,
+        sales_price: i.products.sales_price,
       },
     };
   });
@@ -188,7 +138,7 @@ export async function getOrderById(orderId: string): Promise<Order | null> {
       product_id,
       quantity,
       price_at_purchase,
-      products:products(name, price, stock)
+      products:products(name, price, stock, sales_price)
     `,
     )
     .eq("order_id", orderId);

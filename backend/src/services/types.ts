@@ -43,19 +43,14 @@ export interface UserDTO {
   created_at: string;
 }
 
-// export interface OrderItem {
-//   quantity: number;
-//   products: {
-//     name: string;
-//     price: number;
-//   };
-// };
-
 export interface OrderItem {
+  product_id: string;
   quantity: number;
+  price_at_purchase: number;
   products: {
     name: string;
     price: number;
     stock: number;
+    sales_price?: number | null;
   };
 }
