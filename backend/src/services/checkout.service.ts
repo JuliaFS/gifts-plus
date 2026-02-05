@@ -63,9 +63,10 @@ console.log("user_id:", order.user_id);
 
   // 7️⃣ Insert row into invoices table (before sending emails)
   let { error: invoiceError } = await supabase.from("invoices").insert({
-   
+    user_id: userId,
     order_id: order.id,
     pdf_url: publicUrl,
+    amount: order.total_amount,
     payment_type: "delivery",
     status: "pending",
   });
