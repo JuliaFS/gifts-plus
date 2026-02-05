@@ -89,6 +89,6 @@ export async function finalizeCheckout(orderId: string, emailFromWebhook?: strin
   // 6️⃣ Update order status
   await supabase
     .from("orders")
-    .update({ status: "PAID" })
+    .update({ status: "PENDING" })
     .eq("id", orderId);
 }

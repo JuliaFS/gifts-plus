@@ -14,7 +14,7 @@ export async function checkout(userId: string, customerEmail: string) {
 
   const cartItems = validation.items;
 
-  const order = await createOrder(userId, cartItems);
+  const order = await createOrder(userId, cartItems, { paymentMethod: "ON DELIVERY" });
 
   for (const item of cartItems) {
     const { error } = await supabase.rpc("decrease_stock", {

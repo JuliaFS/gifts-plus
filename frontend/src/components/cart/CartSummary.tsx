@@ -1,45 +1,54 @@
-"use client";
+// "use client";
 
+import { useState } from "react";
 import { useCartStore } from "@/store/cartStore";
 import { useCurrentUser } from "@/services/hooks/useCurrentUser";
 import { syncCartToBackend } from "@/services/cart";
-import { checkout } from "@/services/checkout";
-import { useState } from "react";
+import { useCheckout } from "@/app/cart/hooks/useCheckout";
 import { useRouter } from "next/navigation";
+import { getErrorMessage } from "@/utils/getErrorMessage"; // make sure the path is correct
 
 export default function CartSummary() {
   const items = useCartStore((s) => s.items);
   const clearCart = useCartStore((s) => s.clearCart);
   const userId = useCurrentUser().data?.id;
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState<string | null>(null);
-
   const router = useRouter();
-  const total = items.reduce((sum, i) => sum + i.product.price * i.quantity, 0);
+
+  const { mutate: checkoutCOD, isPending, error } = useCheckout();
+
+  const [commonError, setCommonError] = useState<string | null>(null);
+
+  const total = items.reduce((sum, i) => {
+    const price =
+      i.product.sales_price && i.product.sales_price < i.product.price
+        ? i.product.sales_price
+        : i.product.price;
+    return sum + price * i.quantity;
+  }, 0);
 
   const handleCODCheckout = async () => {
     if (!userId) {
-      setMessage("You must be logged in to checkout.");
-      setTimeout(() => router.push("/login"), 2000);
+      router.push("/login");
       return;
     }
 
     if (items.length === 0) {
-      alert("Cart is empty");
       return;
     }
 
-    setLoading(true);
     try {
+      setCommonError(null); // clear previous errors
       await syncCartToBackend(items);
-      await checkout(userId); // your existing COD checkout
-      clearCart();
-      alert("✅ Order placed! Pay on delivery.");
-      router.push("/success");
-    } catch (err: any) {
-      alert(err.message || "Checkout failed");
-    } finally {
-      setLoading(false);
+      checkoutCOD(undefined, {
+        onSuccess: () => {
+          clearCart();
+          router.push(`/success?payment=delivery&total=${total.toFixed(2)}`);
+        },
+      });
+    } catch (err: unknown) {
+      const errorMessage = getErrorMessage(err, "Failed to sync cart");
+      console.error(errorMessage);
+      setCommonError(errorMessage); // show error to user
     }
   };
 
@@ -47,14 +56,18 @@ export default function CartSummary() {
     <div className="border-t pt-4 mt-4">
       <p className="font-bold text-lg">Total: {total.toFixed(2)} €</p>
 
-      {message && <p className="text-red-600 mt-2">{message}</p>}
+      {/* Show backend error from useCheckout */}
+      {error && <p className="text-red-600 mt-2">{error.message}</p>}
+
+      {/* Show common error from catch block */}
+      {commonError && <p className="text-red-600 mt-2">{commonError}</p>}
 
       <button
         onClick={handleCODCheckout}
-        disabled={loading || items.length === 0}
+        disabled={isPending || items.length === 0}
         className="mt-3 w-full bg-purple-500 text-white py-2 rounded hover:bg-purple-700 disabled:opacity-50 flex justify-center items-center"
       >
-        {loading && (
+        {isPending && (
           <svg
             className="animate-spin h-5 w-5 mr-2 text-white"
             xmlns="http://www.w3.org/2000/svg"
@@ -76,85 +89,8 @@ export default function CartSummary() {
             />
           </svg>
         )}
-        {loading ? "Processing..." : "Checkout (Pay on Delivery)"}
+        {isPending ? "Processing..." : "Checkout (Pay on Delivery)"}
       </button>
     </div>
   );
 }
-
-// "use client";
-
-// import { useCartStore } from "@/store/cartStore";
-// import { useCheckout } from "@/app/cart/hooks/useCheckout";
-// import { useCurrentUser } from "@/services/hooks/useCurrentUser";
-// import { syncCartToBackend } from "@/services/cart";
-// import { useState } from "react";
-// import { useRouter } from "next/navigation";
-// import { getErrorMessage } from "@/utils/getErrorMessage";
-
-// export default function CartSummary() {
-//   const items = useCartStore((s) => s.items);
-//   const clearCart = useCartStore((s) => s.clearCart);
-//   const [message, setMessage] = useState<string | null>(null);
-
-//   const router = useRouter();
-//   const userId = useCurrentUser().data?.id;
-//   const checkoutMutation = useCheckout();
-
-//   const total = items.reduce((sum, i) => sum + i.product.price * i.quantity, 0);
-
-//   const handleCheckout = async () => {
-//     // 🚫 Not logged in
-//     if (!userId) {
-//       setMessage("You must be logged in to checkout.");
-
-//       setTimeout(() => {
-//         router.push("/login");
-//       }, 2000);
-
-//       return;
-//     }
-
-//     // 🚫 Empty cart
-//     if (items.length === 0) {
-//       alert("Cart is empty");
-//       return;
-//     }
-
-//     try {
-//       // 1️⃣ Sync cart to backend
-//       await syncCartToBackend(items);
-
-//       // 2️⃣ Checkout (awaitable)
-//       await checkoutMutation.mutateAsync();
-
-//       // 3️⃣ Success UI
-//       clearCart();
-//       alert("Order completed");
-//     } catch (err) {
-//       alert(getErrorMessage(err, "Checkout failed"));
-//     }
-//   };
-
-//   return (
-//     <div className="border-t pt-4 mt-4">
-//       <p className="font-bold text-lg">Total: {total.toFixed(2)} €</p>
-
-//       {message && <p className="text-red-600 mt-2">{message}</p>}
-
-//       <button
-//         onClick={handleCheckout}
-//         disabled={checkoutMutation.isPending || items.length === 0}
-//         className="mt-3 w-full bg-purple-500 cursor-pointer text-white py-2 rounded hover:bg-purple-700 disabled:opacity-50"
-//       >
-//         {checkoutMutation.isPending ? "Processing..." : "Checkout"}
-//       </button>
-
-//       {checkoutMutation.isError && (
-//         <p className="text-red-600 mt-2">
-//           {(checkoutMutation.error as Error).message}
-//         </p>
-//       )}
-//     </div>
-//   );
-// }

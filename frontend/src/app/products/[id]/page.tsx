@@ -6,7 +6,7 @@ import { useState, useMemo, useRef } from "react";
 
 import { useGetProductById } from "../hooks/useGetProductById";
 import { useDeleteProduct } from "@/app/admin/hooks/useDeleteProduct";
-import { ProductImage, Product } from "@/services/types";
+import { ProductImage, Product, Favorite } from "@/services/types";
 
 import AddToCartButton from "@/components/cart/AddToCartButton";
 import EditButton from "@/app/admin/products/EditButton";
@@ -24,7 +24,6 @@ export default function ProductDetailsPage() {
 
   const deleteMutation = useDeleteProduct();
   const { data: user } = useCurrentUser();
-  const isAdmin = user?.role === "ADMIN";
 
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [activeImage, setActiveImage] = useState<ProductImage | null>(null);
@@ -32,31 +31,34 @@ export default function ProductDetailsPage() {
 
   const { favoritesQuery, addMutation, removeMutation } = useFavorites();
 
+  const images = useMemo(() => {
+    if (!product) return []; // Guard for initial render when product is undefined
+    const list = product.product_images ?? [];
+    return list.map((img, i) => ({
+      ...img,
+      id: `img-${i}`, // Generate a stable key for local rendering
+      position: i, // Use index as position for local rendering
+    })) as ProductImage[];
+  }, [product]);
+
+  const isFavorite = useMemo(
+    () =>
+      favoritesQuery.data?.some((f: Favorite) => f.product_id === productId),
+    [favoritesQuery.data, productId],
+  );
+
   // ---- LOADING GUARDS (IMPORTANT) ----
   if (isLoading) return <p>Loading product...</p>;
   if (isError || !product) return <p>Product not found.</p>;
 
   // ✅ SAFE: product exists here
+  const isAdmin = user?.role === "ADMIN";
   const isOutOfStock = product.stock <= 0;
-
-  // Favorites
-  const isFavorite = favoritesQuery.data?.some(
-    (f: any) => f.product_id === productId
-  );
 
   const toggleFavorite = () => {
     if (isFavorite) removeMutation.mutate(productId);
     else addMutation.mutate(productId);
   };
-
-  const images = useMemo(() => {
-    const list = product.product_images ?? [];
-    return list.map((img, i) => ({
-      ...img,
-      id: img.id || `img-${i}`,
-      position: img.position || i,
-    })) as ProductImage[];
-  }, [product]);
 
   const currentImage =
     activeImage ?? images.find((img) => img.is_main) ?? images[0];

@@ -19,6 +19,7 @@ type Errors = {
   description?: string;
   price?: string;
   stock?: string;
+  sales_price?: string;
   sale_start_at?: string;
   sale_end_at?: string;
 };

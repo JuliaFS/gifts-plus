@@ -30,6 +30,7 @@ export interface Order {
   status: string;
   user_id?: string;
   items: OrderItem[];
+  payment_method?: string;
 }
 
 export async function sendOrderEmail({
@@ -55,8 +56,8 @@ export async function sendOrderEmail({
   const finalBuffer = invoiceBuffer
     ? invoiceBuffer
     : invoicePath
-    ? undefined
-    : await generateInvoice(orderId, items);
+      ? undefined
+      : await generateInvoice(orderId, items);
 
   // Human-readable email body (never PDF content)
   const body = `
@@ -66,7 +67,7 @@ Order ID: ${orderId}
 ${items
   .map(
     (i) =>
-      `${i.products.name} × ${i.quantity} = ${i.price_at_purchase.toFixed(2)} €`
+      `${i.products.name} × ${i.quantity} = ${i.price_at_purchase.toFixed(2)} €`,
   )
   .join("\n")}
 
@@ -88,7 +89,11 @@ Total: ${total.toFixed(2)} €
   console.log(`Order email sent to ${customerEmail} for order ${orderId}`);
 }
 
-export async function createOrder(userId: string, cartItems: CheckoutItem[]): Promise<Order> {
+export async function createOrder(
+  userId: string,
+  cartItems: CheckoutItem[],
+  options?: { status?: string; paymentMethod?: string },
+): Promise<Order> {
   // 1️⃣ Filter invalid products
   const validItems = cartItems.filter((i) => i.products !== null);
 
@@ -97,26 +102,26 @@ export async function createOrder(userId: string, cartItems: CheckoutItem[]): Pr
   }
 
   // 2️⃣ Calculate total
-  const total = validItems.reduce(
-    (sum, i) => {
-      const price = i.products.sales_price && i.products.sales_price < i.products.price
+  const total = validItems.reduce((sum, i) => {
+    const price =
+      i.products.sales_price && i.products.sales_price < i.products.price
         ? i.products.sales_price
         : i.products.price;
-      return sum + i.quantity * price;
-    },
-    0
-  );
+    return sum + i.quantity * price;
+  }, 0);
 
   // 3️⃣ Prepare items for DB
   const itemsPayload = validItems.map((i) => {
-    const price = i.products.sales_price && i.products.sales_price < i.products.price
-      ? i.products.sales_price
-      : i.products.price;
+    const price =
+      i.products.sales_price && i.products.sales_price < i.products.price
+        ? i.products.sales_price
+        : i.products.price;
     return {
       product_id: i.product_id,
       quantity: i.quantity,
       price_at_purchase: price,
-      products: { // keep full info for email/invoice
+      products: {
+        // keep full info for email/invoice
         name: i.products.name,
         price: i.products.price,
         stock: i.products.stock,
@@ -135,18 +140,28 @@ export async function createOrder(userId: string, cartItems: CheckoutItem[]): Pr
         quantity: i.quantity,
         price_at_purchase: i.price_at_purchase,
       })), // send only DB needed fields
-    }
+    },
   );
 
   if (error) throw error;
   if (!orderId) throw new Error("Order ID is undefined");
 
+  // 4.5 Update options (status, payment_method) if provided
+  const updates: any = {};
+  if (options?.status) updates.status = options.status;
+  if (options?.paymentMethod) updates.payment_method = options.paymentMethod;
+
+  if (Object.keys(updates).length > 0) {
+    await supabase.from("orders").update(updates).eq("id", orderId);
+  }
+
   // 5️⃣ Return full order with proper types
   return {
     id: String(orderId),
     total_amount: total,
-    status: "PENDING",
+    status: options?.status || "PENDING",
     items: itemsPayload,
+    payment_method: options?.paymentMethod,
   };
 }
 
@@ -168,12 +183,14 @@ export async function getOrderById(orderId: string): Promise<Order | null> {
   // Fetch order items with product info
   const { data: itemsData, error: itemsError } = await supabase
     .from("order_items")
-    .select(`
+    .select(
+      `
       product_id,
       quantity,
       price_at_purchase,
       products:products(name, price, stock)
-    `)
+    `,
+    )
     .eq("order_id", orderId);
 
   if (itemsError) {

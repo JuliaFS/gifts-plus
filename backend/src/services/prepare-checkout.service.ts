@@ -41,7 +41,7 @@ export async function prepareCheckout(userId: string, customerEmail: string) {
   // 3️⃣ Create order (PENDING_PAYMENT)
   const order = await createOrder(userId, cartItems, {
     status: "PENDING_PAYMENT",
-    totalAmount,
+    paymentMethod: "PAID",
   });
 
   // 4️⃣ Create Stripe PaymentIntent
