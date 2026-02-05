@@ -7,9 +7,14 @@ import { useEffect, useState } from "react";
 type Props = {
   product: Product;
   imgRef: React.RefObject<HTMLDivElement | null>;
+  disabled?: boolean;
 };
 
-export default function AddToCartButton({ product, imgRef }: Props) {
+export default function AddToCartButton({
+  product,
+  imgRef,
+  disabled = false,
+}: Props) {
   const cartIconRef = useCartIconRef();
   const { addToCart } = useCartStore();
   const [fly, setFly] = useState<{
@@ -18,9 +23,11 @@ export default function AddToCartButton({ product, imgRef }: Props) {
     to: DOMRect;
   } | null>(null);
 
-   const [message, setMessage] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
 
   const handleAdd = () => {
+    if (disabled) return;
+
     addToCart(product, 1);
 
     if (!imgRef.current || !cartIconRef.current) return;
@@ -33,22 +40,15 @@ export default function AddToCartButton({ product, imgRef }: Props) {
       from,
       to,
     });
-      // Show message
-  setMessage(`${product.name} added to cart`);
 
-  setTimeout(() => {
-    setMessage(null); // disappears after 2 seconds
-  }, 2000);
+    setMessage(`${product.name} added to cart`);
   };
 
-   // Clear message after 2 seconds
+  // Auto-clear message
   useEffect(() => {
     if (!message) return;
 
-    const timer = setTimeout(() => {
-      setMessage(null);
-    }, 2000);
-
+    const timer = setTimeout(() => setMessage(null), 2000);
     return () => clearTimeout(timer);
   }, [message]);
 
@@ -56,9 +56,16 @@ export default function AddToCartButton({ product, imgRef }: Props) {
     <>
       <button
         onClick={handleAdd}
-        className="mt-2 px-3 py-1 bg-gradient-to-r from-purple-500 to-indigo-500 shadow-sm cursor-pointer text-white rounded"
+        disabled={disabled}
+        className={`mt-2 px-3 py-1 rounded text-white shadow-sm transition
+          ${
+            disabled
+              ? "bg-gray-300 cursor-not-allowed"
+              : "bg-gradient-to-r from-purple-500 to-indigo-500 hover:opacity-90"
+          }
+        `}
       >
-        Add to Cart
+        {disabled ? "Out of stock" : "Add to Cart"}
       </button>
 
       {fly && (
@@ -69,6 +76,7 @@ export default function AddToCartButton({ product, imgRef }: Props) {
           onComplete={() => setFly(null)}
         />
       )}
+
       {message && (
         <div className="fixed top-4 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-4 py-2 rounded shadow">
           {message}
@@ -77,33 +85,3 @@ export default function AddToCartButton({ product, imgRef }: Props) {
     </>
   );
 }
-
-
-
-
-// "use client";
-
-// import { Product } from "@/services/types";
-// import { useCartStore } from "@/store/cartStore";
-
-// type Props = {
-//   product: Product;
-// };
-
-// export default function AddToCartButton({ product }: Props) {
-//   const addToCart = useCartStore((s) => s.addToCart);
-
-  
-
-//   return (
-//     <button
-//       onClick={() => {
-//         console.log("ADD TO CART CLICKED", product.id);
-//         addToCart(product);
-//       }}
-//       className="mt-3 w-full bg-black text-white py-2 rounded hover:bg-gray-800"
-//     >
-//       Add to Cart
-//     </button>
-//   );
-// }

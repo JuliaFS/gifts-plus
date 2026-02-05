@@ -19,6 +19,19 @@ type Errors = {
   description?: string;
   price?: string;
   stock?: string;
+  sale_start_at?: string;
+  sale_end_at?: string;
+};
+
+const formatDateForInput = (dateString: string | null | undefined): string => {
+  if (!dateString) return "";
+  try {
+    // Handles ISO strings from DB
+    return new Date(dateString).toISOString().split("T")[0];
+  } catch (e) {
+    // Fallback for invalid date strings
+    return "";
+  }
 };
 
 export default function EditProductModal({ product, onClose }: Props) {
@@ -32,6 +45,11 @@ export default function EditProductModal({ product, onClose }: Props) {
     price: product.price,
     stock: product.stock,
   });
+  const [salesForm, setSalesForm] = useState({
+    sales_price: product.sales_price ?? "",
+    sale_start_at: formatDateForInput(product.sale_start_at),
+    sale_end_at: formatDateForInput(product.sale_end_at),
+  });
 
   // Initialize selected categories from product
   const initialCategoryIds = product.product_categories
@@ -41,7 +59,8 @@ export default function EditProductModal({ product, onClose }: Props) {
   const [selectedCategories, setSelectedCategories] = useState<string[]>(initialCategoryIds);
 
   // Baseline for change detection
-  const [initialForm, setInitialForm] = useState(form);
+  const [initialForm, setInitialForm] = useState({ ...form });
+  const [initialSalesForm, setInitialSalesForm] = useState({ ...salesForm });
   const [initialSelectedCategories, setInitialSelectedCategories] = useState<string[]>(initialCategoryIds);
 
   // Images state
@@ -66,19 +85,26 @@ export default function EditProductModal({ product, onClose }: Props) {
     if (!form.price) e.price = "Price is required";
     if (form.stock === undefined) e.stock = "Stock is required";
     setErrors(e);
+
+    const salesPrice = Number(salesForm.sales_price);
+    if (salesPrice > 0) {
+      if (!salesForm.sale_start_at) e.sale_start_at = "Start date is required with a sales price.";
+      if (!salesForm.sale_end_at) e.sale_end_at = "End date is required with a sales price.";
+    }
+
+    if (salesForm.sale_start_at && salesForm.sale_end_at && new Date(salesForm.sale_start_at) >= new Date(salesForm.sale_end_at)) {
+      e.sale_end_at = "End date must be after the start date.";
+    }
     return Object.keys(e).length === 0;
   };
 
   // Detect if anything changed
   const hasChanges =
-    form.name !== initialForm.name ||
-    form.description !== initialForm.description ||
-    form.price !== initialForm.price ||
-    form.stock !== initialForm.stock ||
+    JSON.stringify(form) !== JSON.stringify(initialForm) ||
+    JSON.stringify(salesForm) !== JSON.stringify(initialSalesForm) ||
     JSON.stringify(selectedCategories) !== JSON.stringify(initialSelectedCategories) ||
     images.new.length > 0 ||
     images.existing.length !== initialImagesState.length;
-
   // Save function
   const save = async () => {
     if (!validate()) return;
@@ -98,6 +124,9 @@ export default function EditProductModal({ product, onClose }: Props) {
       // Update product
       await updateProduct(product.id, {
         ...form,
+        sales_price: salesForm.sales_price ? Number(salesForm.sales_price) : null,
+        sale_start_at: salesForm.sale_start_at || null,
+        sale_end_at: salesForm.sale_end_at || null,
         category_ids: selectedCategories,
         ...(newImageUrls.length && { image_urls: newImageUrls }),
       });
@@ -107,6 +136,7 @@ export default function EditProductModal({ product, onClose }: Props) {
 
       // Reset baseline for change detection
       setInitialForm({ ...form });
+      setInitialSalesForm({ ...salesForm });
       setInitialSelectedCategories([...selectedCategories]);
       setInitialImagesState([...images.existing, ...newImageUrls]);
     } catch (err: unknown) {
@@ -183,6 +213,51 @@ export default function EditProductModal({ product, onClose }: Props) {
           }}
         />
         {errors.stock && <p className="text-red-500">{errors.stock}</p>}
+
+        {/* Sales Price */}
+        <label className="block mb-1 font-medium">Sales Price</label>
+        <input
+          type="number"
+          step="0.01"
+          className="w-full p-2 border rounded mb-2"
+          placeholder="Sales Price (optional)"
+          value={salesForm.sales_price}
+          onChange={(e) => {
+            setSalesForm({ ...salesForm, sales_price: e.target.value });
+            clearError("sales_price");
+            setMessage(null);
+          }}
+        />
+
+        {/* Sale Start Date */}
+        <label className="block mb-1 font-medium">Sale Start Date</label>
+        <input
+          type="date"
+          className="w-full p-2 border rounded mb-2"
+          value={salesForm.sale_start_at}
+          onChange={(e) => {
+            setSalesForm({ ...salesForm, sale_start_at: e.target.value });
+            clearError("sale_start_at");
+            setMessage(null);
+          }}
+        />
+        {errors.sale_start_at && (
+          <p className="text-red-500">{errors.sale_start_at}</p>
+        )}
+
+        {/* Sale End Date */}
+        <label className="block mb-1 font-medium">Sale End Date</label>
+        <input
+          type="date"
+          className="w-full p-2 border rounded mb-2"
+          value={salesForm.sale_end_at}
+          onChange={(e) => {
+            setSalesForm({ ...salesForm, sale_end_at: e.target.value });
+            clearError("sale_end_at");
+            setMessage(null);
+          }}
+        />
+        {errors.sale_end_at && <p className="text-red-500">{errors.sale_end_at}</p>}
 
         {/* Categories */}
         <label className="block mb-1 font-medium">Categories</label>
@@ -268,4 +343,3 @@ export default function EditProductModal({ product, onClose }: Props) {
     </div>
   );
 }
-

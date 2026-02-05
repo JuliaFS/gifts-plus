@@ -13,7 +13,6 @@ import EditButton from "@/app/admin/products/EditButton";
 import DeleteButton from "@/app/admin/products/DeleteButton";
 import EditProductModal from "@/app/admin/products/EditProductModal";
 import { useCurrentUser } from "@/services/hooks/useCurrentUser";
-
 import { useFavorites } from "@/services/hooks/useFavorites";
 
 export default function ProductDetailsPage() {
@@ -33,7 +32,14 @@ export default function ProductDetailsPage() {
 
   const { favoritesQuery, addMutation, removeMutation } = useFavorites();
 
-  // Check if product is currently favorited
+  // ---- LOADING GUARDS (IMPORTANT) ----
+  if (isLoading) return <p>Loading product...</p>;
+  if (isError || !product) return <p>Product not found.</p>;
+
+  // ✅ SAFE: product exists here
+  const isOutOfStock = product.stock <= 0;
+
+  // Favorites
   const isFavorite = favoritesQuery.data?.some(
     (f: any) => f.product_id === productId
   );
@@ -44,20 +50,18 @@ export default function ProductDetailsPage() {
   };
 
   const images = useMemo(() => {
-    const list = product?.product_images ?? [];
+    const list = product.product_images ?? [];
     return list.map((img, i) => ({
       ...img,
-      id: (img as ProductImage).id || `img-${i}`,
-      position: (img as ProductImage).position || i,
+      id: img.id || `img-${i}`,
+      position: img.position || i,
     })) as ProductImage[];
   }, [product]);
 
-  // const displayImage = activeImage ?? images[0];
-  const currentImage = activeImage ?? images.find((img) => img.is_main) ?? images[0];
-  const displayImageUrl = currentImage?.image_url || "/placeholder.png";
+  const currentImage =
+    activeImage ?? images.find((img) => img.is_main) ?? images[0];
 
-  if (isLoading) return <p>Loading product...</p>;
-  if (isError || !product) return <p>Product not found.</p>;
+  const displayImageUrl = currentImage?.image_url || "/placeholder.png";
 
   const handleDelete = (productId: string) => {
     if (!confirm("Delete this product?")) return;
@@ -72,7 +76,6 @@ export default function ProductDetailsPage() {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">{product.name}</h1>
 
-        {/* FAVORITE BUTTON */}
         <button onClick={toggleFavorite} className="text-2xl ml-4">
           {isFavorite ? "❤️" : "🤍"}
         </button>
@@ -82,7 +85,6 @@ export default function ProductDetailsPage() {
       {isAdmin && (
         <div className="flex gap-2 mb-4">
           <EditButton product={product} onEdit={setEditingProduct} />
-
           <DeleteButton
             productId={product.id}
             onDelete={handleDelete}
@@ -117,29 +119,45 @@ export default function ProductDetailsPage() {
           </div>
         )}
 
-        {displayImageUrl && (
-          <div ref={mainImageRef} className="relative w-full h-[250px]">
-            <Image
-              src={displayImageUrl}
-              alt={product.name}
-              fill
-              className="object-contain rounded"
-              priority
-            />
-          </div>
-        )}
+        <div ref={mainImageRef} className="relative w-full h-[250px]">
+          <Image
+            src={displayImageUrl}
+            alt={product.name}
+            fill
+            className="object-contain rounded"
+            priority
+          />
+        </div>
       </div>
 
       {/* DETAILS */}
       <p className="mt-6 text-gray-700">{product.description}</p>
+
       <p className="mt-4 text-2xl font-bold">
-        ${Number(product.price).toFixed(2)}
+        {product.sales_price ? (
+          <>
+            <span className="line-through text-gray-400 mr-2">
+              {product.price.toFixed(2)} €
+            </span>
+            <span className="text-red-600">
+              {product.sales_price.toFixed(2)} €
+            </span>
+          </>
+        ) : (
+          `${product.price.toFixed(2)} €`
+        )}
       </p>
+
       <p className="text-sm text-gray-500 mt-1">Stock: {product.stock}</p>
 
-      <AddToCartButton product={product} imgRef={mainImageRef} />
+      {/* ✅ ADD TO CART DISABLED WHEN OUT OF STOCK */}
+      <AddToCartButton
+        product={product}
+        imgRef={mainImageRef}
+        disabled={isOutOfStock}
+      />
 
-      {/* EDIT MODAL */}
+      {/* EDIT MODAL (ADMIN ONLY, NEVER DISABLED BY STOCK) */}
       {editingProduct && (
         <EditProductModal
           product={editingProduct}

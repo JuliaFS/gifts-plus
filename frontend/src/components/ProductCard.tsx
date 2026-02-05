@@ -46,6 +46,8 @@ export default function ProductCard({
     (f: Favorite) => f.product_id === product.id,
   );
 
+  const isOutOfStock = product.stock <= 0;
+
   // Toggle favorite
   const toggleFavorite = () => {
     if (isFavorite) removeMutation.mutate(product.id);
@@ -94,7 +96,7 @@ ${badge === "HOT" && "bg-orange-500"}`}
         {/* PRODUCT LINK */}
         <Link href={href} className="flex flex-col flex-1">
           {/* IMAGE */}
-          <div className="relative mb-2 h-32">
+          <div className="relative mb-2 min-h-32">
             <Image
               src={mainImage}
               alt={product.name}
@@ -104,7 +106,7 @@ ${badge === "HOT" && "bg-orange-500"}`}
           </div>
 
           {/* TITLE */}
-          <h2 className="text-xl font-semibold line-clamp-2">{product.name}</h2>
+          <h2 className="text-xl font-semibold line-clamp-2 min-h-12">{product.name}</h2>
 
           {/* DESCRIPTION */}
           {showDescription && (
@@ -116,12 +118,12 @@ ${badge === "HOT" && "bg-orange-500"}`}
           {/* PRICE + STOCK */}
           <div className="mt-2 font-bold flex-1 flex flex-col justify-end items-end pr-4">
             {product.sales_price ? (
-              <>
+              <div>
                 <span className="line-through text-gray-400 mr-2">
                   {product.price.toFixed(2)} €
                 </span>
                 <span className="text-red-600">{product.sales_price.toFixed(2)} €</span>
-              </>
+              </div>
             ) : (
               <span>{product.price.toFixed(2)} €</span>
             )}
@@ -133,7 +135,7 @@ ${badge === "HOT" && "bg-orange-500"}`}
 
         {/* ADD TO CART BUTTON */}
         <div className="mx-auto pt-2">
-          <AddToCartButton product={product} imgRef={wrapperRef} />
+          <AddToCartButton product={product} imgRef={wrapperRef}  disabled={isOutOfStock}/>
         </div>
       </div>
     </div>

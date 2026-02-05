@@ -23,6 +23,9 @@ type FormErrors = {
   description?: string;
   price?: string;
   stock?: string;
+  sales_price?: string;
+  sale_start_at?: string;
+  sale_end_at?: string;
 };
 
 export default function AdminProductPage() {
@@ -65,6 +68,19 @@ export default function AdminProductPage() {
     if (!formData.get("price")) e.price = "Price is required";
     if (!formData.get("stock")) e.stock = "Stock is required";
     setErrors(e);
+
+    const salesPrice = Number(formData.get("sales_price"));
+    const startDate = formData.get("sale_start_at") as string;
+    const endDate = formData.get("sale_end_at") as string;
+
+    if (salesPrice > 0) {
+      if (!startDate) e.sale_start_at = "Start date is required with a sales price.";
+      if (!endDate) e.sale_end_at = "End date is required with a sales price.";
+    }
+
+    if (startDate && endDate && new Date(startDate) >= new Date(endDate)) {
+      e.sale_end_at = "End date must be after the start date.";
+    }
     return Object.keys(e).length === 0;
   };
 
@@ -85,6 +101,10 @@ export default function AdminProductPage() {
       files.map((file) => uploadProductImage(file))
     );
 
+    const sales_price = formData.get("sales_price") ? Number(formData.get("sales_price")) : null;
+    const sale_start_at = (formData.get("sale_start_at") as string) || null;
+    const sale_end_at = (formData.get("sale_end_at") as string) || null;
+
     createMutation.mutate(
       {
         name: formData.get("name") as string,
@@ -93,6 +113,9 @@ export default function AdminProductPage() {
         stock: Number(formData.get("stock")),
         image_urls,
         category_ids: selectedCategories, // pass selected categories
+        sales_price,
+        sale_start_at,
+        sale_end_at,
       },
       {
         onSuccess: () => {
@@ -183,6 +206,39 @@ export default function AdminProductPage() {
             onChange={() => clearError("stock")}
           />
           {errors.stock && <p className="text-red-500">{errors.stock}</p>}
+
+          {/* Sales Price */}
+          <input
+            name="sales_price"
+            type="number"
+            step="0.01"
+            className="w-full p-2 border rounded mb-2"
+            placeholder="Sales Price (optional)"
+            onChange={() => clearError("sales_price")}
+          />
+          {errors.sales_price && <p className="text-red-500">{errors.sales_price}</p>}
+
+          {/* Sale Start Date */}
+          <label className="block mb-1 font-medium">Sale Start Date</label>
+          <input
+            name="sale_start_at"
+            type="date"
+            className="w-full p-2 border rounded mb-2"
+            onChange={() => clearError("sale_start_at")}
+          />
+          {errors.sale_start_at && (
+            <p className="text-red-500">{errors.sale_start_at}</p>
+          )}
+
+          {/* Sale End Date */}
+          <label className="block mb-1 font-medium">Sale End Date</label>
+          <input
+            name="sale_end_at"
+            type="date"
+            className="w-full p-2 border rounded mb-2"
+            onChange={() => clearError("sale_end_at")}
+          />
+          {errors.sale_end_at && <p className="text-red-500">{errors.sale_end_at}</p>}
 
           {/* Categories */}
           <label className="block mb-1 font-medium">Categories</label>

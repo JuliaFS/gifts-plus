@@ -40,6 +40,8 @@ export type Product = {
     is_main: boolean;
   }[];
   product_categories: ProductCategoryLink[];
+  sale_start_at?: string | null;
+  sale_end_at?: string | null;
 };
 
 type ProductCategoryLink = {
@@ -57,6 +59,9 @@ export type CreateProductInput = {
   badge?: string;
   promotion?: string;
   category_ids?: string[]; // <--- important
+  sales_price?: number | null;
+  sale_start_at?: string | null;
+  sale_end_at?: string | null;
 };
 
 export type UpdateProductInput = {
