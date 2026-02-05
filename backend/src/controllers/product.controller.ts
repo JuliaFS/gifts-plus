@@ -1,4 +1,3 @@
-// src/controllers/product.controller.ts
 import { Request, Response, NextFunction } from "express";
 import * as productService from "../services/product.service";
 import { searchProducts } from "../services/product.service";
@@ -6,7 +5,7 @@ import { searchProducts } from "../services/product.service";
 export async function getProducts(
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) {
   try {
     const page = parseInt(req.query.page as string) || 1;
@@ -22,7 +21,7 @@ export async function getProducts(
 export async function createProduct(
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) {
   try {
     const { name, price, stock, description, image_urls, category_ids } =
@@ -56,7 +55,7 @@ export async function createProduct(
 export async function getProductById(
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) {
   try {
     const { id } = req.params;
@@ -79,7 +78,7 @@ export async function getProductById(
 export async function updateProduct(
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) {
   try {
     const { id } = req.params;
@@ -130,7 +129,7 @@ export async function updateProduct(
 export async function deleteProduct(
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) {
   try {
     const { id } = req.params;
@@ -155,7 +154,7 @@ export async function deleteProduct(
 export async function deleteProductImages(
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) {
   try {
     const { id } = req.params;
@@ -180,7 +179,7 @@ export async function deleteProductImages(
 export async function addBadgeToProduct(
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) {
   try {
     const { id } = req.params;
@@ -208,7 +207,7 @@ export async function addBadgeToProduct(
 export async function searchProductsHandler(
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) {
   try {
     const q = req.query.q as string;

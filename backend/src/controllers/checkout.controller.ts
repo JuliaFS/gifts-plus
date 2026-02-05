@@ -7,7 +7,7 @@ import { verifyStripePayment } from "../services/stripe/strype-payment.service";
 export async function checkoutHandler(
   req: AuthRequest,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) {
   try {
     if (!req.user) {
@@ -25,7 +25,7 @@ export async function checkoutHandler(
 export async function verifyPaymentController(
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) {
   try {
     const { paymentIntentId } = req.body;
@@ -45,7 +45,7 @@ export async function verifyPaymentController(
 export async function prepareCheckoutController(
   req: AuthRequest,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) {
   try {
     if (!req.user) {

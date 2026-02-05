@@ -4,7 +4,7 @@ import * as categoryService from "../services/category.service";
 export async function getCategories(
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) {
   try {
     const categories = await categoryService.getCategories();
@@ -17,7 +17,7 @@ export async function getCategories(
 export async function createCategory(
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) {
   try {
     const { name, slug } = req.body;
@@ -42,7 +42,7 @@ export async function createCategory(
 export async function getProductsByCategory(
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) {
   try {
     const { slug } = req.params;

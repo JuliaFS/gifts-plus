@@ -6,12 +6,13 @@ export async function createPaymentIntentController(
   res: Response
 ) {
   try {
-    const { amount, userId, orderId } = req.body;
+    const { amount, userId, orderId, customerEmail } = req.body;
 
     const paymentIntent = await createStripePaymentIntent({
       amount,
       userId,
       orderId,
+      customerEmail,
     });
 
     res.json(paymentIntent);

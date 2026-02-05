@@ -8,7 +8,7 @@ const JWT_EXPIRES_IN = Number(process.env.JWT_EXPIRES_IN || 3600);
 export async function register(
   req: AuthRequest,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) {
   try {
     const { email, password, address, phone } = req.body;
@@ -28,7 +28,7 @@ export async function register(
       process.env.JWT_SECRET!,
       {
         expiresIn: JWT_EXPIRES_IN,
-      }
+      },
     );
 
     res.cookie("token", token, {
@@ -57,7 +57,7 @@ export async function login(req: AuthRequest, res: Response) {
         user: { id: user.id, email: user.email, role: user.role || "customer" },
       },
       process.env.JWT_SECRET!,
-      { expiresIn: JWT_EXPIRES_IN }
+      { expiresIn: JWT_EXPIRES_IN },
     );
 
     res.cookie("token", token, {
@@ -92,7 +92,7 @@ export async function login(req: AuthRequest, res: Response) {
 export async function getMe(
   req: AuthRequest,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) {
   try {
     const user = await authService.getUserById(req.user!.id);
@@ -114,7 +114,7 @@ export function logout(req: AuthRequest, res: Response) {
 export async function checkEmail(
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) {
   try {
     const email = req.query.email as string | null;
@@ -158,62 +158,6 @@ export async function forgotPassword(req: Request, res: Response) {
   }
 }
 
-// export async function resetPassword(req: Request, res: Response) {
-//   try {
-//     const { token, password } = req.body;
-
-//     if (!token || !password) {
-//       return res.status(400).json({ message: "Invalid request" });
-//     }
-
-//     await authService.resetPassword(token, password);
-
-//     return res.status(200).json({ message: "Password successfully reset" });
-//   } catch (error: any) {
-//     return res
-//       .status(error.status || 500)
-//       .json({ message: error.message });
-//   }
-// }
-
-// export async function resetPassword(req: Request, res: Response) {
-//   try {
-//     const { token, password } = req.body;
-
-//     if (!token || !password) {
-//       return res.status(400).json({ message: "Invalid request" });
-//     }
-
-//     // 1. Reset the password and get the user data back
-//     const user = await authService.resetPassword(token, password);
-
-//     // 2. Generate the JWT (Matches your register/login logic)
-//     const jwtToken = jwt.sign(
-//       { user: { id: user.id, email: user.email, role: user.role || 'customer' } },
-//       process.env.JWT_SECRET!,
-//       { expiresIn: JWT_EXPIRES_IN }
-//     );
-
-//     // 3. Set the HttpOnly cookie
-//     res.cookie("token", jwtToken, {
-//       httpOnly: true,
-//       secure: process.env.NODE_ENV === "production",
-//       sameSite: "lax",
-//       maxAge: JWT_EXPIRES_IN * 1000,
-//     });
-
-//     // 4. Return success and the user object
-//     return res.status(200).json({
-//       message: "Password successfully reset",
-//       user
-//     });
-//   } catch (error: any) {
-//     return res
-//       .status(error.status || 500)
-//       .json({ message: error.message });
-//   }
-// }
-
 export async function resetPassword(req: Request, res: Response) {
   try {
     const { token, password } = req.body;
@@ -233,7 +177,7 @@ export async function resetPassword(req: Request, res: Response) {
         user: { id: user.id, email: user.email, role: user.role || "customer" },
       },
       process.env.JWT_SECRET!,
-      { expiresIn: JWT_EXPIRES_IN }
+      { expiresIn: JWT_EXPIRES_IN },
     );
 
     // 3. Set the HttpOnly cookie so the user is logged in instantly

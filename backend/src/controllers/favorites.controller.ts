@@ -1,9 +1,12 @@
-import { Request, Response, NextFunction } from "express";
+import { Response, NextFunction } from "express";
 import { AuthRequest } from "../middleware/auth.middleware";
 import * as favoritesService from "../services/favorites.service";
 
-
-export async function addFavoriteHandler(req: AuthRequest, res: Response, next: NextFunction) {
+export async function addFavoriteHandler(
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction,
+) {
   try {
     const userId = req.user!.id;
     const productId = req.params.productId;
@@ -16,7 +19,11 @@ export async function addFavoriteHandler(req: AuthRequest, res: Response, next: 
   }
 }
 
-export async function removeFavoriteHandler(req: AuthRequest, res: Response, next: NextFunction) {
+export async function removeFavoriteHandler(
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction,
+) {
   try {
     const userId = req.user!.id;
     const productId = req.params.productId;
@@ -29,7 +36,11 @@ export async function removeFavoriteHandler(req: AuthRequest, res: Response, nex
   }
 }
 
-export async function getFavoritesHandler(req: AuthRequest, res: Response, next: NextFunction) {
+export async function getFavoritesHandler(
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction,
+) {
   try {
     const userId = req.user!.id;
 
