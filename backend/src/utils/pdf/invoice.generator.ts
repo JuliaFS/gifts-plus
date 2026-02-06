@@ -102,44 +102,87 @@ export function generateInvoice(orderId: string, items: OrderItem[]): Promise<Bu
       .text("Price", priceX, tableTop)
       .text("Total", totalX, tableTop);
 
-    // ---------------------------------------------------------
-    // 5. Table Rows
-    // ---------------------------------------------------------
-    let y = tableTop + 25;
-    let grandTotal = 0;
+    // // ---------------------------------------------------------
+    // // 5. Table Rows
+    // // ---------------------------------------------------------
+    // let y = tableTop + 25;
+    // let grandTotal = 0;
 
-    doc.font(hasCustomFont ? "DejaVu" : "Helvetica");
+    // doc.font(hasCustomFont ? "DejaVu" : "Helvetica");
 
-    items.forEach((item) => {
-      const name = item.products.name;
-      const qty = item.quantity;
-      const price = item.price_at_purchase;
-      const lineTotal = price * qty;
-      grandTotal += lineTotal;
+    // items.forEach((item) => {
+    //   const name = item.products.name;
+    //   const qty = item.quantity;
+    //   const price = item.price_at_purchase;
+    //   const lineTotal = price * qty;
+    //   grandTotal += lineTotal;
 
-      // Check for page break
-      if (y > 700) {
-        doc.addPage();
-        y = 50;
-      }
+    //   // Check for page break
+    //   if (y > 700) {
+    //     doc.addPage();
+    //     y = 50;
+    //   }
 
-      doc
-        .fontSize(10)
-        .text(name, itemX + 5, y, { width: 240 })
-        .text(qty.toString(), quantityX, y)
-        .text(price.toFixed(2) + " €", priceX, y)
-        .text(lineTotal.toFixed(2) + " €", totalX, y);
+    //   doc
+    //     .fontSize(10)
+    //     .text(name, itemX + 5, y, { width: 240 })
+    //     .text(qty.toString(), quantityX, y)
+    //     .text(price.toFixed(2) + " €", priceX, y)
+    //     .text(lineTotal.toFixed(2) + " €", totalX, y);
 
-      // Draw line below row
-      doc
-        .moveTo(itemX, y + 15)
-        .lineTo(550, y + 15)
-        .strokeColor("#eeeeee")
-        .lineWidth(1)
-        .stroke();
+    //   // Draw line below row
+    //   doc
+    //     .moveTo(itemX, y + 15)
+    //     .lineTo(550, y + 15)
+    //     .strokeColor("#eeeeee")
+    //     .lineWidth(1)
+    //     .stroke();
 
-      y += 25;
-    });
+    //   y += 25;
+    // });
+// ---------------------------------------------------------
+// 5. Table Rows
+// ---------------------------------------------------------
+let y = tableTop + 25;
+let grandTotal = 0;
+
+doc.font(hasCustomFont ? "DejaVu" : "Helvetica");
+
+items.forEach((item) => {
+  const name = item.products.name;
+  const qty = item.quantity;
+  const price = item.price_at_purchase;
+  const lineTotal = price * qty;
+  grandTotal += lineTotal;
+
+  const itemTextOptions = { width: 240 };
+  const textHeight = doc.heightOfString(name, itemTextOptions);
+
+  const rowHeight = Math.max(20, textHeight + 5);
+
+  // Page break check (uses dynamic height)
+  if (y + rowHeight > 700) {
+    doc.addPage();
+    y = 50;
+  }
+
+  doc
+    .fontSize(10)
+    .text(name, itemX + 5, y, itemTextOptions)
+    .text(qty.toString(), quantityX, y)
+    .text(price.toFixed(2) + " €", priceX, y)
+    .text(lineTotal.toFixed(2) + " €", totalX, y);
+
+  // Divider line BELOW the tallest content
+  doc
+    .moveTo(itemX, y + rowHeight)
+    .lineTo(550, y + rowHeight)
+    .strokeColor("#eeeeee")
+    .lineWidth(1)
+    .stroke();
+
+  y += rowHeight + 5;
+});
 
     // ---------------------------------------------------------
     // 6. Grand Total
