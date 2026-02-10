@@ -109,24 +109,6 @@ export default function DashboardPage() {
         )}
       </div>
 
-      {/* Most Popular Favorites */}
-      <div className="space-y-4">
-        <h2 className="text-2xl font-bold">Most Popular Favorites</h2>
-        {favoritesQuery.isLoading ? (
-          <p className="text-center mt-10">Loading favorites...</p>
-        ) : favoritesQuery.isError ? (
-          <p className="text-red-500 text-center mt-10">Failed to load favorites.</p>
-        ) : (
-          <div className="flex space-x-4 overflow-x-auto py-2">
-            {popularFavorites.map((fav) => (
-              <div className="min-w-[200px]" key={fav.product_id}>
-                <ProductCard product={fav.products} />
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
       {/* Recent Orders */}
       {currentUser?.role === "ADMIN" && (
         <div className="space-y-4">
