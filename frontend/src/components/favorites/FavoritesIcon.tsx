@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, MouseEvent } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useCurrentUser } from "@/services/hooks/useCurrentUser";
 import { useFavorites } from "@/services/hooks/useFavorites";
@@ -16,22 +16,27 @@ export default function FavoritesIcon() {
 
   // Fetch favorites only when modal opens
   const { favoritesQuery } = useFavorites(isOpen);
-  const favoritesData = favoritesQuery.data ?? [];
+  const favoritesData = useMemo(
+    () => favoritesQuery.data ?? [],
+    [favoritesQuery.data],
+  );
 
   const handleClick = () => {
     if (!user) {
       alert("You need to login first. Redirecting...");
       setTimeout(() => {
         router.push(`/login?redirect=${currentPath}`);
-      }, 2000);
+      }, 1000);
       return;
     }
     setIsOpen(true); // triggers favorites fetch
   };
 
-  const handleProductClick = (productId: string) => {
+  // const handleProductClick = (productId: string) => {
+  const handleProductClick = () => {
     setIsOpen(false);
-    router.push(`/products/${productId}`);
+    // router.push(`/products/${productId}`);
+    router.push(`/products`);
   };
 
   const goToFavoritesPage = () => {
@@ -86,7 +91,7 @@ export default function FavoritesIcon() {
             {/* Favorites Grid */}
             {favoritesData.length > 0 && (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {favoritesData.map((fav: Favorite) => (
+                {/* {favoritesData.map((fav: Favorite) => (
                   <div
                     key={fav.product_id}
                     onClick={() => handleProductClick(fav.product_id)}
@@ -94,7 +99,20 @@ export default function FavoritesIcon() {
                   >
                     <ProductCard product={fav.products} />
                   </div>
-                ))}
+                ))} */}
+                {favoritesData.map((fav: Favorite) => {
+                  if (!fav.products) return null; // 👈 THIS IS THE FIX
+
+                  return (
+                    <div
+                      key={fav.product_id}
+                      onClick={() => handleProductClick()}
+                      className="cursor-pointer"
+                    >
+                      <ProductCard product={fav.products} />
+                    </div>
+                  );
+                })}
               </div>
             )}
 
@@ -115,5 +133,3 @@ export default function FavoritesIcon() {
     </>
   );
 }
-
-

@@ -39,7 +39,6 @@ Key Features
     Total number of favorited items across the platform.
         Technical Architecture
             Frontend
-    Frontend
     Framework: Next.js
     State Management: Zustand for global state (e.g., shopping cart).
     Data Fetching: TanStack Query (useQuery, useMutation) for managing server state, caching, and asynchronous operations.
@@ -47,13 +46,9 @@ Key Features
     Styling: Tailwind CSS.
 
             Backend
-    Backend
     Framework: Node.js with Express.
     Database & Auth: Supabase is used for the PostgreSQL database, user authentication, and file storage (for PDF invoices).
-    Security: HTTP-only cookies are used for secure authentication and session management.
     Payments: The backend integrates with the Stripe SDK to create Payment Intents and verify payment success.
     Emailing: Nodemailer is used to send transactional emails (e.g., order confirmations) to customers and admins.
     PDF Generation: pdfkit is used to dynamically generate PDF invoices for every order, with support for Cyrillic characters (Bulgarian).
     Webhooks: A dedicated endpoint listens for Stripe webhooks (e.g., payment_intent.succeeded) to finalize orders asynchronously.
-
-    Site demo: https://gifts-plus.vercel.app/
