@@ -6,26 +6,15 @@ import { useGetProducts } from "../products/hooks/useGetProducts";
 import ProductCard from "@/components/ProductCard";
 import { Product } from "@/services/types";
 import { useAuthGuard } from "@/services/hooks/useAuthGuard";
+import { getBadges } from "@/utils/productUtils";
 
 export default function DashboardPage() {
   // Queries
   const { data: orders = [], isLoading: ordersLoading } = useAdminOrders();
-  const { guard, currentUser, showMessage } = useAuthGuard();
+  const { currentUser, showMessage } = useAuthGuard();
   const { favoritesQuery } = useFavorites(!!currentUser);
   const { data: productsData, isLoading: productsLoading } = useGetProducts(1);
   const products = productsData?.data || [];
-
-  // Helper: compute badges
-  const TWENTY_DAYS_MS = 20 * 24 * 60 * 60 * 1000;
-  const referenceTime = new Date().getTime();
-
-  const getBadges = (product: Product) => [
-    new Date(product.created_at).getTime() >= referenceTime - TWENTY_DAYS_MS
-      ? "NEW"
-      : null,
-    product.sales_price != null ? "SALE" : null,
-    product.sales_count != null && product.sales_count >= 50 ? "HOT" : null,
-  ].filter(Boolean) as string[];
 
   // Derived data
   const hotProducts = products.filter((p) => getBadges(p).includes("HOT"));

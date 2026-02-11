@@ -43,6 +43,12 @@ Key Features
     State Management: Zustand for global state (e.g., shopping cart).
     Data Fetching: TanStack Query (useQuery, useMutation) for managing server state, caching, and asynchronous operations.
     Payments: Stripe.js and React Stripe.js for handling online credit card payments.
+    Tests: Jest
+    # To run all tests once
+        npm test
+
+        # To run tests in watch mode (re-runs on file changes)
+        npm test -- --watch
     Styling: Tailwind CSS.
 
             Backend

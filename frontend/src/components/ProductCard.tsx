@@ -7,24 +7,7 @@ import AddToCartButton from "./cart/AddToCartButton";
 import { useRef, useState, useEffect } from "react";
 import { useFavorites } from "@/services/hooks/useFavorites";
 import { useAuthGuard } from "@/services/hooks/useAuthGuard";
-
-type BadgeType = "NEW" | "SALE" | "HOT";
-
-function isNew(createdAt: string) {
-  const created = new Date(createdAt);
-  const now = new Date();
-  return (now.getTime() - created.getTime()) / 86400000 <= 20;
-}
-
-function getBadges(product: Product): BadgeType[] {
-  const badges: BadgeType[] = [];
-
-  if (isNew(product.created_at)) badges.push("NEW");
-  if (product.sales_price != null) badges.push("SALE");
-  if ((product.sales_count ?? 0) >= 50) badges.push("HOT");
-
-  return badges;
-}
+import { getBadges } from "@/utils/productUtils";
 
 interface ProductCardProps {
   product: Product;
