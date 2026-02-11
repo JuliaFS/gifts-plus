@@ -47,9 +47,6 @@ export default function DashboardPage() {
       <div key={p.id} className="relative">
         <ProductCard
           product={p}
-          onFavorite={() =>
-            guard(() => console.log("Favorite clicked!"))
-          }
         />
         {/* Temporary message overlay */}
         {showMessage && (
