@@ -4,7 +4,7 @@ import { CardElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import { useCartStore } from "@/store/cartStore";
 import { useCurrentUser } from "@/services/hooks/useCurrentUser";
 import { useState } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { syncCartToBackend } from "@/services/cart";
 import { useCheckout } from "@/app/cart/hooks/useCheckout";
 import { usePrepareCheckout } from "@/app/cart/hooks/usePrepareToCheckout";
@@ -20,9 +20,12 @@ export default function CheckoutForm() {
   const userId = useCurrentUser().data?.id;
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   const [error, setError] = useState<string | null>(null);
-  const [paymentType, setPaymentType] = useState<PaymentType>("delivery");
+  const [paymentType, setPaymentType] = useState<PaymentType>(
+    searchParams.get("payment") === "online" ? "online" : "delivery"
+  );
   const [isConfirmingStripe, setIsConfirmingStripe] = useState(false);
 
   const total = items.reduce((sum, i) => {
@@ -45,7 +48,8 @@ export default function CheckoutForm() {
     setError(null);
     if (!userId) {
       setError("You must be logged in to checkout.");
-      setTimeout(() => router.push(`/login?redirect=${encodeURIComponent(pathname)}`), 2000);
+      const returnUrl = `${pathname}?payment=${paymentType}`;
+      setTimeout(() => router.push(`/login?redirect=${encodeURIComponent(returnUrl)}`), 2000);
       return;
     }
     if (items.length === 0) {
@@ -159,7 +163,7 @@ export default function CheckoutForm() {
       </div>
 
       {/* Stripe Card input only for online */}
-      {paymentType === "online" && (
+      {paymentType === "online" && userId && (
         <CardElement
           className="my-3 p-2 border rounded"
           options={{ hidePostalCode: true }}
