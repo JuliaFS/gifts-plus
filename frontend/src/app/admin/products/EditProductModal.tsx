@@ -151,194 +151,209 @@ export default function EditProductModal({ product, onClose }: Props) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center max-h-sm overflow-y-auto">
-      <div className="bg-white rounded-lg p-6 w-full max-w-md">
-        <h2 className="text-xl font-bold mb-4">Edit Product</h2>
+    <div className="fixed inset-0 bg-purple-300/20 z-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-lg w-full max-w-md flex flex-col max-h-[75vh]">
+        {/* Header */}
+        <div className="p-6 pb-4 flex-shrink-0 relative">
+          <h2 className="text-xl font-bold">Edit Product</h2>
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-2xl cursor-pointer"
+            aria-label="Close"
+          >
+            &times;
+          </button>
+        </div>
 
-        {/* Message */}
-        {message && (
-          <p className={`mb-2 ${message.includes("successfully") ? "text-green-600" : "text-red-500"}`}>
-            {message}
-          </p>
-        )}
+        {/* Scrollable Content */}
+        <div className="px-6 overflow-y-auto flex-grow">
+          {/* Message */}
+          {message && (
+            <p className={`mb-2 ${message.includes("successfully") ? "text-green-600" : "text-red-500"}`}>
+              {message}
+            </p>
+          )}
 
-        {/* FORM */}
-        <input
-          className="w-full p-2 border rounded mb-2"
-          value={form.name}
-          onChange={(e) => {
-            setForm({ ...form, name: e.target.value });
-            clearError("name");
-            setMessage(null);
-          }}
-        />
-        {errors.name && <p className="text-red-500">{errors.name}</p>}
-
-        <textarea
-          className="w-full p-2 border rounded mb-2"
-          value={form.description}
-          onChange={(e) => {
-            setForm({ ...form, description: e.target.value });
-            clearError("description");
-            setMessage(null);
-          }}
-        />
-        {errors.description && <p className="text-red-500">{errors.description}</p>}
-
-        <input
-          type="number"
-          className="w-full p-2 border rounded mb-2"
-          value={form.price}
-          onChange={(e) => {
-            setForm({ ...form, price: Number(e.target.value) });
-            clearError("price");
-            setMessage(null);
-          }}
-        />
-        {errors.price && <p className="text-red-500">{errors.price}</p>}
-
-        <input
-          type="text"
-          inputMode="numeric"
-          pattern="[0-9]*"
-          value={form.stock}
-          className="w-full p-2 border rounded mb-2"
-          placeholder="Enter stock..."
-          onChange={(e) => {
-            const value = e.target.value;
-            if (/^\d*$/.test(value)) {
-              setForm({ ...form, stock: Number(value) });
-              clearError("stock");
-              setMessage(null);
-            }
-          }}
-        />
-        {errors.stock && <p className="text-red-500">{errors.stock}</p>}
-
-        {/* Sales Price */}
-        <label className="block mb-1 font-medium">Sales Price</label>
-        <input
-          type="number"
-          step="0.01"
-          className="w-full p-2 border rounded mb-2"
-          placeholder="Sales Price (optional)"
-          value={salesForm.sales_price}
-          onChange={(e) => {
-            setSalesForm({ ...salesForm, sales_price: e.target.value });
-            clearError("sales_price");
-            setMessage(null);
-          }}
-        />
-
-        {/* Sale Start Date */}
-        <label className="block mb-1 font-medium">Sale Start Date</label>
-        <input
-          type="date"
-          className="w-full p-2 border rounded mb-2"
-          value={salesForm.sale_start_at}
-          onChange={(e) => {
-            setSalesForm({ ...salesForm, sale_start_at: e.target.value });
-            clearError("sale_start_at");
-            setMessage(null);
-          }}
-        />
-        {errors.sale_start_at && (
-          <p className="text-red-500">{errors.sale_start_at}</p>
-        )}
-
-        {/* Sale End Date */}
-        <label className="block mb-1 font-medium">Sale End Date</label>
-        <input
-          type="date"
-          className="w-full p-2 border rounded mb-2"
-          value={salesForm.sale_end_at}
-          onChange={(e) => {
-            setSalesForm({ ...salesForm, sale_end_at: e.target.value });
-            clearError("sale_end_at");
-            setMessage(null);
-          }}
-        />
-        {errors.sale_end_at && <p className="text-red-500">{errors.sale_end_at}</p>}
-
-        {/* Categories */}
-        <label className="block mb-1 font-medium">Categories</label>
-        {categoriesLoading ? (
-          <p>Loading categories...</p>
-        ) : (
-          <select
-            multiple
+          {/* FORM */}
+          <input
             className="w-full p-2 border rounded mb-2"
-            value={selectedCategories}
+            value={form.name}
             onChange={(e) => {
-              setSelectedCategories(Array.from(e.target.selectedOptions, (opt) => opt.value));
+              setForm({ ...form, name: e.target.value });
+              clearError("name");
               setMessage(null);
             }}
-          >
-            {categories.map((cat: Category) => (
-              <option key={cat.id} value={cat.id}>
-                {cat.name}
-              </option>
-            ))}
-          </select>
-        )}
+          />
+          {errors.name && <p className="text-red-500">{errors.name}</p>}
 
-        {/* Images */}
-        {images.existing.length > 0 && (
-          <div className="grid grid-cols-3 gap-2 mb-3">
-            {images.existing.map((url, i) => (
-              <div key={url} className="relative h-20 w-full">
-                <Image src={url} alt="Product image" fill className="object-cover rounded" />
-                <button
-                  onClick={() => removeExisting(i)}
-                  className="absolute top-0 right-0 bg-red-500 text-white w-5 h-5 rounded-full text-xs"
-                >
-                  ×
-                </button>
-              </div>
-            ))}
+          <textarea
+            className="w-full p-2 border rounded mb-2"
+            value={form.description}
+            onChange={(e) => {
+              setForm({ ...form, description: e.target.value });
+              clearError("description");
+              setMessage(null);
+            }}
+          />
+          {errors.description && <p className="text-red-500">{errors.description}</p>}
+
+          <input
+            type="number"
+            className="w-full p-2 border rounded mb-2"
+            value={form.price}
+            onChange={(e) => {
+              setForm({ ...form, price: Number(e.target.value) });
+              clearError("price");
+              setMessage(null);
+            }}
+          />
+          {errors.price && <p className="text-red-500">{errors.price}</p>}
+
+          <input
+            type="text"
+            inputMode="numeric"
+            pattern="[0-9]*"
+            value={form.stock}
+            className="w-full p-2 border rounded mb-2"
+            placeholder="Enter stock..."
+            onChange={(e) => {
+              const value = e.target.value;
+              if (/^\d*$/.test(value)) {
+                setForm({ ...form, stock: Number(value) });
+                clearError("stock");
+                setMessage(null);
+              }
+            }}
+          />
+          {errors.stock && <p className="text-red-500">{errors.stock}</p>}
+
+          {/* Sales Price */}
+          <label className="block mb-1 font-medium">Sales Price</label>
+          <input
+            type="number"
+            step="0.01"
+            className="w-full p-2 border rounded mb-2"
+            placeholder="Sales Price (optional)"
+            value={salesForm.sales_price}
+            onChange={(e) => {
+              setSalesForm({ ...salesForm, sales_price: e.target.value });
+              clearError("sales_price");
+              setMessage(null);
+            }}
+          />
+
+          {/* Sale Start Date */}
+          <label className="block mb-1 font-medium">Sale Start Date</label>
+          <input
+            type="date"
+            className="w-full p-2 border rounded mb-2"
+            value={salesForm.sale_start_at}
+            onChange={(e) => {
+              setSalesForm({ ...salesForm, sale_start_at: e.target.value });
+              clearError("sale_start_at");
+              setMessage(null);
+            }}
+          />
+          {errors.sale_start_at && (
+            <p className="text-red-500">{errors.sale_start_at}</p>
+          )}
+
+          {/* Sale End Date */}
+          <label className="block mb-1 font-medium">Sale End Date</label>
+          <input
+            type="date"
+            className="w-full p-2 border rounded mb-2"
+            value={salesForm.sale_end_at}
+            onChange={(e) => {
+              setSalesForm({ ...salesForm, sale_end_at: e.target.value });
+              clearError("sale_end_at");
+              setMessage(null);
+            }}
+          />
+          {errors.sale_end_at && <p className="text-red-500">{errors.sale_end_at}</p>}
+
+          {/* Categories */}
+          <label className="block mb-1 font-medium">Categories</label>
+          {categoriesLoading ? (
+            <p>Loading categories...</p>
+          ) : (
+            <select
+              multiple
+              className="w-full p-2 border rounded mb-2"
+              value={selectedCategories}
+              onChange={(e) => {
+                setSelectedCategories(Array.from(e.target.selectedOptions, (opt) => opt.value));
+                setMessage(null);
+              }}
+            >
+              {categories.map((cat: Category) => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.name}
+                </option>
+              ))}
+            </select>
+          )}
+
+          {/* Images */}
+          {images.existing.length > 0 && (
+            <div className="grid grid-cols-3 gap-2 mb-3">
+              {images.existing.map((url, i) => (
+                <div key={url} className="relative h-20 w-full">
+                  <Image src={url} alt="Product image" fill className="object-cover rounded" />
+                  <button
+                    onClick={() => removeExisting(i)}
+                    className="absolute top-0 right-0 bg-red-500 text-white w-5 h-5 rounded-full text-xs"
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {images.previews.length > 0 && (
+            <div className="grid grid-cols-3 gap-2 mb-3">
+              {images.previews.map((url, i) => (
+                <div key={url} className="relative h-20 w-full">
+                  <Image
+                    src={url}
+                    alt="New image preview"
+                    fill
+                    className="object-cover rounded border border-green-400"
+                  />
+                  <button
+                    onClick={() => removeNew(i)}
+                    className="absolute top-0 right-0 bg-red-500 text-white w-5 h-5 rounded-full text-xs"
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <input
+            type="file"
+            multiple
+            accept="image/*"
+            onChange={(e) => addImages(Array.from(e.target.files || []))}
+          />
+        </div>
+
+        {/* Footer */}
+        <div className="p-6 pt-4 flex-shrink-0">
+          <div className="flex gap-3">
+            <button
+              onClick={save}
+              disabled={!hasChanges}
+              className="flex-1 bg-purple-500 text-white py-2 rounded cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Save
+            </button>
+            <button onClick={onClose} className="flex-1 bg-gray-400 text-white py-2 rounded cursor-pointer">
+              Cancel
+            </button>
           </div>
-        )}
-
-        {images.previews.length > 0 && (
-          <div className="grid grid-cols-3 gap-2 mb-3">
-            {images.previews.map((url, i) => (
-              <div key={url} className="relative h-20 w-full">
-                <Image
-                  src={url}
-                  alt="New image preview"
-                  fill
-                  className="object-cover rounded border border-green-400"
-                />
-                <button
-                  onClick={() => removeNew(i)}
-                  className="absolute top-0 right-0 bg-red-500 text-white w-5 h-5 rounded-full text-xs"
-                >
-                  ×
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
-
-        <input
-          type="file"
-          multiple
-          accept="image/*"
-          onChange={(e) => addImages(Array.from(e.target.files || []))}
-        />
-
-        {/* Actions */}
-        <div className="flex gap-3 mt-6">
-          <button
-            onClick={save}
-            disabled={!hasChanges}
-            className="flex-1 bg-blue-600 text-white py-2 rounded disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            Save
-          </button>
-          <button onClick={onClose} className="flex-1 bg-gray-400 text-white py-2 rounded">
-            Cancel
-          </button>
         </div>
       </div>
     </div>
