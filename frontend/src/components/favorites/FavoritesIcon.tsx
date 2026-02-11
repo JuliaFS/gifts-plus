@@ -97,15 +97,6 @@ export default function FavoritesIcon() {
             {/* Favorites Grid */}
             {favoritesData.length > 0 && (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {/* {favoritesData.map((fav: Favorite) => (
-                  <div
-                    key={fav.product_id}
-                    onClick={() => handleProductClick(fav.product_id)}
-                    className="cursor-pointer"
-                  >
-                    <ProductCard product={fav.products} />
-                  </div>
-                ))} */}
                 {favoritesData.map((fav: Favorite) => {
                   if (!fav.products) return null; // 👈 THIS IS THE FIX
 

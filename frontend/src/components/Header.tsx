@@ -17,7 +17,8 @@ export default function Header() {
   const queryClient = useQueryClient();
   const { data: currentUser, isLoading } = useCurrentUser();
   const [searchQuery, setSearchQuery] = useState("");
-  const { data: categories = [], isLoading: categoriesLoading } = useCategories();
+  const { data: categories = [], isLoading: categoriesLoading } =
+    useCategories();
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const logoutMutation = useMutation({
@@ -148,15 +149,23 @@ export default function Header() {
           </div>
 
           {/* Other menu links */}
-          <Link href="/about" className="hover:text-green-300 transition-colors">
+          <Link
+            href="/about"
+            className="hover:text-green-300 transition-colors"
+          >
             About Us
           </Link>
-          <Link href="/contact" className="hover:text-green-300 transition-colors">
+          <Link
+            href="/contact"
+            className="hover:text-green-300 transition-colors"
+          >
             Contact
           </Link>
 
           {/* Phone info */}
-          <span className="hidden md:inline-block">Call us: +1 234 567 890</span>
+          <span className="hidden md:inline-block">
+            Call us: +1 234 567 890
+          </span>
         </nav>
       </div>
     </header>
