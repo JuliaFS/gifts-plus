@@ -19,13 +19,13 @@ export default function CategoryPage({ params }: Props) {
   if (isError || !category) return <p>Failed to load category.</p>;
 
   return (
-    <div className="container mx-auto py-8 px-12 md:px-0">
+    <div className="container mx-6 md:mx-auto py-8">
       <h1 className="text-lg md:text-2xl font-bold mb-6 capitalize text-center">{category.name}</h1>
 
       {category.products?.length === 0 ? (
         <p>No products found in this category.</p>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-8 px-12">
           {category.products.map((product: Product) => (
             <ProductCard
               key={product.id}
