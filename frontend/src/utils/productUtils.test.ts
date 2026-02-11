@@ -1,14 +1,10 @@
 import { getBadges } from "./productUtils";
 import { Product } from "@/services/types";
 
-// Mock Date.now() to get consistent results for the "NEW" badge test
-const MOCK_DATE = new Date("2024-01-21T00:00:00.000Z");
-jest.spyOn(global, "Date").mockImplementation(() => MOCK_DATE as any);
-
 // Helper to create a mock product, making tests cleaner
-const createMockProduct = (overrides: Partial<Product>): Product => {
+const createMockProduct = (overrides: Partial<Product> = {}): Product => {
   return {
-    id: "1",
+    id: "11eef365-e147-425d-a26e-9af8959d867b",
     name: "Test Product",
     description: "A test product",
     price: 100,
@@ -16,11 +12,26 @@ const createMockProduct = (overrides: Partial<Product>): Product => {
     created_at: new Date().toISOString(),
     product_images: [],
     product_categories: [],
+    sales_price: null,
+    sales_count: 0,
     ...overrides,
   };
 };
 
+
 describe("getBadges", () => {
+  // Use fake timers to control `new Date()` for consistent test results
+  beforeAll(() => {
+    jest.useFakeTimers();
+    // Set the "current" date for all tests in this suite
+    jest.setSystemTime(new Date("2024-01-21T00:00:00.000Z"));
+  });
+
+  // Restore real timers after all tests in this suite are done
+  afterAll(() => {
+    jest.useRealTimers();
+  });
+
   it('should return ["NEW"] for a product created within the last 20 days', () => {
     const product = createMockProduct({
       created_at: new Date("2024-01-20T00:00:00.000Z").toISOString(),
