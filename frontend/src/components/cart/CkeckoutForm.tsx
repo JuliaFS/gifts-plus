@@ -4,7 +4,7 @@ import { CardElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import { useCartStore } from "@/store/cartStore";
 import { useCurrentUser } from "@/services/hooks/useCurrentUser";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { syncCartToBackend } from "@/services/cart";
 import { useCheckout } from "@/app/cart/hooks/useCheckout";
 import { usePrepareCheckout } from "@/app/cart/hooks/usePrepareToCheckout";
@@ -19,6 +19,7 @@ export default function CheckoutForm() {
   const clearCart = useCartStore((s) => s.clearCart);
   const userId = useCurrentUser().data?.id;
   const router = useRouter();
+  const pathname = usePathname();
 
   const [error, setError] = useState<string | null>(null);
   const [paymentType, setPaymentType] = useState<PaymentType>("delivery");
@@ -44,7 +45,7 @@ export default function CheckoutForm() {
     setError(null);
     if (!userId) {
       setError("You must be logged in to checkout.");
-      setTimeout(() => router.push("/login"), 2000);
+      setTimeout(() => router.push(`/login?redirect=${encodeURIComponent(pathname)}`), 2000);
       return;
     }
     if (items.length === 0) {

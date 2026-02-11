@@ -1,16 +1,20 @@
 "use client";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { useLogin } from "./hooks/useLogin";
-import { useQueryClient } from "@tanstack/react-query";
-import Link from "next/link";
 
-export default function LoginPage() {
+import { useState, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
+import { useQueryClient } from "@tanstack/react-query";
+import { useLogin } from "./hooks/useLogin";
+
+function LoginContent() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoginError, setIsLoginError] = useState(false);
+
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectPath = searchParams.get("redirect");
 
   const { mutate, isPending } = useLogin();
   const queryClient = useQueryClient();
@@ -26,20 +30,21 @@ export default function LoginPage() {
           if (!data) return;
           queryClient.setQueryData(["currentUser"], data);
 
-          if (data.role === "admin") {
+          // ✅ Redirect logic
+          if (redirectPath) {
+            router.push(redirectPath);
+          } else if (data.role === "admin") {
             router.push("/admin/products");
           } else {
             router.push("/dashboard");
           }
         },
-        onError: (err: unknown) => {
-          // Narrow the error type
+        onError: (err: any) => {
           let message = "Login failed";
           if (err instanceof Error) {
             message = err.message;
           } else if (err && typeof err === "object" && "message" in err) {
-            // @ts-expect-error
-            message = err.message;
+            message = (err as any).message;
           }
           setError(message);
           setIsLoginError(true);
@@ -49,12 +54,12 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center py-6 px-12 mt-10">
+    <div className="flex flex-col items-center justify-center p-6 mt-10">
       <form
         onSubmit={handleLogin}
         className="w-full max-w-md bg-white rounded-3xl p-10 shadow-2xl"
       >
-        <h2 className="text-2xl md:text-4xl font-extrabold text-center mb-6">Login</h2>
+        <h2 className="text-4xl font-extrabold text-center mb-6">Login</h2>
 
         {error && <p className="text-red-500 mb-4">{error}</p>}
 
@@ -64,45 +69,61 @@ export default function LoginPage() {
             value={email}
             onChange={(e) => {
               setEmail(e.target.value);
-              setError(""); // reset error on change
+              setError("");
               setIsLoginError(false);
             }}
             placeholder="Email"
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400"
+            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
         </div>
 
-        <div className="mb-1">
+        <div className="mb-6">
           <input
             type="password"
             value={password}
             onChange={(e) => {
               setPassword(e.target.value);
-              setError(""); // reset error on change
+              setError("");
               setIsLoginError(false);
             }}
             placeholder="Password"
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-300"
+            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
         </div>
-        <div className="text-right italic font-bold text-sm pb-8"><Link href="/forgot-password">Forgot password?</Link></div>
+
+        <div className="mb-6 text-right">
+          <Link href="/forgot-password" className="text-sm text-blue-600 hover:underline">Forgot password?</Link>
+        </div>
 
         <button
           type="submit"
           disabled={isPending || isLoginError}
-          className="w-full py-3 bg-gradient-to-r from-purple-300 to-purple-500 text-white font-bold rounded-xl transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full py-3 bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-bold rounded-xl transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isPending ? "Logging in..." : "Login"}
         </button>
+
         <p className="text-center text-gray-400 text-sm pt-8">
           Don't have an account?{" "}
-          <Link href="/register" className="text-purple-400 font-bold hover:underline cursor-pointer">
+          {/* Pass the redirect param to register page so flow isn't lost */}
+          <Link
+            href={`/register${redirectPath ? `?redirect=${encodeURIComponent(redirectPath)}` : ""}`}
+            className="text-cyan-400 hover:underline"
+          >
             Register
           </Link>
         </p>
       </form>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+      <LoginContent />
+    </Suspense>
   );
 }
