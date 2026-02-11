@@ -11,6 +11,7 @@ import adminOrdersRoutes from "./src/routes/admin-orders.routes";
 import favoritesRoutes from "./src/routes/favorites.routes";
 import categoryRoutes from "./src/routes/category.routes";
 import stripeRoutes from "./src/routes/stripe.routes";
+  import contactsRoutes from "./src/routes/contacts.routes";
 
 dotenv.config();
 
@@ -38,6 +39,7 @@ app.use("/api/favorites", favoritesRoutes);
 
 app.use("/api/categories", categoryRoutes);
 app.use("/api/stripe", stripeRoutes);
+app.use("/api/contacts", contactsRoutes);
 
 // Global error handler
 app.use(

@@ -151,13 +151,13 @@ export default function Header() {
           {/* Other menu links */}
           <Link
             href="/about"
-            className="hover:text-green-300 transition-colors"
+            className="hover:text-green-300 transition-colors cursor-pointer"
           >
             About Us
           </Link>
           <Link
-            href="/contact"
-            className="hover:text-green-300 transition-colors"
+            href="/contacts"
+            className="hover:text-green-300 transition-colors cursor-pointer"
           >
             Contact
           </Link>
