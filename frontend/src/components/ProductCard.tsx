@@ -113,7 +113,7 @@ ${badge === "HOT" && "bg-orange-500"}`}
 
         {/* TEMP MESSAGE */}
         {showMessage && (
-          <div className="absolute top-10 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded z-10">
+          <div className="absolute top-10 right-2 bg-green-500 text-white text-xs px-2 py-1 rounded z-10">
             Login to add favorite
           </div>
         )}

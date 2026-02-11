@@ -59,7 +59,7 @@ export default function FavoritesIcon() {
         >
           ❤️
           {user && favoritesData.length > 0 && (
-            <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center border-2 border-white">
+            <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
               {favoritesData.length}
             </span>
           )}
