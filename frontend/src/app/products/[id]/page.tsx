@@ -52,7 +52,7 @@ export default function ProductDetailsPage() {
   if (isError || !product) return <p>Product not found.</p>;
 
   // ✅ SAFE: product exists here
-  const isAdmin = user?.role === "ADMIN";
+  const isAdmin = user?.role === "admin";
   const isOutOfStock = product.stock <= 0;
 
   const toggleFavorite = () => {

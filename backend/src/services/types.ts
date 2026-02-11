@@ -54,3 +54,37 @@ export interface OrderItem {
     sales_price?: number | null;
   };
 }
+
+export interface CheckoutItem {
+  product_id: string;
+  quantity: number;
+  products: {
+    name: string;
+    price: number;
+    stock: number;
+    sales_price?: number | null;
+  };
+}
+
+export interface OrderItem {
+  product_id: string;
+  quantity: number;
+  price_at_purchase: number;
+  products: {
+    name: string;
+    price: number;
+    stock: number;
+    sales_price?: number | null;
+  };
+}
+
+export interface Order {
+  id: string;
+  total_amount: number;
+  status: string;
+  user_id?: string;
+  items: OrderItem[];
+  payment_method?: string;
+  invoice_url?: string;
+}
+

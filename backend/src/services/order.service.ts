@@ -1,36 +1,7 @@
 import { supabase } from "../db/supabaseClient";
+import { CheckoutItem, Order, OrderItem } from "./types";
 
-export interface CheckoutItem {
-  product_id: string;
-  quantity: number;
-  products: {
-    name: string;
-    price: number;
-    stock: number;
-    sales_price?: number | null;
-  };
-}
 
-export interface OrderItem {
-  product_id: string;
-  quantity: number;
-  price_at_purchase: number;
-  products: {
-    name: string;
-    price: number;
-    stock: number;
-    sales_price?: number | null;
-  };
-}
-
-export interface Order {
-  id: string;
-  total_amount: number;
-  status: string;
-  user_id?: string;
-  items: OrderItem[];
-  payment_method?: string;
-}
 
 /**
  * Sends order confirmation email to customer.
@@ -74,7 +45,7 @@ export async function createOrder(
         name: i.products.name,
         price: i.products.price,
         stock: i.products.stock,
-        sales_price: i.products.sales_price,
+        sales_price: i.products.sales_price ?? null,
       },
     };
   });
@@ -106,13 +77,23 @@ export async function createOrder(
   }
 
   // 5️⃣ Return full order with proper types
+  // return {
+  //   id: String(orderId),
+  //   total_amount: total,
+  //   status: options?.status || "PENDING",
+  //   items: itemsPayload,
+  //   payment_method: options?.paymentMethod,
+  // };
   return {
-    id: String(orderId),
-    total_amount: total,
-    status: options?.status || "PENDING",
-    items: itemsPayload,
-    payment_method: options?.paymentMethod,
-  };
+  id: String(orderId),
+  total_amount: total,
+  status: options?.status || "PENDING",
+  items: itemsPayload,
+  ...(options?.paymentMethod && {
+    payment_method: options.paymentMethod,
+  }),
+};
+
 }
 
 export async function getOrderById(orderId: string): Promise<Order | null> {
