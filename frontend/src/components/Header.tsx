@@ -75,9 +75,9 @@ export default function Header() {
           </div>
 
           {/* User & Icons */}
-          <div className="flex gap-4 items-center">
+          <div className="flex flex-wrap gap-4 items-center justify-center">
             {/* Login / Register */}
-            <div className="flex gap-2 min-w-[120px]">
+            <div className={`flex gap-2 ${!currentUser ? "min-w-[120px]" : ""}`}>
               {isLoading ? (
                 <span className="opacity-0">Loading</span>
               ) : !currentUser ? (
@@ -94,7 +94,7 @@ export default function Header() {
 
             {/* Admin */}
             {currentUser?.role === "ADMIN" && (
-              <div className="flex gap-2 items-center">
+              <div className="flex gap-2 items-center w-full md:w-auto justify-center order-last md:order-none">
                 <Link href="/admin/products" className="hover:underline">
                   Admin Products
                 </Link>
@@ -164,7 +164,7 @@ export default function Header() {
 
           {/* Phone info */}
           <span className="hidden md:inline-block">
-            Call us: +1 234 567 890
+            Call us: +359 123 45 67 89
           </span>
         </nav>
       </div>
