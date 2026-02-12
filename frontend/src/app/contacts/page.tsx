@@ -53,7 +53,7 @@ export default function ContactsPage() {
         fast and stylish applications.
       </p>
 
-      <div className="z-50 h-full flex gap-4 justify-end mb-8">
+      <div className="flex gap-4 justify-center mb-8">
         <a
           href="https://www.linkedin.com/in/yulia-stambolieva-47b777304/"
           target="_blank"
