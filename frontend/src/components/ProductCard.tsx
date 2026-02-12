@@ -45,8 +45,12 @@ export default function ProductCard({
   // Toggle favorite with guard
   const toggleFavorite = () => {
     guard(() => {
-      if (isFavorite) removeMutation.mutate(product.id);
-      else {
+      if (isFavorite) {
+        removeMutation.mutate(product.id, {
+          onSuccess: () =>
+            setSuccessMessage("Product removed from your favorites"),
+        });
+      } else {
         addMutation.mutate(product.id, {
           onSuccess: () =>
             setSuccessMessage("Product is added to your favorites"),
