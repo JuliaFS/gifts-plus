@@ -22,7 +22,7 @@ export default function FavoritesIcon() {
   };
 
   return (
-    <div className="relative ml-4">
+    <div className="relative">
       <button
         onClick={handleClick}
         className="p-2 text-2xl"

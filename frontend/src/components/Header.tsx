@@ -132,7 +132,7 @@ export default function Header() {
             <button
               ref={searchButtonRef}
               onClick={() => setIsSearchOpen(!isSearchOpen)}
-              className="text-gray-600 hover:text-purple-600 transition duration-700 ease-out"
+              className="text-gray-600 hover:text-purple-600 cursor-pointer"
             >
               <FaSearch size={20} />
             </button>
