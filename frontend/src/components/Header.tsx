@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { FaSearch, FaChevronDown } from "react-icons/fa";
 import { logout } from "@/services/auth";
 import { useCurrentUser } from "@/services/hooks/useCurrentUser";
@@ -20,6 +20,40 @@ export default function Header() {
   const { data: categories = [], isLoading: categoriesLoading } =
     useCategories();
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const searchRef = useRef<HTMLDivElement>(null);
+  const searchButtonRef = useRef<HTMLButtonElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Close search when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        searchRef.current &&
+        !searchRef.current.contains(event.target as Node) &&
+        searchButtonRef.current &&
+        !searchButtonRef.current.contains(event.target as Node)
+      ) {
+        setIsSearchOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  // Clear search query when closed and focus when opened
+  useEffect(() => {
+    if (!isSearchOpen) {
+      const timer = setTimeout(() => setSearchQuery(""), 500);
+      return () => clearTimeout(timer);
+    } else {
+      // Delay focus slightly to allow transition to start
+      const timer = setTimeout(() => searchInputRef.current?.focus(), 100);
+      return () => clearTimeout(timer);
+    }
+  }, [isSearchOpen]);
 
   const logoutMutation = useMutation({
     mutationFn: logout,
@@ -32,6 +66,7 @@ export default function Header() {
   const handleSearch = () => {
     if (searchQuery.trim()) {
       router.push(`/search?query=${encodeURIComponent(searchQuery.trim())}`);
+      setIsSearchOpen(false);
     }
   };
 
@@ -40,7 +75,7 @@ export default function Header() {
   };
 
   return (
-    <header className="w-full">
+    <header className="w-full relative">
       {/* Top carousel line */}
       <TopLineCarousel />
 
@@ -54,25 +89,6 @@ export default function Header() {
           >
             Gifts Plus
           </Link>
-
-          {/* Search */}
-          <div className="my-2 flex items-stretch rounded-lg border border-gray-300 overflow-hidden bg-white focus-within:border-purple-500 focus-within:ring-2 focus-within:ring-purple-200 transition">
-            <input
-              type="text"
-              placeholder="Search products..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyDown={handleKeyDown}
-              className="px-3 py-2 w-64 text-sm text-black outline-none"
-            />
-
-            <button
-              onClick={handleSearch}
-              className="flex items-center justify-center px-4 bg-gradient-to-r from-purple-500 to-indigo-500 text-white hover:opacity-90 transition self-stretch"
-            >
-              <FaSearch size={14} />
-            </button>
-          </div>
 
           {/* User & Icons */}
           <div className="flex flex-wrap gap-4 items-center justify-center">
@@ -111,6 +127,15 @@ export default function Header() {
                 Logout
               </button>
             )}
+
+            {/* Search Trigger */}
+            <button
+              ref={searchButtonRef}
+              onClick={() => setIsSearchOpen(!isSearchOpen)}
+              className="text-gray-600 hover:text-purple-600 transition duration-700 ease-out"
+            >
+              <FaSearch size={20} />
+            </button>
 
             {/* Cart & Favorites */}
             <CartIcon />
@@ -167,6 +192,37 @@ export default function Header() {
             Call us: +359 123 45 67 89
           </span>
         </nav>
+      </div>
+
+      {/* Search Bar Overlay */}
+      <div
+        ref={searchRef}
+        className={`absolute left-0 w-full bg-purple-100 border-b border-purple-200 p-4 shadow-md z-40 transition-all duration-500 ease-in-out ${
+          isSearchOpen
+            ? "opacity-100 translate-y-0 visible"
+            : "opacity-0 -translate-y-12 invisible"
+        }`}
+        style={{ top: "100%" }}
+      >
+        <div className="container mx-auto flex justify-center">
+          <div className="flex w-full max-w-2xl items-stretch rounded-lg border border-purple-300 overflow-hidden bg-white focus-within:border-purple-500 focus-within:ring-2 focus-within:ring-purple-200 transition">
+            <input
+              ref={searchInputRef}
+              type="text"
+              placeholder="Search products..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={handleKeyDown}
+              className="flex-1 px-4 py-2 text-sm text-black outline-none"
+            />
+            <button
+              onClick={handleSearch}
+              className="flex items-center justify-center px-6 bg-gradient-to-r from-purple-500 to-indigo-500 text-white hover:opacity-90 transition"
+            >
+              <FaSearch size={16} />
+            </button>
+          </div>
+        </div>
       </div>
     </header>
   );
