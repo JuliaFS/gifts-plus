@@ -78,6 +78,7 @@ export default function CheckoutForm() {
 
             if (result.error) {
               setError(result.error.message || "Payment failed");
+              elements.getElement(CardElement)?.clear();
               return;
             }
             if (result.paymentIntent?.status === "succeeded") {
@@ -146,7 +147,10 @@ export default function CheckoutForm() {
             name="payment"
             value="delivery"
             checked={paymentType === "delivery"}
-            onChange={() => setPaymentType("delivery")}
+            onChange={() => {
+              setPaymentType("delivery");
+              setError(null);
+            }}
           />
           Pay on Delivery
         </label>
@@ -156,7 +160,10 @@ export default function CheckoutForm() {
             name="payment"
             value="online"
             checked={paymentType === "online"}
-            onChange={() => setPaymentType("online")}
+            onChange={() => {
+              setPaymentType("online");
+              setError(null);
+            }}
           />
           Pay Online
         </label>
@@ -173,11 +180,8 @@ export default function CheckoutForm() {
       <button
         onClick={handleCheckout}
         disabled={isLoading || items.length === 0}
-        className={`w-full py-2 text-white rounded flex justify-center items-center disabled:opacity-50 ${
-          paymentType === "delivery"
-            ? "bg-purple-500 hover:bg-purple-700"
-            : "bg-green-600 hover:bg-green-700"
-        }`}
+        className="w-full py-2 text-white rounded flex justify-center items-center disabled:opacity-50 bg-purple-500 hover:bg-purple-700"
+  
       >
         {isLoading
           ? "Processing..."

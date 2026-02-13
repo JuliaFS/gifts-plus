@@ -207,8 +207,8 @@ export default function Header() {
         }`}
         style={{ top: "100%" }}
       >
-        <div className="container mx-auto flex justify-center">
-          <div className="flex w-full max-w-2xl items-stretch rounded-lg border border-purple-300 overflow-hidden bg-white focus-within:border-purple-500 focus-within:ring-2 focus-within:ring-purple-200 transition">
+        <div className="container mx-auto flex">
+          <div className="flex w-full max-w-sm rounded-lg border border-purple-300 overflow-hidden bg-white focus-within:border-purple-500 focus-within:ring-2 focus-within:ring-purple-200 transition">
             <input
               ref={searchInputRef}
               type="text"
