@@ -200,7 +200,7 @@ export default function Header() {
         className={`absolute left-0 w-full bg-purple-100 border-b border-purple-200 p-4 shadow-md z-40 transition-all duration-500 ease-in-out ${
           isSearchOpen
             ? "opacity-100 translate-y-0 visible"
-            : "opacity-0 -translate-y-12 invisible"
+            : "opacity-0 -translate-y-12 invisible pointer-events-none"
         }`}
         style={{ top: "100%" }}
       >
