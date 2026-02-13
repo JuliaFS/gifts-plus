@@ -19,7 +19,7 @@ function LoginContent() {
   const { mutate, isPending } = useLogin();
   const queryClient = useQueryClient();
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     setError("");
 
@@ -78,7 +78,7 @@ function LoginContent() {
           />
         </div>
 
-        <div className="mb-6">
+        <div className="mb-2">
           <input
             type="password"
             value={password}
@@ -93,14 +93,14 @@ function LoginContent() {
           />
         </div>
 
-        <div className="mb-6 text-right">
-          <Link href="/forgot-password" className="text-sm text-blue-600 hover:underline">Forgot password?</Link>
+        <div className="mb-8 text-right">
+          <Link href="/forgot-password" className="text-sm text-purple-800 font-italic hover:underline">Forgot password?</Link>
         </div>
 
         <button
           type="submit"
           disabled={isPending || isLoginError}
-          className="w-full py-3 bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-bold rounded-xl transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full py-3 bg-gradient-to-r from-purple-300 to-purple-600 text-white font-bold rounded-xl transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isPending ? "Logging in..." : "Login"}
         </button>
@@ -110,7 +110,7 @@ function LoginContent() {
           {/* Pass the redirect param to register page so flow isn't lost */}
           <Link
             href={`/register${redirectPath ? `?redirect=${encodeURIComponent(redirectPath)}` : ""}`}
-            className="text-cyan-400 hover:underline"
+            className="text-purple-600 font-bold cursor-pointer hover:underline"
           >
             Register
           </Link>

@@ -112,14 +112,15 @@ export async function emailExists(email: string): Promise<boolean> {
 }
 
 export async function forgotPassword(email: string) {
+  const cleanEmail = email.trim();
   const { data: user } = await supabase
     .from("users")
     .select("id, email")
-    .eq("email", email)
+    .eq("email", cleanEmail)
     .maybeSingle();
 
   // ⚠️ Do not reveal if user exists
-  if (!user) return { message: "If this email exists, a reset link was sent" };
+  if (!user) return { message: `Password reset link has been sent to ${cleanEmail}` };
 
   const resetToken = crypto.randomBytes(32).toString("hex");
 
@@ -134,28 +135,43 @@ export async function forgotPassword(email: string) {
 
   console.log("expires at:", expires);
 
-  await supabase
+  const { error } = await supabase
     .from("users")
     .update({
       reset_password_token: hashedToken,
-      reset_password_expires: expires,
+      reset_password_expires: expires.toISOString(),
     })
     .eq("id", user.id);
 
+  if (error) {
+    console.error("Failed to save reset token:", error);
+    throw new Error("Internal error processing request");
+  }
+
   const resetUrl = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`;
+  console.log("Sending reset email to:", user.email);
+
 
   await sendEmail({
     to: user.email,
-    subject: "Reset your password",
+    subject: "Reset your password for Gifts Plus",
     html: `
-      <p>You requested a password reset.</p>
-      <p>Click the link below to reset your password:</p>
-      <p><a href="${resetUrl}" target="_blank">Reset password</a></p>
-      <p>This link expires in 15 minutes.</p>
+      <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6;">
+        <h2 style="color: #8a2be2;">Gifts Plus Password Reset</h2>
+        <p>Hello,</p>
+        <p>We received a request to reset the password for your account associated with this email address. If you made this request, please click the button below to set a new password.</p>
+        <p style="text-align: center; margin: 25px 0;">
+          <a href="${resetUrl}" target="_blank" style="background-color: #8a2be2; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold;">Reset Your Password</a>
+        </p>
+        <p>This password reset link is valid for the next 15 minutes.</p>
+        <p>If you did not request a password reset, please ignore this email or contact our support if you have concerns.</p>
+        <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
+        <p style="font-size: 0.9em; color: #777;">Thank you,<br/>The Gifts Plus Team</p>
+      </div>
     `,
   });
 
-  return { message: "If this email exists, a reset link was sent" };
+  return { message: `Password reset link has been sent to ${user.email}` };
 }
 
 export async function resetPassword(
