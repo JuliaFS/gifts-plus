@@ -110,7 +110,7 @@ export default function Header() {
 
             {/* Admin */}
             {currentUser?.role === "ADMIN" && (
-              <div className="flex gap-2 items-center w-full md:w-auto justify-center order-last md:order-none">
+              <div className="flex gap-2 items-center w-full md:w-auto justify-center order-last md:order-0">
                 <Link href="/admin/products" className="hover:underline">
                   Admin Products
                 </Link>
@@ -122,7 +122,7 @@ export default function Header() {
             {currentUser && (
               <button
                 onClick={() => logoutMutation.mutate()}
-                className="bg-purple-500 px-3 py-1 rounded hover:bg-purple-600 text-white"
+                className="bg-purple-500 px-3 py-1 rounded hover:bg-purple-600 text-white order-4"
               >
                 Logout
               </button>

@@ -30,9 +30,10 @@ export async function createCategory(name: string, slug: string) {
 
 export async function getProductsByCategory(slug: string) {
   // Join products table to get price and stock
-const { data, error } = await supabase
-  .from('products_by_category')
-  .select(`
+  const { data, error } = await supabase
+    .from("products_by_category")
+    .select(
+      `
     product_id,
     product_name,
     product_price,
@@ -43,13 +44,20 @@ const { data, error } = await supabase
     image_id,
     image_url,
     image_product_id
-  `)
-  .eq('category_slug', slug);
+  `,
+    )
+    .eq("category_slug", slug);
 
   if (error) throw error;
   if (!data || data.length === 0) {
+    const { data: category } = await supabase
+      .from("categories")
+      .select("name")
+      .eq("slug", slug)
+      .single();
+
     return {
-      name: slug.replace(/-/g, " "),
+      name: category?.name ?? slug.replace(/-/g, " "),
       products: [],
     };
   }
@@ -86,52 +94,3 @@ const { data, error } = await supabase
     products: Object.values(productsMap),
   };
 }
-
-// export async function getProductsByCategory(slug: string) {
-//   const { data, error } = await supabase
-//     .from("products_by_category")
-//     .select("*")
-//     .eq("category_slug", slug);
-
-//   if (error) throw error;
-//   if (!data || data.length === 0) {
-//     return {
-//       name: slug.replace(/-/g, " "),
-//       products: [],
-//     };
-//   }
-
-//   // ✅ Extract category name ONCE
-//   const categoryName = data[0].category_name;
-
-//   // ✅ Group products (your existing logic, slightly cleaned)
-//   const productsMap: Record<string, any> = {};
-
-//   data.forEach((row) => {
-//     const productId = row.product_id;
-
-//     if (!productsMap[productId]) {
-//       productsMap[productId] = {
-//         id: row.product_id,
-//         name: row.product_name,
-//         price: row.price,
-//         stock: row.stock,
-//         product_images: [],
-//       };
-//     }
-
-//     if (row.image_id) {
-//       productsMap[productId].product_images.push({
-//         id: row.image_id,
-//         image_url: row.image_url,
-//         product_id: row.image_product_id,
-//       });
-//     }
-//   });
-
-//   return {
-//     name: categoryName,
-    
-//     products: Object.values(productsMap),
-//   };
-// }
