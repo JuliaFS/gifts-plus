@@ -91,7 +91,7 @@ export default function AdminProductPage() {
     setPreviews((p) => [...p, ...selected.map(URL.createObjectURL)]);
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
 
@@ -141,13 +141,13 @@ export default function AdminProductPage() {
       <div className="flex gap-4 mb-6">
         <Link
           href="/admin/orders"
-          className="text-blue-600 hover:underline font-medium"
+          className="text-purple-500 hover:underline font-bold"
         >
           View Orders
         </Link>
         <Link
           href="/products"
-          className="text-blue-600 hover:underline font-medium"
+          className="text-purple-500 hover:underline font-bold"
         >
           Products
         </Link>
@@ -156,10 +156,10 @@ export default function AdminProductPage() {
       {/* ================= CREATE FORM ================= */}
       <div>
         <div className="flex justify-between items-center mb-4">
-          <h1 className="text-2xl font-bold text-green-500">Create Product</h1>
+          <h1 className="text-xl md:text-2xl lg:text-3xl font-bold">Create Product</h1>
           <Link
             href="/admin/categories"
-            className="text-blue-600 hover:underline font-medium"
+            className="text-purple-600 font-bold hover:underline"
           >
             Create Category
           </Link>
@@ -246,7 +246,7 @@ export default function AdminProductPage() {
             <label className="font-medium">Categories</label>
             <Link
               href="/admin/categories"
-              className="text-blue-600 hover:underline text-sm"
+              className="text-purple-500 font-bold hover:underline text-sm"
             >
               + Add Category
             </Link>
@@ -289,7 +289,7 @@ export default function AdminProductPage() {
 
           <button
             type="submit"
-            className="flex-1 bg-blue-600 text-white py-2 rounded"
+            className="flex-1 bg-purple-600 cursor-pointer hover:bg-purple-600 text-white font-bold px-3 py-2 rounded"
             disabled={createMutation.isPending}
           >
             {createMutation.isPending ? "Creating..." : "Create Product"}
@@ -308,19 +308,19 @@ export default function AdminProductPage() {
             <table className="w-full border">
               <thead>
                 <tr>
-                  <th className="border">Name</th>
-                  <th className="border">Image</th>
-                  <th className="border">Price</th>
-                  <th className="border">Stock</th>
-                  <th className="border">Categories</th>
-                  <th className="border">Actions</th>
+                  <th className="border p-2">Name</th>
+                  <th className="border p-2">Image</th>
+                  <th className="border p-2">Price</th>
+                  <th className="border p-2">Stock</th>
+                  <th className="border p-2">Categories</th>
+                  <th className="border p-2">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {productsData?.data.map((p: Product) => (
                   <tr key={p.id}>
-                    <td className="border">{p.name}</td>
-                    <td className="border">
+                    <td className="border p-2">{p.name}</td>
+                    <td className="border p-2">
                       {p.product_images?.[0] && (
                         <Image
                           src={p.product_images[0].image_url}
@@ -330,14 +330,14 @@ export default function AdminProductPage() {
                         />
                       )}
                     </td>
-                    <td className="border">${Number(p.price).toFixed(2)}</td>
-                    <td className="border">{p.stock}</td>
-                    <td className="border">
+                    <td className="border p-2">${Number(p.price).toFixed(2)}</td>
+                    <td className="border p-2">{p.stock}</td>
+                    <td className="border p-2">
                       {p.product_categories
                         ?.map((c) => c.categories.name)
                         .join(", ")}
                     </td>
-                    <td className="border">
+                    <td className="border p-2">
                       <div className="flex gap-2 justify-center">
                         <EditButton product={p} onEdit={setEditingProduct} />
                         <DeleteButton

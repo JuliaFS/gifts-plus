@@ -13,7 +13,7 @@ function SearchResults() {
   const { data: products, isLoading, isError } = useSearchProducts(query);
 
   return (
-    <div className="max-w-6xl mx-auto p-6">
+    <div className="container mx-auto p-6">
       <h1 className="text-2xl font-bold mb-4">
         Search results for "{query}"
       </h1>
@@ -22,7 +22,7 @@ function SearchResults() {
       {isError && <p className="text-red-500">Failed to load search results</p>}
       {products?.length === 0 && query && <p>No results found</p>}
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-8">
         {products?.map((product: Product) => (
           <ProductCard key={product.id} product={product} />
         ))}

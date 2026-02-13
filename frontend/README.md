@@ -5,9 +5,7 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 First, run the development server:
 #backend folder to start server -> npm run dev
 #frontend folder -> npm run dev
-
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000] with your browser to see the result.
 
     Gifts Plus E-Commerce Platform
 

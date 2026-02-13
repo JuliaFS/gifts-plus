@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState, useRef, useEffect } from "react";
-import { FaSearch, FaChevronDown } from "react-icons/fa";
+import { FaSearch, FaChevronDown, FaBars } from "react-icons/fa";
 import { logout } from "@/services/auth";
 import { useCurrentUser } from "@/services/hooks/useCurrentUser";
 import CartIcon from "./cart/CartIcon";
@@ -153,7 +153,10 @@ export default function Header() {
               className="flex items-center gap-1 hover:text-green-300 transition-colors cursor-pointer"
               onClick={() => setDropdownOpen((prev) => !prev)}
             >
-              Browse Categories <FaChevronDown />
+              <span className="md:hidden"><FaBars size={20} /></span>
+              <span className="hidden md:flex items-center gap-1">
+                Categories <FaChevronDown />
+              </span>
             </button>
 
             {dropdownOpen && !categoriesLoading && (

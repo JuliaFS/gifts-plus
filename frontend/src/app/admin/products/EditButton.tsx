@@ -11,7 +11,7 @@ export default function EditButton({ product, onEdit }: Props) {
   return (
     <button
       onClick={() => onEdit(product)}
-      className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
+      className="px-3 py-1 bg-purple-500 cursor-pointer hover:bg-purple-600 text-white rounded hover:bg-blue-700"
     >
       Edit
     </button>

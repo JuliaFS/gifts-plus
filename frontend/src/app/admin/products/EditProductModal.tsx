@@ -155,7 +155,7 @@ export default function EditProductModal({ product, onClose }: Props) {
       <div className="bg-white rounded-lg w-full max-w-md flex flex-col max-h-[75vh]">
         {/* Header */}
         <div className="p-6 pb-4 flex-shrink-0 relative">
-          <h2 className="text-xl font-bold">Edit Product</h2>
+          <h2 className="text-xl font-bold text-center">Edit Product</h2>
           <button
             onClick={onClose}
             className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-2xl cursor-pointer"
