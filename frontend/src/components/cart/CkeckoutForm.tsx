@@ -3,7 +3,7 @@
 import { CardElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import { useCartStore } from "@/store/cartStore";
 import { useCurrentUser } from "@/services/hooks/useCurrentUser";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { syncCartToBackend } from "@/services/cart";
 import { useCheckout } from "@/app/cart/hooks/useCheckout";
@@ -17,7 +17,8 @@ export default function CheckoutForm() {
   const elements = useElements();
   const items = useCartStore((s) => s.items);
   const clearCart = useCartStore((s) => s.clearCart);
-  const userId = useCurrentUser().data?.id;
+  const { data: user, isLoading: isUserLoading } = useCurrentUser();
+  const userId = user?.id;
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -43,6 +44,22 @@ export default function CheckoutForm() {
   const { mutateAsync, isPending } = useVerifyPayment();
 
   const isLoading = isPlacingCOD || isPreparingOnline || isConfirmingStripe || isPending;
+
+  const cardElementOptions = useMemo(() => ({
+    hidePostalCode: true,
+    style: {
+      base: {
+        fontSize: "16px",
+        color: "#424770",
+        "::placeholder": {
+          color: "#aab7c4",
+        },
+      },
+      invalid: {
+        color: "#9e2146",
+      },
+    },
+  }), []);
 
   const handleCheckout = async () => {
     setError(null);
@@ -139,9 +156,23 @@ export default function CheckoutForm() {
       <p className="font-bold text-lg mb-2">Total: {total.toFixed(2)} €</p>
       {error && <p className="text-red-600 mb-2">{error}</p>}
 
+      {isUserLoading ? (
+        <p className="text-gray-500">Checking authorization...</p>
+      ) : !userId ? (
+        <div className="flex flex-col gap-2">
+          <p className="text-red-600">Please log in to proceed with checkout.</p>
+          <button
+            onClick={() => router.push(`/login?redirect=${encodeURIComponent(pathname + "?" + searchParams.toString())}`)}
+            className="w-full py-2 text-white rounded bg-purple-500 hover:bg-purple-700"
+          >
+            Log in
+          </button>
+        </div>
+      ) : (
+        <>
       {/* Payment type selector */}
-      <div className="flex gap-4 mb-4">
-        <label className="flex items-center gap-2">
+      <div className="flex flex-col sm:flex-row gap-4 mb-6">
+        <label className="flex items-center gap-2 cursor-pointer">
           <input
             type="radio"
             name="payment"
@@ -154,7 +185,7 @@ export default function CheckoutForm() {
           />
           Pay on Delivery
         </label>
-        <label className="flex items-center gap-2">
+        <label className="flex items-center gap-2 cursor-pointer">
           <input
             type="radio"
             name="payment"
@@ -170,10 +201,10 @@ export default function CheckoutForm() {
       </div>
 
       {/* Stripe Card input only for online */}
-      {paymentType === "online" && userId && (
+      {paymentType === "online" && (
         <CardElement
-          className="my-3 p-2 border rounded"
-          options={{ hidePostalCode: true }}
+          className="my-6 p-4 border rounded bg-white shadow-sm"
+          options={cardElementOptions}
         />
       )}
 
@@ -189,6 +220,8 @@ export default function CheckoutForm() {
             ? "Place Order (Pay on Delivery)"
             : "Pay Online"}
       </button>
+        </>
+      )}
     </div>
   );
 }
