@@ -189,11 +189,6 @@ export default function Header() {
           >
             Contact
           </Link>
-
-          {/* Phone info */}
-          <span className="hidden md:inline-block">
-            Call us: +359 123 45 67 89
-          </span>
         </nav>
       </div>
 
