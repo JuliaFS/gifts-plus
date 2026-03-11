@@ -120,7 +120,8 @@ export async function forgotPassword(email: string) {
     .maybeSingle();
 
   // ⚠️ Do not reveal if user exists
-  if (!user) return { message: `Password reset link has been sent to ${cleanEmail}` };
+  if (!user)
+    return { message: `Password reset link has been sent to ${cleanEmail}` };
 
   const resetToken = crypto.randomBytes(32).toString("hex");
 
@@ -128,8 +129,6 @@ export async function forgotPassword(email: string) {
     .createHash("sha256")
     .update(resetToken)
     .digest("hex");
-
-  console.log("hashed token:", hashedToken);
 
   const expires = new Date(Date.now() + 15 * 60 * 1000);
 
@@ -149,8 +148,7 @@ export async function forgotPassword(email: string) {
   }
 
   const resetUrl = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`;
-  console.log("Sending reset email to:", user.email);
-
+ 
 
   await sendEmail({
     to: user.email,
@@ -176,7 +174,7 @@ export async function forgotPassword(email: string) {
 
 export async function resetPassword(
   rawToken: string,
-  newPassword: string
+  newPassword: string,
 ): Promise<UserDTO> {
   // 1. Hash the incoming raw token to compare with the DB
   const hashedToken = crypto
