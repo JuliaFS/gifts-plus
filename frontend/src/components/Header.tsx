@@ -81,7 +81,7 @@ export default function Header() {
 
       {/* Top bar */}
       <div className="bg-white shadow">
-        <nav className="container mx-auto flex flex-col md:flex-row justify-between items-center py-3 px-4">
+        <nav className="w-full flex flex-col md:flex-row justify-between items-center py-3 px-6">
           {/* Logo */}
           <Link
             href="/"
@@ -146,7 +146,7 @@ export default function Header() {
 
       {/* Bottom bar */}
       <div className="bg-purple-800 border-t border-purple-900 text-white shadow-lg">
-        <nav className="container mx-auto flex items-center py-2 px-4 space-x-6 relative">
+        <nav className="w-full flex items-center py-2 px-6 space-x-6 relative">
           {/* Browse Categories Dropdown */}
           <div className="relative">
             <button
@@ -202,8 +202,8 @@ export default function Header() {
         }`}
         style={{ top: "100%" }}
       >
-        <div className="container mx-auto flex">
-          <div className="flex w-full max-w-sm rounded-lg border border-purple-300 overflow-hidden bg-white focus-within:border-purple-500 focus-within:ring-2 focus-within:ring-purple-200 transition">
+        <div className="w-full px-6 flex justify-start">
+          <div className="flex w-full max-w-md rounded-lg border border-purple-300 overflow-hidden bg-white focus-within:border-purple-500 focus-within:ring-2 focus-within:ring-purple-200 transition">
             <input
               ref={searchInputRef}
               type="text"

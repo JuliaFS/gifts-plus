@@ -68,9 +68,9 @@ export default function ProductCard({
   const badges = getBadges(product);
 
   return (
-    <div className="relative w-full overflow-visible">
+    <div className="relative w-full overflow-hidden p-2">
       {/* Purple rotated background */}
-      <div className="absolute top-1.5 left-0 w-[calc(100%+0.1rem)] h-[calc(100%+0.05rem)] bg-purple-400 shadow-md rotate-2 rounded-xl z-0" />
+      <div className="absolute inset-2 bg-purple-400 shadow-md rotate-2 rounded-xl z-0" />
       <div
         ref={wrapperRef}
         className="rounded p-4 shadow-sm hover:shadow-md relative z-10 bg-white flex flex-col h-96"
