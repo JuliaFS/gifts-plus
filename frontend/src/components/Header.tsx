@@ -4,7 +4,12 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState, useRef, useEffect } from "react";
-import { FaSearch, FaChevronDown, FaBars } from "react-icons/fa";
+import {
+  FaSearch,
+  FaChevronDown,
+  FaBars,
+  FaRegUserCircle,
+} from "react-icons/fa";
 import { logout } from "@/services/auth";
 import { useCurrentUser } from "@/services/hooks/useCurrentUser";
 import CartIcon from "./cart/CartIcon";
@@ -59,7 +64,7 @@ export default function Header() {
     mutationFn: logout,
     onSuccess: () => {
       queryClient.setQueryData(["currentUser"], null);
-      router.push("/login");
+      router.push("/");
     },
   });
 
@@ -93,20 +98,6 @@ export default function Header() {
           {/* User & Icons */}
           <div className="flex flex-wrap gap-4 items-center justify-center">
             {/* Login / Register */}
-            <div className={`flex gap-2 ${!currentUser ? "min-w-[120px]" : ""}`}>
-              {isLoading ? (
-                <span className="opacity-0">Loading</span>
-              ) : !currentUser ? (
-                <>
-                  <Link href="/login" className="hover:underline">
-                    Login
-                  </Link>
-                  <Link href="/register" className="hover:underline">
-                    Register
-                  </Link>
-                </>
-              ) : null}
-            </div>
 
             {/* Admin */}
             {currentUser?.role === "ADMIN" && (
@@ -117,12 +108,21 @@ export default function Header() {
                 <span>Welcome, {currentUser.email}</span>
               </div>
             )}
+            {/* Enter site (when NOT logged in) */}
+            <Link
+              href="/login"
+              className="hover:underline"
+              title="Enter your account"
+            >
+              <FaRegUserCircle className="text-xl" />
+            </Link>
 
             {/* Logout */}
             {currentUser && (
               <button
                 onClick={() => logoutMutation.mutate()}
                 className="bg-purple-500 px-3 py-1 rounded hover:bg-purple-600 text-white order-4"
+                title="Logout"
               >
                 Logout
               </button>
@@ -133,6 +133,7 @@ export default function Header() {
               ref={searchButtonRef}
               onClick={() => setIsSearchOpen(!isSearchOpen)}
               className="text-gray-600 hover:text-purple-600 cursor-pointer"
+              title="Search"
             >
               <FaSearch size={20} />
             </button>
@@ -153,7 +154,9 @@ export default function Header() {
               className="flex items-center gap-1 hover:text-green-300 transition-colors cursor-pointer"
               onClick={() => setDropdownOpen((prev) => !prev)}
             >
-              <span className="md:hidden"><FaBars size={20} /></span>
+              <span className="md:hidden">
+                <FaBars size={20} />
+              </span>
               <span className="hidden md:flex items-center gap-1">
                 Categories <FaChevronDown />
               </span>

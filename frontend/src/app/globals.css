@@ -37,3 +37,36 @@ body {
 .animate-marquee {
   animation: marquee 100s linear infinite;
 }
+
+/* .festive-wrapper {
+  transform: scale(1);
+  transform-origin: top center;
+}
+
+/* tablets */
+/* @media (max-width: 1024px) {
+  .festive-wrapper {
+    transform: scale(0.7);
+  }
+} */
+
+/* small tablets */
+/* @media (max-width: 768px) {
+  .festive-wrapper {
+    transform: scale(0.75);
+  }
+} */
+
+/* mobile */
+/* @media (max-width: 480px) {
+  .festive-wrapper {
+    transform: scale(0.35);
+  }
+} */
+
+/* desktop */
+/* @media (min-width: 1280px) {
+  .festive-wrapper {
+    transform: scale(1);
+  }
+} */ 

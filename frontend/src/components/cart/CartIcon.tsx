@@ -11,9 +11,9 @@ export default function CartIcon() {
   const count = items.reduce((sum, i) => sum + i.quantity, 0);
 
   return (
-    <Link href="/cart" className="relative">
+    <Link href="/cart" className="relative" title="View Cart">
       <div ref={cartIconRef}>
-        <RiShoppingCartFill size={24} />
+        <RiShoppingCartFill size={24}/>
       </div>
 
       {count > 0 && (

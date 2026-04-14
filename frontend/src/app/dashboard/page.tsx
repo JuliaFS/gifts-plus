@@ -7,6 +7,7 @@ import ProductCard from "@/components/ProductCard";
 import { Product } from "@/services/types";
 import { useAuthGuard } from "@/services/hooks/useAuthGuard";
 import { getBadges } from "@/utils/productUtils";
+import FestiveSaleBanner from "@/components/FestiveBanner";
 
 export default function DashboardPage() {
   // Queries
@@ -20,13 +21,14 @@ export default function DashboardPage() {
   const hotProducts = products.filter((p) => getBadges(p).includes("HOT"));
   const newProducts = products.filter((p) => getBadges(p).includes("NEW"));
   const saleProducts = products.filter((p) => getBadges(p).includes("SALE"));
+
   const totalOrders = orders.length;
 
   // Popular favorites
   const popularFavorites = (favoritesQuery.data ?? [])
     .filter((f) => f.products)
     .sort(
-      (a, b) => (b.products?.sales_count || 0) - (a.products?.sales_count || 0)
+      (a, b) => (b.products?.sales_count || 0) - (a.products?.sales_count || 0),
     )
     .slice(0, 8);
 
@@ -34,9 +36,7 @@ export default function DashboardPage() {
   const renderProducts = (productList: Product[]) =>
     productList.map((p) => (
       <div key={p.id} className="relative">
-        <ProductCard
-          product={p}
-        />
+        <ProductCard product={p} />
         {/* Temporary message overlay */}
         {showMessage && (
           <div className="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded z-10">
@@ -47,8 +47,11 @@ export default function DashboardPage() {
     ));
 
   return (
-    <div className="container mx-auto px-6 mt-10 space-y-10">
-      {/* KPI Cards */}
+    <div className="w-full space-y-10 pb-10">
+      <FestiveSaleBanner />
+
+      <div className="container mx-auto px-6 space-y-10">
+        {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {currentUser?.role === "ADMIN" && (
           <div className="p-4 bg-white rounded-lg shadow">
@@ -56,7 +59,7 @@ export default function DashboardPage() {
             <p className="text-2xl font-bold">{totalOrders}</p>
           </div>
         )}
-        <div className="p-4 bg-white rounded-lg shadow">
+        {/* <div className="p-4 bg-white rounded-lg shadow">
           <p className="text-gray-500">HOT Products</p>
           <p className="text-2xl font-bold">{hotProducts.length}</p>
         </div>
@@ -66,12 +69,14 @@ export default function DashboardPage() {
         </div>
         <div className="p-4 bg-white rounded-lg shadow">
           <p className="text-gray-500">Favorites</p>
-          <p className="text-2xl font-bold">{favoritesQuery.data?.length || 0}</p>
-        </div>
+          <p className="text-2xl font-bold">
+            {favoritesQuery.data?.length || 0}
+          </p>
+        </div> */}
       </div>
 
       {/* HOT Products */}
-      <div className="space-y-4">
+      <div className="scroll-mt-10 space-y-4">
         <h2 className="text-2xl font-bold">HOT Products</h2>
         {productsLoading ? (
           <p>Loading products...</p>
@@ -83,7 +88,7 @@ export default function DashboardPage() {
       </div>
 
       {/* SALE Products */}
-      <div className="space-y-4">
+      <div id="hot-products" className="space-y-4">
         <h2 className="text-2xl font-bold">SALE Products</h2>
         {productsLoading ? (
           <p>Loading products...</p>
@@ -142,8 +147,12 @@ export default function DashboardPage() {
                     <tr key={o.id} className="border-t border-gray-200">
                       <td className="px-4 py-2">{o.id}</td>
                       <td className="px-4 py-2">{o.status}</td>
-                      <td className="px-4 py-2">${o.total_amount.toFixed(2)}</td>
-                      <td className="px-4 py-2">{o.order_items[0]?.products.name}</td>
+                      <td className="px-4 py-2">
+                        ${o.total_amount.toFixed(2)}
+                      </td>
+                      <td className="px-4 py-2">
+                        {o.order_items[0]?.products.name}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -152,6 +161,7 @@ export default function DashboardPage() {
           )}
         </div>
       )}
+    </div>
     </div>
   );
 }
