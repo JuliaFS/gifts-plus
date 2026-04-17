@@ -1,13 +1,15 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useRef, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthGuard } from "@/services/hooks/useAuthGuard";
 import { useFavorites } from "@/services/hooks/useFavorites";
 import { FaRegHeart } from "react-icons/fa";
+import Link from "next/link";
 
 export default function FavoritesIcon() {
   const router = useRouter();
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const { guard, showMessage, currentUser: user } = useAuthGuard();
 
@@ -19,11 +21,30 @@ export default function FavoritesIcon() {
   );
 
   const handleClick = () => {
+    if (!user) {
+      setIsPromptOpen((prev) => !prev);
+    }
     guard(() => router.push("/favorites"));
   };
 
+  const [isPromptOpen, setIsPromptOpen] = useState(false);
+
+  useEffect(() => {
+    if (showMessage) setIsPromptOpen(true);
+  }, [showMessage]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setIsPromptOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   return (
-    <div className="relative">
+    <div className="relative" ref={containerRef}>
       <button
         onClick={handleClick}
         className="p-2 text-2xl cursor-pointer"

@@ -25,6 +25,7 @@ export default function Header() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
+  const categoryDropdownRef = useRef<HTMLDivElement>(null);
   const searchButtonRef = useRef<HTMLButtonElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
@@ -45,6 +46,12 @@ export default function Header() {
         !searchButtonRef.current.contains(event.target as Node)
       ) {
         setIsSearchOpen(false);
+      }
+      if (
+        categoryDropdownRef.current &&
+        !categoryDropdownRef.current.contains(event.target as Node)
+      ) {
+        setDropdownOpen(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -158,7 +165,7 @@ export default function Header() {
       <div className="bg-brand-green border-b border-green-600 text-white shadow-lg">
         <nav className="w-full flex items-center py-2 px-6 space-x-6 relative">
           {/* Browse Categories Dropdown */}
-          <div className="relative">
+          <div className="relative" ref={categoryDropdownRef}>
             <button
               className="flex items-center gap-1 hover:text-green-600 transition-colors cursor-pointer"
               onClick={() => setDropdownOpen((prev) => !prev)}
