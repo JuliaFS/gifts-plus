@@ -7,7 +7,7 @@ import { useState, useRef, useEffect } from "react";
 import {
   FaChevronDown,
   FaBars,
-  FaRegUserCircle,
+  FaRegUser,
 } from "react-icons/fa";
 import { IoSearch } from "react-icons/io5";
 import { logout } from "@/services/auth";
@@ -118,7 +118,7 @@ export default function Header() {
               className="hover:underline"
               title="Enter your account"
             >
-              <FaRegUserCircle className="text-xl" />
+              <FaRegUser className="text-xl" />
             </Link>
 
             {/* Logout */}

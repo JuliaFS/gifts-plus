@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthGuard } from "@/services/hooks/useAuthGuard";
 import { useFavorites } from "@/services/hooks/useFavorites";
+import { FaRegHeart } from "react-icons/fa";
 
 export default function FavoritesIcon() {
   const router = useRouter();
@@ -28,7 +29,7 @@ export default function FavoritesIcon() {
         className="p-2 text-2xl"
         title="Favorites"
       >
-        ❤️
+        <FaRegHeart size={22}/>
         {user && favoritesData.length > 0 && (
           <span className="absolute top-0.5 -right-1 bg-purple-500 border border-white text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
             {favoritesData.length}
