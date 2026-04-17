@@ -1,6 +1,8 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import express from "express";
 import cors from "cors";
-import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 
 import authRoutes from "./src/routes/auth.routes";
@@ -11,9 +13,8 @@ import adminOrdersRoutes from "./src/routes/admin-orders.routes";
 import favoritesRoutes from "./src/routes/favorites.routes";
 import categoryRoutes from "./src/routes/category.routes";
 import stripeRoutes from "./src/routes/stripe.routes";
-  import contactsRoutes from "./src/routes/contacts.routes";
-
-dotenv.config();
+import contactsRoutes from "./src/routes/contacts.routes";
+import chatRouter from "./src/routes/chat";
 
 const app = express();
 
@@ -22,7 +23,7 @@ app.use(
     //origin: process.env.FRONTEND_URL || "http://localhost:3000",
     origin: process.env.FRONTEND_URL,
     credentials: true,
-  })
+  }),
 );
 
 console.log("Frontend URL for CORS:", process.env.FRONTEND_URL);
@@ -40,6 +41,7 @@ app.use("/api/favorites", favoritesRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/stripe", stripeRoutes);
 app.use("/api/contacts", contactsRoutes);
+app.use("/api/chat", chatRouter);
 
 // Global error handler
 app.use(
@@ -47,13 +49,13 @@ app.use(
     err: any,
     req: express.Request,
     res: express.Response,
-    next: express.NextFunction
+    next: express.NextFunction,
   ) => {
     console.error(err);
     res.status(err.status || 500).json({
       message: err.message || "Internal Server Error",
     });
-  }
+  },
 );
 
 export default app;

@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import Providers from "./providers";
 import { CartIconProvider } from "@/components/cart/CartIconContext";
 import CookieBanner from "@/components/CookieBanner";
+import AiChat from "@/components/AiChat";
 import { Analytics } from "@vercel/analytics/next"
 
 const geistSans = Geist({
@@ -40,6 +41,7 @@ export default function RootLayout({
               <main className="flex-1">{children}</main>
               <Footer />
               <CookieBanner />
+              <AiChat />
             </div>
           </CartIconProvider>
         </Providers>

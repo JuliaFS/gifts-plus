@@ -34,7 +34,7 @@ export default function CookieBanner() {
 
   return (
     <div
-      className={`fixed bottom-6 right-6 z-[100] max-w-sm w-full p-4 transition-all duration-700 ease-out transform ${
+      className={`fixed bottom-6 left-6 z-[100] max-w-sm w-full p-4 transition-all duration-700 ease-out transform ${
         status === "visible" ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
       }`}
     >
