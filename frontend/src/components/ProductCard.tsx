@@ -3,11 +3,13 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Favorite, Product } from "@/services/types";
+import { motion, AnimatePresence } from "framer-motion";
 import AddToCartButton from "./cart/AddToCartButton";
 import { useRef, useState, useEffect } from "react";
 import { useFavorites } from "@/services/hooks/useFavorites";
 import { useAuthGuard } from "@/services/hooks/useAuthGuard";
 import { getBadges } from "@/utils/productUtils";
+import { FaRegHeart, FaHeart } from "react-icons/fa";
 
 interface ProductCardProps {
   product: Product;
@@ -68,9 +70,9 @@ export default function ProductCard({
   const badges = getBadges(product);
 
   return (
-    <div className="relative w-full overflow-hidden p-2">
+    <div className="relative w-full p-2">
       {/* Purple rotated background */}
-      <div className="absolute inset-2 bg-purple-400 shadow-md rotate-2 rounded-xl z-0" />
+      <div className="absolute inset-2 bg-brand-green shadow-md rotate-2 rounded-xl z-0" />
       <div
         ref={wrapperRef}
         className="rounded p-4 shadow-sm hover:shadow-md relative z-10 bg-white flex flex-col h-96"
@@ -93,9 +95,9 @@ ${badge === "HOT" && "bg-orange-500"}`}
         {/* FAVORITE BUTTON */}
         <button
           onClick={toggleFavorite}
-          className="absolute top-2 right-2 text-xl z-10"
+          className="absolute top-2 right-2 text-xl z-20 transition-transform active:scale-125 hover:scale-110"
         >
-          {isFavorite ? "❤️" : "🤍"}
+          {isFavorite ? <FaHeart size={24} className="text-red-500"/> : <FaRegHeart size={24} />}
         </button>
 
         {/* TEMP MESSAGE */}
@@ -106,11 +108,18 @@ ${badge === "HOT" && "bg-orange-500"}`}
         )}
 
         {/* SUCCESS MESSAGE */}
-        {successMessage && (
-          <div className="absolute top-10 right-2 bg-green-500 text-white text-xs px-2 py-1 rounded z-10">
-            {successMessage}
-          </div>
-        )}
+        <AnimatePresence>
+          {successMessage && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: -20, x: "-50%" }}
+              animate={{ opacity: 1, scale: 1, y: 0, x: "-50%" }}
+              exit={{ opacity: 0, scale: 0.9, y: -20, x: "-50%" }}
+              className="fixed top-4 left-1/2 transform -translate-x-1/2 bg-green-600 text-white text-sm font-bold px-4 py-3 rounded-xl z-50 shadow-2xl text-center pointer-events-none"
+            >
+              {successMessage}
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* PRODUCT LINK */}
         <Link href={href} className="flex flex-col flex-1">

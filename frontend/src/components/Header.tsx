@@ -4,11 +4,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState, useRef, useEffect } from "react";
-import {
-  FaChevronDown,
-  FaBars,
-  FaRegUser,
-} from "react-icons/fa";
+import { FaChevronDown, FaBars, FaRegUser } from "react-icons/fa";
+import { GiPresent } from "react-icons/gi";
 import { IoSearch } from "react-icons/io5";
 import { logout } from "@/services/auth";
 import { useCurrentUser } from "@/services/hooks/useCurrentUser";
@@ -32,7 +29,11 @@ export default function Header() {
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   // Live search check to show "No results" message
-  const { data: searchResults, isError: isSearchError, isLoading: isSearchLoading } = useSearchProducts(searchQuery);
+  const {
+    data: searchResults,
+    isError: isSearchError,
+    isLoading: isSearchLoading,
+  } = useSearchProducts(searchQuery);
 
   // Close search when clicking outside
   useEffect(() => {
@@ -91,13 +92,17 @@ export default function Header() {
       {/* Top bar */}
       <div className="bg-white shadow">
         <nav className="w-full flex flex-col md:flex-row justify-between items-center py-3 px-6">
-          {/* Logo */}
-          <Link
-            href="/"
-            className="text-2xl font-extrabold bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 bg-clip-text text-transparent"
-          >
-            Gifts Plus
-          </Link>
+          <div className="flex justify-center items-center">
+            <GiPresent size={32} className="text-brand-green rotate-6"/>
+            {/* Logo */}
+            <Link
+              href="/"
+              // className="text-2xl font-extrabold bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 bg-clip-text text-transparent"
+              className="text-2xl pt-1 font-extrabold"
+            >
+              Gifts Plus
+            </Link>
+          </div>
 
           {/* User & Icons */}
           <div className="flex flex-wrap gap-4 items-center justify-center">
@@ -125,7 +130,7 @@ export default function Header() {
             {currentUser && (
               <button
                 onClick={() => logoutMutation.mutate()}
-                className="bg-purple-500 px-3 py-1 rounded hover:bg-purple-600 text-white order-4"
+                className="bg-brand-green px-3 py-1 rounded hover:bg-green-600 text-white order-4 cursor-pointer"
                 title="Logout"
               >
                 Logout
@@ -136,7 +141,7 @@ export default function Header() {
             <button
               ref={searchButtonRef}
               onClick={() => setIsSearchOpen(!isSearchOpen)}
-              className="hover:text-purple-600 cursor-pointer"
+              className="hover:text-green-600 cursor-pointer"
               title="Search"
             >
               <IoSearch size={24} />
@@ -150,19 +155,20 @@ export default function Header() {
       </div>
 
       {/* Bottom bar */}
-      <div className="bg-purple-800 border-t border-purple-900 text-white shadow-lg">
+      <div className="bg-brand-green border-b border-green-600 text-white shadow-lg">
         <nav className="w-full flex items-center py-2 px-6 space-x-6 relative">
           {/* Browse Categories Dropdown */}
           <div className="relative">
             <button
-              className="flex items-center gap-1 hover:text-green-300 transition-colors cursor-pointer"
+              className="flex items-center gap-1 hover:text-green-600 transition-colors cursor-pointer"
               onClick={() => setDropdownOpen((prev) => !prev)}
             >
               <span className="md:hidden">
-                <FaBars size={20} />
+                <FaBars size={20} className={`transition-transform duration-300 inline-block ${dropdownOpen ? "rotate-180" : "rotate-90"}`} />
               </span>
               <span className="hidden md:flex items-center gap-1">
-                Categories <FaChevronDown />
+                Categories 
+                <FaChevronDown className={`transition-transform duration-300 ${dropdownOpen ? "rotate-0" : "-rotate-90"}`} />
               </span>
             </button>
 
@@ -172,7 +178,7 @@ export default function Header() {
                   <li key={cat.id}>
                     <Link
                       href={`/categories/${cat.slug}`}
-                      className="block px-4 py-2 hover:bg-green-100 hover:text-green-800 transition-colors"
+                      className="block px-4 py-2 hover:bg-brand-green hover:text-green-800 transition-colors"
                       onClick={() => setDropdownOpen(false)}
                     >
                       {cat.name}
@@ -186,13 +192,13 @@ export default function Header() {
           {/* Other menu links */}
           <Link
             href="/about"
-            className="hover:text-green-300 transition-colors cursor-pointer"
+            className="hover:text-green-600 transition-colors cursor-pointer"
           >
             About Us
           </Link>
           <Link
             href="/contacts"
-            className="hover:text-green-300 transition-colors cursor-pointer"
+            className="hover:text-green-600 transition-colors cursor-pointer"
           >
             Contact
           </Link>
@@ -227,13 +233,15 @@ export default function Header() {
               <IoSearch size={24} />
             </button>
           </div>
-          
+
           {/* Feedback for no results */}
-          {searchQuery.trim().length > 0 && !isSearchLoading && searchResults?.length === 0 && (
-            <p className="mt-2 text-sm text-red-600 font-semibold italic">
-              No products found matching "{searchQuery}"
-            </p>
-          )}
+          {searchQuery.trim().length > 0 &&
+            !isSearchLoading &&
+            searchResults?.length === 0 && (
+              <p className="mt-2 text-sm text-red-600 font-semibold italic">
+                No products found matching "{searchQuery}"
+              </p>
+            )}
           {isSearchError && (
             <p className="mt-2 text-sm text-red-500 font-semibold">
               Error connecting to search service.

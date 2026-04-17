@@ -65,7 +65,7 @@ export default function DashboardPage() {
     productList.map((p) => (
       <div
         key={p.id}
-        className="relative min-w-[220px] max-w-[220px] pb-4 transform transition duration-300 hover:scale-102"
+        className="relative min-w-[220px] max-w-[220px] pb-4 transition-all duration-300 hover:scale-[1.02] hover:z-20"
       >
         <ProductCard product={p} />
 
@@ -89,7 +89,7 @@ export default function DashboardPage() {
         {/* 🎁 HERO */}
         <motion.div
           ref={heroRef}
-          className="relative rounded-[2rem] overflow-hidden h-[250px] md:h-[300px] bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 flex items-center justify-center text-white shadow-2xl"
+          className="relative overflow-hidden h-[250px] md:h-[300px] bg-gradient-to-br from-brand-green via-brand-green to-pink-500 flex items-center justify-center text-white shadow-2xl"
         >
           <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
           <div className="relative z-10 text-center space-y-6 px-4">
@@ -118,7 +118,7 @@ export default function DashboardPage() {
               whileHover={{ scale: 1.05, boxShadow: "0px 0px 20px rgba(255,255,255,0.3)" }}
               whileTap={{ scale: 0.95 }}
               onClick={() => router.push("/products")}
-              className="bg-white/20 backdrop-blur-md border border-white/30 text-white px-8 py-3 rounded-full font-bold text-lg transition-all hover:bg-white hover:text-purple-600"
+              className="bg-white/20 backdrop-blur-md border border-white/30 text-white px-8 py-3 font-bold text-lg transition-all hover:bg-white hover:text-brand-green"
             >
               Shop Now
             </motion.button>
@@ -128,7 +128,7 @@ export default function DashboardPage() {
         {/* 🎀 CATEGORIES SECTION */}
         <div className="space-y-6">
           <div className="flex justify-between items-end">
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white">Shop by Occasion</h2>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Shop by Occasion</h2>
           </div>
 
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
@@ -141,7 +141,7 @@ export default function DashboardPage() {
               <motion.div
                 key={cat.name}
                 whileHover={{ scale: 1.05 }}
-                className={`${cat.color} rounded-2xl p-8 flex flex-col items-center justify-center shadow-sm hover:shadow-md transition-all cursor-pointer border border-transparent hover:border-current/10`}
+                className={`${cat.color} p-8 flex flex-col items-center justify-center hover:shadow-md transition-all cursor-pointer border border-transparent hover:border-current/10`}
               >
                 <span className="text-4xl mb-3">{cat.emoji}</span>
                 <p className="text-lg font-bold">{cat.name}</p>

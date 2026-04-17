@@ -26,12 +26,12 @@ export default function FavoritesIcon() {
     <div className="relative">
       <button
         onClick={handleClick}
-        className="p-2 text-2xl"
+        className="p-2 text-2xl cursor-pointer"
         title="Favorites"
       >
         <FaRegHeart size={22}/>
         {user && favoritesData.length > 0 && (
-          <span className="absolute top-0.5 -right-1 bg-purple-500 border border-white text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+          <span className="absolute top-0.5 -right-1 bg-brand-green border border-white text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
             {favoritesData.length}
           </span>
         )}
