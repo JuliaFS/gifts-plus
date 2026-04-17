@@ -32,7 +32,7 @@ export default function Header() {
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   // Live search check to show "No results" message
-  const { isError: isSearchError } = useSearchProducts(searchQuery);
+  const { data: searchResults, isError: isSearchError, isLoading: isSearchLoading } = useSearchProducts(searchQuery);
 
   // Close search when clicking outside
   useEffect(() => {
@@ -229,9 +229,14 @@ export default function Header() {
           </div>
           
           {/* Feedback for no results */}
-          {searchQuery.trim().length > 0 && isSearchError && (
+          {searchQuery.trim().length > 0 && !isSearchLoading && searchResults?.length === 0 && (
             <p className="mt-2 text-sm text-red-600 font-semibold italic">
-              No such product responses to that search
+              No products found matching "{searchQuery}"
+            </p>
+          )}
+          {isSearchError && (
+            <p className="mt-2 text-sm text-red-500 font-semibold">
+              Error connecting to search service.
             </p>
           )}
         </div>

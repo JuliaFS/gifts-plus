@@ -93,7 +93,9 @@ export async function addBadgeToProduct(
 
 // Search products
 export async function searchProducts(query: string): Promise<Product[]> {
-  const res = await fetch(API.products.search(query), {
+  // Explicitly ensure we use the 'query' parameter name to match the search page
+  const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/products/search?query=${encodeURIComponent(query)}`;
+  const res = await fetch(url, {
     credentials: "include",
   });
 

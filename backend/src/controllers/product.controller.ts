@@ -210,17 +210,13 @@ export async function searchProductsHandler(
   next: NextFunction,
 ) {
   try {
-    const q = (req.query.q as string) || "";
+    // Support both 'q' and 'query' parameters for robustness
+    const q = (req.query.q || req.query.query || "") as string;
     
     const products = await searchProducts(q);
 
-    if (!products || products.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "No such product responses to that search" });
-    }
-
-    res.json(products);
+    // Return 200 OK even if array is empty. Empty results are not an "Error".
+    res.status(200).json(products || []);
   } catch (err) {
     next(err);
   }

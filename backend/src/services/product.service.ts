@@ -223,8 +223,8 @@ export async function addBadgeToProduct(
   return data;
 }
 
-export async function searchProducts(query: string) {
-  const trimmedQuery = query?.trim();
+export async function searchProducts(query: any) {
+  const trimmedQuery = typeof query === "string" ? query.trim() : "";
   if (!trimmedQuery) return [];
 
   const { data, error } = await supabase
@@ -232,9 +232,13 @@ export async function searchProducts(query: string) {
     .select(
       `
       *,
-      product_images (
-        image_url,
-        is_main
+      product_images (*),
+      product_categories!product_categories_product_id_fkey (
+        categories!product_categories_category_id_fkey (
+          id,
+          name,
+          slug
+        )
       )
     `
     )
