@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { RiShoppingCartFill } from "react-icons/ri";
+import { LiaShoppingBagSolid } from "react-icons/lia";
 import { useCartStore } from "@/store/cartStore";
 import { useCartIconRef } from "./CartIconContext";
 
@@ -13,7 +13,7 @@ export default function CartIcon() {
   return (
     <Link href="/cart" className="relative" title="View Cart">
       <div ref={cartIconRef}>
-        <RiShoppingCartFill size={24}/>
+        <LiaShoppingBagSolid size={24}/>
       </div>
 
       {count > 0 && (
