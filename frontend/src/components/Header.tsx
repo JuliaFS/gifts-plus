@@ -5,16 +5,17 @@ import { useRouter } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState, useRef, useEffect } from "react";
 import {
-  FaSearch,
   FaChevronDown,
   FaBars,
   FaRegUserCircle,
 } from "react-icons/fa";
+import { IoSearch } from "react-icons/io5";
 import { logout } from "@/services/auth";
 import { useCurrentUser } from "@/services/hooks/useCurrentUser";
 import CartIcon from "./cart/CartIcon";
 import FavoritesIcon from "./favorites/FavoritesIcon";
 import { useCategories } from "@/services/hooks/useCategories";
+import { useSearchProducts } from "@/services/hooks/useSearchProduct";
 import TopLineCarousel from "./TopLineCarousel";
 
 export default function Header() {
@@ -29,6 +30,9 @@ export default function Header() {
   const searchRef = useRef<HTMLDivElement>(null);
   const searchButtonRef = useRef<HTMLButtonElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Live search check to show "No results" message
+  const { isError: isSearchError } = useSearchProducts(searchQuery);
 
   // Close search when clicking outside
   useEffect(() => {
@@ -132,10 +136,10 @@ export default function Header() {
             <button
               ref={searchButtonRef}
               onClick={() => setIsSearchOpen(!isSearchOpen)}
-              className="text-gray-600 hover:text-purple-600 cursor-pointer"
+              className="hover:text-purple-600 cursor-pointer"
               title="Search"
             >
-              <FaSearch size={20} />
+              <IoSearch size={24} />
             </button>
 
             {/* Cart & Favorites */}
@@ -205,8 +209,8 @@ export default function Header() {
         }`}
         style={{ top: "100%" }}
       >
-        <div className="w-full px-6 flex justify-start">
-          <div className="flex w-full max-w-md rounded-lg border border-purple-300 overflow-hidden bg-white focus-within:border-purple-500 focus-within:ring-2 focus-within:ring-purple-200 transition">
+        <div className="w-full px-6 flex flex-col justify-start">
+          <div className="flex w-full max-w-md rounded-lg border border-purple-300 overflow-hidden bg-white shadow-sm focus-within:border-purple-500 focus-within:ring-2 focus-within:ring-purple-200 transition">
             <input
               ref={searchInputRef}
               type="text"
@@ -220,9 +224,16 @@ export default function Header() {
               onClick={handleSearch}
               className="flex items-center justify-center px-6 bg-gradient-to-r from-purple-500 to-indigo-500 text-white hover:opacity-90 transition"
             >
-              <FaSearch size={16} />
+              <IoSearch size={24} />
             </button>
           </div>
+          
+          {/* Feedback for no results */}
+          {searchQuery.trim().length > 0 && isSearchError && (
+            <p className="mt-2 text-sm text-red-600 font-semibold italic">
+              No such product responses to that search
+            </p>
+          )}
         </div>
       </div>
     </header>

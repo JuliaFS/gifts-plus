@@ -224,7 +224,8 @@ export async function addBadgeToProduct(
 }
 
 export async function searchProducts(query: string) {
-  if (!query) return [];
+  const trimmedQuery = query?.trim();
+  if (!trimmedQuery) return [];
 
   const { data, error } = await supabase
     .from("products")
@@ -237,7 +238,7 @@ export async function searchProducts(query: string) {
       )
     `
     )
-    .ilike("name", `%${query}%`); // case-insensitive search
+    .ilike("name", `%${trimmedQuery}%`); // case-insensitive search
 
   if (error) throw error;
   return data;

@@ -210,8 +210,16 @@ export async function searchProductsHandler(
   next: NextFunction,
 ) {
   try {
-    const q = req.query.q as string;
+    const q = (req.query.q as string) || "";
+    
     const products = await searchProducts(q);
+
+    if (!products || products.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No such product responses to that search" });
+    }
+
     res.json(products);
   } catch (err) {
     next(err);
