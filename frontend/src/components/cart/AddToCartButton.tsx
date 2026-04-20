@@ -61,7 +61,7 @@ export default function AddToCartButton({
       <button
         onClick={handleAdd}
         disabled={disabled}
-        className={`mt-2 px-3 py-1 rounded text-white shadow-sm transition cursor-pointer
+        className={`mt-2 px-3 py-1 rounded text-white shadow-sm transition cursor-pointer z-[1000]
           ${
             disabled
               ? "bg-gray-300 cursor-not-allowed"
