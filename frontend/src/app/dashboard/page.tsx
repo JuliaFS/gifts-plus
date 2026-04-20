@@ -89,7 +89,7 @@ export default function DashboardPage() {
         {/* 🎁 HERO */}
         <motion.div
           ref={heroRef}
-          className="relative overflow-hidden h-[250px] md:h-[300px] bg-gradient-to-br from-brand-green via-brand-green to-pink-500 flex items-center justify-center text-white shadow-2xl"
+          className="relative overflow-hidden h-[250px] md:h-[300px] bg-gradient-to-br from-brand-green via-brand-green to-pink-500 flex items-center justify-center text-white shadow-2xl p-2 md:p-1"
         >
           <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
           <div className="relative z-10 text-center space-y-6 px-4">
@@ -97,7 +97,7 @@ export default function DashboardPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4, duration: 0.6 }}
-              className="text-4xl md:text-6xl font-extrabold tracking-tight"
+              className="text-3xl md:text-6xl font-extrabold tracking-tight"
             >
               Find the Perfect Gift 🎁
             </motion.h1>
@@ -106,7 +106,7 @@ export default function DashboardPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6, duration: 0.6 }}
-              className="text-lg md:text-xl opacity-90 max-w-xl mx-auto font-medium"
+              className="text-base md:text-xl opacity-90 max-w-xl mx-auto font-medium"
             >
               Make every moment special with unique presents
             </motion.p>
@@ -118,7 +118,7 @@ export default function DashboardPage() {
               whileHover={{ scale: 1.05, boxShadow: "0px 0px 20px rgba(255,255,255,0.3)" }}
               whileTap={{ scale: 0.95 }}
               onClick={() => router.push("/products")}
-              className="bg-white/20 backdrop-blur-md border border-white/30 text-white px-8 py-3 font-bold text-lg transition-all hover:bg-white hover:text-brand-green"
+              className="bg-white/20 backdrop-blur-md border border-white/30 text-white px-8 py-3 font-bold text-base md:text-lg transition-all hover:bg-white hover:text-brand-green"
             >
               Shop Now
             </motion.button>
