@@ -11,7 +11,7 @@ type Message = {
   id: string;
   sender: "user" | "ai";
   text?: string;
-  productIds?: number[];
+  productIds?: string[];
 };
 
 export default function AiChat() {
@@ -135,7 +135,7 @@ export default function AiChat() {
                     <div className="flex gap-3 overflow-x-auto">
                       {msg.productIds.map((id) => {
                         const product = products.find(
-                          (p) => p.id === id
+                          (p) => String(p.id) === String(id)
                         );
                         if (!product) return null;
 
