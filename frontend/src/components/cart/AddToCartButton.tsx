@@ -30,9 +30,11 @@ export default function AddToCartButton({
 
     addToCart(product, 1);
     
-    // ✅ Set the message immediately so user sees feedback 
-    // even if animation refs are missing
-    setMessage(`${product.name} added to cart`);
+    // Clear and reset message to ensure the animation/re-render triggers every click
+    setMessage(null);
+    setTimeout(() => {
+      setMessage(`${product.name} added to cart`);
+    }, 10);
 
     if (!imgRef.current || !cartIconRef.current) return;
 

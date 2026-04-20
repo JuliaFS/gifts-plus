@@ -56,7 +56,8 @@ export default function ProductDetailsPage() {
 
   // ✅ SAFE: product exists here
   const isAdmin = user?.role === "ADMIN";
-  const isOutOfStock = product.stock <= 0;
+  // Handle null/undefined stock safely
+  const isOutOfStock = (product.stock ?? 0) <= 0;
 
   const toggleFavorite = () => {
     guard(() => {
@@ -168,7 +169,7 @@ export default function ProductDetailsPage() {
 
       <p className="text-sm text-gray-500 mt-1">Stock: {product.stock}</p>
 
-      <div className="mt-6">
+      <div className="mt-6 relative z-10">
         {/* ✅ ADD TO CART DISABLED WHEN OUT OF STOCK */}
         <AddToCartButton
           product={product}
