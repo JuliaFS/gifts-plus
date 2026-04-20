@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { useAuthGuard } from "@/services/hooks/useAuthGuard";
 import { useFavorites } from "@/services/hooks/useFavorites";
 import { FaRegHeart } from "react-icons/fa";
-import Link from "next/link";
 
 export default function FavoritesIcon() {
   const router = useRouter();

@@ -163,7 +163,7 @@ export default function DashboardPage() {
           {productsLoading ? (
             <div className="flex gap-6 overflow-hidden"><SkeletonLoader /></div>
           ) : (
-            <div className="flex gap-6 overflow-x-auto pb-6 no-scrollbar snap-x">
+            <div className="flex gap-6 overflow-x-auto pb-6 custom-scrollbar snap-x">
               {renderProducts(hotProducts)}
             </div>
           )}
@@ -181,7 +181,7 @@ export default function DashboardPage() {
           {productsLoading ? (
             <div className="flex gap-6 overflow-hidden"><SkeletonLoader /></div>
           ) : (
-            <div className="flex gap-6 overflow-x-auto pb-6 no-scrollbar snap-x">
+            <div className="flex gap-6 overflow-x-auto pb-6 custom-scrollbar snap-x">
               {renderProducts(saleProducts)}
             </div>
           )}
@@ -199,7 +199,7 @@ export default function DashboardPage() {
           {productsLoading ? (
             <div className="flex gap-6 overflow-hidden"><SkeletonLoader /></div>
           ) : (
-            <div className="flex gap-6 overflow-x-auto pb-6 no-scrollbar snap-x">
+            <div className="flex gap-6 overflow-x-auto pb-6 custom-scrollbar snap-x">
               {renderProducts(newProducts)}
             </div>
           )}

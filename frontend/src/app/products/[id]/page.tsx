@@ -14,6 +14,8 @@ import DeleteButton from "@/app/admin/products/DeleteButton";
 import EditProductModal from "@/app/admin/products/EditProductModal";
 import { useCurrentUser } from "@/services/hooks/useCurrentUser";
 import { useFavorites } from "@/services/hooks/useFavorites";
+import { FaHeart, FaRegHeart } from "react-icons/fa";
+import { useAuthGuard } from "@/services/hooks/useAuthGuard";
 
 export default function ProductDetailsPage() {
   const { id } = useParams();
@@ -24,6 +26,7 @@ export default function ProductDetailsPage() {
 
   const deleteMutation = useDeleteProduct();
   const { data: user } = useCurrentUser();
+  const { guard, showMessage } = useAuthGuard();
 
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [activeImage, setActiveImage] = useState<ProductImage | null>(null);
@@ -43,8 +46,8 @@ export default function ProductDetailsPage() {
 
   const isFavorite = useMemo(
     () =>
-      favoritesQuery.data?.some((f: Favorite) => f.product_id === productId),
-    [favoritesQuery.data, productId],
+      favoritesQuery.data?.some((f: Favorite) => String(f.product_id) === String(product?.id)),
+    [favoritesQuery.data, product?.id],
   );
 
   // ---- LOADING GUARDS (IMPORTANT) ----
@@ -52,12 +55,14 @@ export default function ProductDetailsPage() {
   if (isError || !product) return <p>Product not found.</p>;
 
   // ✅ SAFE: product exists here
-  const isAdmin = user?.role === "admin";
+  const isAdmin = user?.role === "ADMIN";
   const isOutOfStock = product.stock <= 0;
 
   const toggleFavorite = () => {
-    if (isFavorite) removeMutation.mutate(productId);
-    else addMutation.mutate(productId);
+    guard(() => {
+      if (isFavorite) removeMutation.mutate(product.id);
+      else addMutation.mutate(product.id);
+    });
   };
 
   const currentImage =
@@ -78,9 +83,20 @@ export default function ProductDetailsPage() {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">{product.name}</h1>
 
-        <button onClick={toggleFavorite} className="text-2xl ml-4">
-          {isFavorite ? "❤️" : "🤍"}
-        </button>
+        <div className="relative">
+          <button 
+            onClick={toggleFavorite} 
+            className="text-2xl ml-4 transition-transform active:scale-125 hover:scale-110"
+            title={isFavorite ? "Remove from favorites" : "Add to favorites"}
+          >
+            {isFavorite ? <FaHeart className="text-red-500" /> : <FaRegHeart />}
+          </button>
+          {showMessage && (
+            <div className="absolute top-full right-0 mt-1 bg-red-500 text-white text-xs px-2 py-1 rounded z-50 whitespace-nowrap shadow-lg">
+              Login to favorite ❤️
+            </div>
+          )}
+        </div>
       </div>
 
       {/* ADMIN ACTIONS */}
@@ -152,12 +168,14 @@ export default function ProductDetailsPage() {
 
       <p className="text-sm text-gray-500 mt-1">Stock: {product.stock}</p>
 
-      {/* ✅ ADD TO CART DISABLED WHEN OUT OF STOCK */}
-      <AddToCartButton
-        product={product}
-        imgRef={mainImageRef}
-        disabled={isOutOfStock}
-      />
+      <div className="mt-6">
+        {/* ✅ ADD TO CART DISABLED WHEN OUT OF STOCK */}
+        <AddToCartButton
+          product={product}
+          imgRef={mainImageRef}
+          disabled={isOutOfStock}
+        />
+      </div>
 
       {/* EDIT MODAL (ADMIN ONLY, NEVER DISABLED BY STOCK) */}
       {editingProduct && (
