@@ -29,6 +29,10 @@ export default function AddToCartButton({
     if (disabled) return;
 
     addToCart(product, 1);
+    
+    // ✅ Set the message immediately so user sees feedback 
+    // even if animation refs are missing
+    setMessage(`${product.name} added to cart`);
 
     if (!imgRef.current || !cartIconRef.current) return;
 
@@ -40,8 +44,6 @@ export default function AddToCartButton({
       from,
       to,
     });
-
-    setMessage(`${product.name} added to cart`);
   };
 
   // Auto-clear message
@@ -78,7 +80,7 @@ export default function AddToCartButton({
       )}
 
       {message && (
-        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-4 py-2 rounded shadow">
+        <div className="fixed top-20 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded-full shadow-lg z-[9999] animate-bounce">
           {message}
         </div>
       )}
