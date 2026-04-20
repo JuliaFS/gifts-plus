@@ -181,7 +181,7 @@ export async function resetPassword(req: Request, res: Response) {
     );
 
     // 3. Set the HttpOnly cookie so the user is logged in instantly
-    res.cookie("token", token, {
+    res.cookie("token", jwtToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production", // required for HTTPS
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",

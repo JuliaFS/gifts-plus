@@ -133,14 +133,15 @@ export default function DashboardPage() {
 
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
             {[
-              { name: "Birthday", emoji: "🎂", color: "bg-blue-50 text-blue-600" },
-              { name: "Anniversary", emoji: "💍", color: "bg-pink-50 text-pink-600" },
-              { name: "Christmas", emoji: "🎄", color: "bg-green-50 text-green-600" },
-              { name: "Graduation", emoji: "🎓", color: "bg-purple-50 text-purple-600" },
+              { name: "Birthday", emoji: "🎂", color: "bg-blue-50 text-blue-600", slug: "birthday" },
+              { name: "Anniversary", emoji: "💍", color: "bg-pink-50 text-pink-600", slug: "anniversary" },
+              { name: "Christmas", emoji: "🎄", color: "bg-green-50 text-green-600", slug: "christmas" },
+              { name: "Graduation", emoji: "🎓", color: "bg-purple-50 text-purple-600", slug: "graduation" },
             ].map((cat, idx) => (
               <motion.div
                 key={cat.name}
                 whileHover={{ scale: 1.05 }}
+                onClick={() => router.push(`/categories/${cat.slug}`)}
                 className={`${cat.color} p-8 flex flex-col items-center justify-center hover:shadow-md transition-all cursor-pointer border border-transparent hover:border-current/10`}
               >
                 <span className="text-4xl mb-3">{cat.emoji}</span>
