@@ -65,13 +65,15 @@ export default function CartItem({ item }: Props) {
   return (
     <div className="flex gap-4 border-b pb-4 relative">
       {mainImage && (
-        <Image
-          src={mainImage.image_url}
-          alt={item.product.name}
-          width={80}
-          height={80}
-          className="rounded"
-        />
+        <div className="w-20 h-auto flex-shrink-0">
+          <Image
+            src={mainImage.image_url}
+            alt={item.product.name}
+            width={80}
+            height={80}
+            className="w-full h-auto rounded"
+          />
+        </div>
       )}
 
       <div className="flex-1">

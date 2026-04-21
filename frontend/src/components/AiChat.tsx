@@ -28,8 +28,8 @@ export default function AiChat() {
 
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // 👇 Get products for AI + rendering
-  const { data } = useGetProducts(1);
+  // 👇 Only fetch products if the chat is actually open to save initialization time
+  const { data } = useGetProducts(isOpen ? 1 : 0); 
   const products = data?.data || [];
 
   // Auto-scroll
@@ -90,14 +90,14 @@ export default function AiChat() {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-[100] flex flex-col items-end">
+    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end pointer-events-none">
       <AnimatePresence>
         {isOpen && (
           <motion.div
             initial={{ opacity: 0, scale: 0.8, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.8, y: 20 }}
-            className="mb-4 w-[350px] max-w-[90vw] h-[500px] bg-white rounded-3xl shadow-2xl flex flex-col overflow-hidden"
+            className="mb-4 w-[350px] max-w-[90vw] h-[500px] bg-white rounded-3xl shadow-2xl flex flex-col overflow-hidden pointer-events-auto"
           >
             {/* Header */}
             <div className="bg-brand-green p-4 flex justify-between text-white">
@@ -173,7 +173,7 @@ export default function AiChat() {
       {/* Floating Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="bg-brand-green text-white p-4 rounded-full shadow-lg"
+        className="bg-brand-green text-white p-4 rounded-full shadow-lg pointer-events-auto cursor-pointer"
       >
         {isOpen ? <IoClose /> : <IoChatbubbleEllipses />}
       </button>

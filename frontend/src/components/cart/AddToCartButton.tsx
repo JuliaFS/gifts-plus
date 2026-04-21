@@ -24,9 +24,19 @@ export default function AddToCartButton({
   } | null>(null);
 
   const [message, setMessage] = useState<string | null>(null);
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  // Set isHydrated to true once the component mounts on the client
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setIsHydrated(true));
+    return () => cancelAnimationFrame(id);
+  }, []);
 
   const handleAdd = () => {
+    // If stock is disabled, do nothing
     if (disabled) return;
+    // If not hydrated yet, ignore the click silently rather than showing a 'dead' button
+    if (!isHydrated) return;
 
     addToCart(product, 1);
     
@@ -61,11 +71,11 @@ export default function AddToCartButton({
       <button
         onClick={handleAdd}
         disabled={disabled}
-        className={`mt-2 px-3 py-1 rounded text-white shadow-sm transition cursor-pointer z-[1000]
+        className={`mt-2 px-6 py-2 rounded-xl text-white shadow-md transition-all duration-200 font-bold relative
           ${
             disabled
-              ? "bg-gray-300 cursor-not-allowed"
-              : "bg-gradient-to-r from-purple-500 to-indigo-500 hover:opacity-90"
+              ? "bg-gray-300 cursor-not-allowed opacity-50"
+              : "bg-gradient-to-r from-purple-500 to-indigo-500 hover:opacity-90 hover:shadow-lg active:scale-95 cursor-pointer"
           }
         `}
       >
