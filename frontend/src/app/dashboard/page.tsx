@@ -12,6 +12,10 @@ import ProductCard from "@/components/ProductCard";
 import { Product } from "@/services/types";
 import { useAuthGuard } from "@/services/hooks/useAuthGuard";
 import { getBadges } from "@/utils/productUtils";
+import Link from "next/link";
+import { LiaGripfire } from "react-icons/lia";
+import { TbRosetteDiscountFilled } from "react-icons/tb";
+import { GiNewBorn } from "react-icons/gi";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -42,7 +46,7 @@ export default function DashboardPage() {
   const popularFavorites = (favoritesQuery.data ?? [])
     .filter((f) => f.products)
     .sort(
-      (a, b) => (b.products?.sales_count || 0) - (a.products?.sales_count || 0)
+      (a, b) => (b.products?.sales_count || 0) - (a.products?.sales_count || 0),
     )
     .slice(0, 8);
 
@@ -53,11 +57,14 @@ export default function DashboardPage() {
     gsap.fromTo(
       heroRef.current,
       { y: 60, opacity: 0, scale: 0.9, filter: "blur(10px)" },
-      { 
-        y: 0, opacity: 1, scale: 1, filter: "blur(0px)", 
-        duration: 1.2, 
-        ease: "power4.out" 
-      }
+      {
+        y: 0,
+        opacity: 1,
+        scale: 1,
+        filter: "blur(0px)",
+        duration: 1.2,
+        ease: "power4.out",
+      },
     );
   }, []);
 
@@ -78,14 +85,13 @@ export default function DashboardPage() {
     ));
 
   return (
-    <motion.div 
+    <motion.div
       initial="hidden"
       animate="visible"
       variants={containerVariants}
       className="w-full pb-16 space-y-16"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 space-y-16">
-
         {/* 🎁 HERO */}
         <motion.div
           ref={heroRef}
@@ -115,7 +121,10 @@ export default function DashboardPage() {
               initial={{ opacity: 0, scale: 0.5 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.8, type: "spring", stiffness: 200 }}
-              whileHover={{ scale: 1.05, boxShadow: "0px 0px 20px rgba(255,255,255,0.3)" }}
+              whileHover={{
+                scale: 1.05,
+                boxShadow: "0px 0px 20px rgba(255,255,255,0.3)",
+              }}
               whileTap={{ scale: 0.95 }}
               onClick={() => router.push("/products")}
               className="bg-white/20 backdrop-blur-md border border-white/30 text-white px-8 py-3 font-bold text-base md:text-lg transition-all hover:bg-white hover:text-brand-green"
@@ -128,15 +137,37 @@ export default function DashboardPage() {
         {/* 🎀 CATEGORIES SECTION */}
         <div className="space-y-6">
           <div className="flex justify-between items-end">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Shop by Occasion</h2>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+              Shop by Occasion
+            </h2>
           </div>
 
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
             {[
-              { name: "Birthday", emoji: "🎂", color: "bg-blue-50 text-blue-600", slug: "birthday" },
-              { name: "Anniversary", emoji: "💍", color: "bg-pink-50 text-pink-600", slug: "anniversary" },
-              { name: "Christmas", emoji: "🎄", color: "bg-green-50 text-green-600", slug: "christmas" },
-              { name: "Graduation", emoji: "🎓", color: "bg-purple-50 text-purple-600", slug: "graduation" },
+              {
+                name: "Birthday",
+                emoji: "🎂",
+                color: "bg-blue-50 text-blue-600",
+                slug: "birthday",
+              },
+              {
+                name: "Anniversary",
+                emoji: "💍",
+                color: "bg-pink-50 text-pink-600",
+                slug: "anniversary",
+              },
+              {
+                name: "Christmas",
+                emoji: "🎄",
+                color: "bg-green-50 text-green-600",
+                slug: "christmas",
+              },
+              {
+                name: "Graduation",
+                emoji: "🎓",
+                color: "bg-purple-50 text-purple-600",
+                slug: "graduation",
+              },
             ].map((cat, idx) => (
               <motion.div
                 key={cat.name}
@@ -155,13 +186,18 @@ export default function DashboardPage() {
         <div className="space-y-6">
           <div className="flex justify-between items-center">
             <h2 className="text-2xl font-bold flex items-center gap-2">
-              <span className="text-red-500">🔥</span> Trending Gifts
+              <span className="text-red-500">
+                <LiaGripfire className="text-4xl text-brand-green" />
+              </span>{" "}
+              Trending Gifts
             </h2>
             <button onClick={() => router.push("/products")} className="text-purple-600 font-semibold hover:underline">View All</button>
           </div>
 
           {productsLoading ? (
-            <div className="flex gap-6 overflow-hidden"><SkeletonLoader /></div>
+            <div className="flex gap-6 overflow-hidden">
+              <SkeletonLoader />
+            </div>
           ) : (
             <div className="flex gap-6 overflow-x-auto pb-6 custom-scrollbar snap-x">
               {renderProducts(hotProducts)}
@@ -173,13 +209,17 @@ export default function DashboardPage() {
         <div className="space-y-6">
           <div className="flex justify-between items-center">
             <h2 className="text-2xl font-bold flex items-center gap-2">
-              <span className="text-emerald-500">💸</span> Best Deals
+              <span className="text-emerald-500">
+                <TbRosetteDiscountFilled className="text-4xl text-brand-green" />
+              </span>{" "}
+              Best Deals
             </h2>
-            <button onClick={() => router.push("/products")} className="text-purple-600 font-semibold hover:underline">View All</button>
           </div>
 
           {productsLoading ? (
-            <div className="flex gap-6 overflow-hidden"><SkeletonLoader /></div>
+            <div className="flex gap-6 overflow-hidden">
+              <SkeletonLoader />
+            </div>
           ) : (
             <div className="flex gap-6 overflow-x-auto pb-6 custom-scrollbar snap-x">
               {renderProducts(saleProducts)}
@@ -191,13 +231,15 @@ export default function DashboardPage() {
         <div className="space-y-6">
           <div className="flex justify-between items-center">
             <h2 className="text-2xl font-bold flex items-center gap-2">
-              <span className="text-blue-500">🆕</span> New Arrivals
+              <GiNewBorn className="text-4xl text-brand-green" />
+              <span>New Arrivals</span>
             </h2>
-            <button onClick={() => router.push("/products")} className="text-purple-600 font-semibold hover:underline">View All</button>
           </div>
 
           {productsLoading ? (
-            <div className="flex gap-6 overflow-hidden"><SkeletonLoader /></div>
+            <div className="flex gap-6 overflow-hidden">
+              <SkeletonLoader />
+            </div>
           ) : (
             <div className="flex gap-6 overflow-x-auto pb-6 custom-scrollbar snap-x">
               {renderProducts(newProducts)}
@@ -213,7 +255,13 @@ export default function DashboardPage() {
 
           {popularFavorites.length === 0 ? (
             <div className="bg-gray-50 dark:bg-zinc-900 rounded-2xl p-12 text-center border-2 border-dashed border-gray-200 dark:border-zinc-800">
-              <p className="text-gray-500 font-medium">No favorites yet. Start liking products to see them here!</p>
+              <p className="text-gray-500 font-medium">
+                No favorites yet.{" "}
+                <Link href="/login" className="font-bold text-brand-green">
+                  Login
+                </Link>{" "}
+                and start liking products to see them here!
+              </p>
             </div>
           ) : (
             <div className="flex gap-6 overflow-x-auto pb-6 no-scrollbar snap-x">
@@ -225,16 +273,20 @@ export default function DashboardPage() {
         {/* ADMIN */}
         {currentUser?.role === "ADMIN" && (
           <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-gray-400 uppercase tracking-widest text-sm">Admin Insights</h2>
+            <h2 className="text-2xl font-bold text-gray-400 uppercase tracking-widest text-sm">
+              Admin Insights
+            </h2>
 
             <div className="p-8 rounded-[2rem] bg-zinc-900 text-white shadow-2xl flex flex-col md:flex-row justify-between items-center gap-6">
               <div>
-                <p className="text-zinc-400 font-medium">Total Platform Orders</p>
+                <p className="text-zinc-400 font-medium">
+                  Total Platform Orders
+                </p>
                 <p className="text-5xl font-black mt-2 bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
                   {orders.length}
                 </p>
               </div>
-              <button 
+              <button
                 onClick={() => router.push("/admin/orders")}
                 className="bg-white text-black px-6 py-3 rounded-xl font-bold hover:bg-zinc-200 transition-colors"
               >
@@ -250,6 +302,9 @@ export default function DashboardPage() {
 
 function SkeletonLoader() {
   return [1, 2, 3, 4].map((i) => (
-    <div key={i} className="min-w-[220px] h-[300px] bg-gray-200 dark:bg-zinc-800 animate-pulse rounded-2xl" />
+    <div
+      key={i}
+      className="min-w-[220px] h-[300px] bg-gray-200 dark:bg-zinc-800 animate-pulse rounded-2xl"
+    />
   ));
 }
