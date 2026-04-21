@@ -120,7 +120,7 @@ export default function ProductDetailsPage() {
         </div>
 
         {/* RIGHT COLUMN: DETAILS & ACTIONS */}
-        <div className="mt-10 px-4 sm:px-0 sm:mt-16 lg:mt-0 flex flex-col gap-6 relative z-10">
+        <div className="mt-10 px-4 sm:px-0 sm:mt-16 lg:mt-0 flex flex-col gap-6 relative z-30">
           <div className="flex justify-between items-start">
             <div>
               <h1 className="text-4xl font-extrabold tracking-tight text-gray-900">{product.name}</h1>

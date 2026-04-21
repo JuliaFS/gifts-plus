@@ -264,7 +264,7 @@ export default function DashboardPage() {
               </p>
             </div>
           ) : (
-            <div className="flex gap-6 overflow-x-auto pb-6 no-scrollbar snap-x">
+            <div className="flex gap-6 overflow-x-auto pb-6 custom-scrollbar snap-x">
               {renderProducts(popularFavorites.map((f) => f.products!))}
             </div>
           )}
@@ -296,6 +296,29 @@ export default function DashboardPage() {
           </div>
         )}
       </div>
+
+      {/* Custom Green Scrollbar Styles */}
+      <style jsx global>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          height: 6px;
+          width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background-color: #10b981; /* Emerald-500 matches brand-green */
+          border-radius: 20px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background-color: #059669; /* Emerald-600 for hover state */
+        }
+        /* Firefox Support */
+        .custom-scrollbar {
+          scrollbar-width: thin;
+          scrollbar-color: #10b981 transparent;
+        }
+      `}</style>
     </motion.div>
   );
 }
