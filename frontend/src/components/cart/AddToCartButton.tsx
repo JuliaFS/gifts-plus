@@ -75,7 +75,7 @@ export default function AddToCartButton({
           ${
             disabled
               ? "bg-gray-300 cursor-not-allowed opacity-50"
-              : "bg-gradient-to-r from-purple-500 to-indigo-500 hover:opacity-90 hover:shadow-lg active:scale-95 cursor-pointer"
+              : "bg-gradient-to-r from-brand-green to-pink-400 to-green-600 hover:opacity-90 hover:shadow-lg active:scale-95 cursor-pointer"
           }
         `}
       >
